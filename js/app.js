@@ -191,7 +191,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           document.getElementById('header-username').innerText = '👤 Valentino — Cliente';
       }
       configMenu(); navV('inicio'); renderMarketCatalog();
-      document.getElementById('header-username').innerText = rNombre || rDni;
+    
       if(rRol === 'admin') setTimeout(renderizarAlertasStaff, 100);
       if(rRol === 'alumno') setTimeout(renderizarAlertaCliente, 100);
       const btn = document.getElementById("btn-kiosco-accion");
