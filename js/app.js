@@ -224,7 +224,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       document.getElementById(id).classList.add('active');
   }
   
-  function cerrarM() { document.querySelectorAll('.modal-base').forEach(m => m.classList.remove('active')); }
+  
   function irQR() { irAPagoReal('qr'); }
   function irTransfer() { alert('Información bancaria copiada.'); }
   function irAPagoReal(type) { cerrarM(); abrirM(type==='qr'?'modal-mp-qr':'modal-bank-transfer'); }
@@ -250,15 +250,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
   }
 
-  function abrirM(id, ctx){
-      const cont = document.getElementById("pago-contenido");
-      const opciones = document.getElementById("pago-opciones");
 
-      if(cont && opciones){
-          cont.innerHTML = "";
-          cont.classList.add("hidden");
-          opciones.classList.remove("hidden");
-      }
+
       if(ctx) currentContext = ctx;
       document.getElementById(id).classList.add('active');
 
@@ -689,19 +682,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
   }
 
-  function closeModal(){
 
-      document.getElementById("modal-pago-selector").classList.remove("active");
-
-      const cont = document.getElementById("pago-contenido");
-      const opciones = document.getElementById("pago-opciones");
-
-      if(cont && opciones){
-          cont.innerHTML = "";
-          cont.classList.add("hidden");
-          opciones.classList.remove("hidden");
-      }
-  }
 
   function confirmarEfectivo(){
       const recibido = parseFloat(document.getElementById("input-efectivo").value || 0);
@@ -715,19 +696,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       closeModal();
   }
 
-  window.volverPago = function(){
-
-      const cont = document.getElementById("pago-contenido");
-      const opciones = document.getElementById("pago-opciones");
-
-      if(!cont || !opciones) return;
-
-      cont.innerHTML = "";
-      cont.classList.add("hidden");
-
-      opciones.classList.remove("hidden");
-  }
-
+  
  function mostrarPago(tipo){
       const cont = document.getElementById("pago-contenido");
       const opciones = document.getElementById("pago-opciones");
