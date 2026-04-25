@@ -240,6 +240,46 @@
     </div>
   </div>
 
+  <div id="modal-pago-proveedor" class="modal-base italic uppercase">
+    <div class="glass-card p-8 w-full max-w-md text-center space-y-4">
+
+      <h3 class="text-xl font-black text-white">Pago a Proveedor</h3>
+  
+      <div class="bg-slate-900 rounded-2xl p-5 text-left space-y-3 border border-slate-700">
+        <p class="text-xs text-slate-400">
+          Producto:
+          <span id="prov-pago-nombre" class="text-white font-black"></span>
+        </p>
+  
+        <p class="text-xs text-slate-400">
+          Proveedor:
+          <span id="prov-pago-proveedor" class="text-white font-black"></span>
+        </p>
+  
+        <p class="text-xs text-slate-400">
+          Monto:
+          <span id="prov-pago-monto" class="text-orange-400 font-black"></span>
+        </p>
+      </div>
+  
+      <select id="prov-metodo" class="w-full p-3 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs">
+        <option value="Efectivo">Efectivo</option>
+        <option value="Transferencia">Transferencia</option>
+        <option value="QR">QR</option>
+        <option value="Tarjeta">Tarjeta</option>
+      </select>
+  
+      <button onclick="confirmarPagoProveedor()" class="btn-ui btn-naranja w-full">
+        Confirmar Pago
+      </button>
+  
+      <button onclick="cerrarM()" class="text-slate-400 text-xs">
+        Cancelar
+      </button>
+
+  </div>
+</div>
+
   <script src="js/data.js"></script>
   <script src="js/navigation.js"></script>
   <script src="js/modals.js"></script>
