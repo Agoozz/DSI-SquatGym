@@ -217,12 +217,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   
-  function abrirM(id, ctx = null) {
-
-      currentContext = ctx;
-
-      document.getElementById(id).classList.add('active');
-  }
   
   
   function irQR() { irAPagoReal('qr'); }
