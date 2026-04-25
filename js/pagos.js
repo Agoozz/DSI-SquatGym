@@ -116,4 +116,124 @@ function mostrarPago(tipo){
       }
   }
 
+function calcularVueltoModal(total){
+      const rec = parseFloat(document.getElementById("input-efectivo").value || 0);
+      document.getElementById("vuelto-texto").innerText = "Vuelto: $" + Math.max(0, rec - total).toLocaleString();
+  }
+
+ function registrarPagoExitoso(metodo) {
+      // Actualizar sociosDB si hay un socio activo
+      if (socioActual) {
+          socioActual.deuda   = 0;
+          socioActual.estado  = 'Al día';
+          const monto = socioActual.deuda || totalCobro;
+          transacciones.push({ tipo: metodo, monto: monto, cliente: socioActual.nombre });
+          socioActual = null;
+      }
+      cerrarFlujoPago();
+      closeModal();
+      filtrarSocios(); // refrescar tabla
+  }
+
+function simularPagoQR(){
+      const el = document.getElementById("qr-estado");
+      el.innerHTML = `<span class="text-yellow-400">⏳ Procesando...</span>`;
+      setTimeout(() => {
+          const ok = Math.random() > 0.3;
+          if(ok){
+              el.innerHTML = `<span class="text-green-400 text-sm">✔ Pago Exitoso</span>`;
+              setTimeout(() => registrarPagoExitoso('QR'), 900);
+          } else {
+              el.innerHTML = `<span class="text-red-400 text-sm">✘ Error de Conexión. Reintentá.</span>`;
+          }
+      }, 1200);
+  }
+
+ function simularTransferencia(){
+      const cbu  = document.getElementById("input-cbu-alias")?.value.trim();
+      const comp = document.getElementById("input-comprobante")?.value.trim();
+      const el   = document.getElementById("transfer-estado");
+      if(!cbu || !comp){ el.innerHTML = `<span class="text-red-400">Completá todos los campos.</span>`; return; }
+      el.innerHTML = `<span class="text-yellow-400">⏳ Verificando comprobante...</span>`;
+      setTimeout(() => {
+          const ok = Math.random() > 0.2;
+          if(ok){
+              el.innerHTML = `<span class="text-green-400 text-sm">✔ Transferencia Verificada</span>`;
+              setTimeout(() => registrarPagoExitoso('Transferencia'), 900);
+          } else {
+              el.innerHTML = `<span class="text-red-400 text-sm">✘ Comprobante inválido. Verificá los datos.</span>`;
+          }
+      }, 1200);
+  }
+
+function simularPosnet(){
+      const titular = document.getElementById("input-titular")?.value.trim();
+      const numero  = document.getElementById("input-numero-t")?.value.trim();
+      const vto     = document.getElementById("input-vto")?.value.trim();
+      const cvv     = document.getElementById("input-cvv")?.value.trim();
+      const el      = document.getElementById("posnet-estado");
+      if(!titular || !numero || !vto || !cvv){ el.innerHTML = `<span class="text-red-400">Completá todos los campos.</span>`; return; }
+      el.innerHTML = `<span class="text-yellow-400">⏳ Conectando con Posnet...</span>`;
+      setTimeout(() => {
+          const ok = Math.random() > 0.25;
+          if(ok){
+              el.innerHTML = `<span class="text-green-400 text-sm">✔ Tarjeta Aprobada</span>`;
+              setTimeout(() => registrarPagoExitoso('Tarjeta'), 900);
+          } else {
+              el.innerHTML = `<span class="text-red-400 text-sm">✘ Tarjeta Rechazada. Intentá con otro medio.</span>`;
+          }
+      }, 1500);
+  }
+
+
+function simularEfectivo(total){
+      const rec = parseFloat(document.getElementById("input-efectivo")?.value || 0);
+      if(rec < total){ alert("El monto recibido es insuficiente."); return; }
+      registrarPagoExitoso('Efectivo');
+  }
+ function confirmarEfectivo(){
+      const recibido = parseFloat(document.getElementById("input-efectivo").value || 0);
+
+      if(recibido < totalCobro){
+          alert("Falta dinero");
+          return;
+      }
+
+      alert("Pago en efectivo registrado ✔");
+      closeModal();
+  }
+
+ function guardarDatosTarjeta() {
+      const btn = document.getElementById('btn-guardar');
+
+      btn.innerText = "Datos guardados ✓";
+
+      btn.classList.remove('text-gray-500'); 
+      btn.classList.add('text-green-600');   
+
+      btn.disabled = true;
+  }
+
+ function cambiarMetodoPago(){
+      const metodo = document.getElementById("metodo-pago").value;
+
+      document.getElementById("bloque-efectivo").classList.add("hidden");
+      document.getElementById("bloque-qr").classList.add("hidden");
+      document.getElementById("bloque-transferencia").classList.add("hidden");
+      document.getElementById("bloque-tarjeta").classList.add("hidden");
+
+      if(metodo === "efectivo"){
+          document.getElementById("bloque-efectivo").classList.remove("hidden");
+      }
+      if(metodo === "qr"){
+          document.getElementById("bloque-qr").classList.remove("hidden");
+      }
+      if(metodo === "transferencia"){
+          document.getElementById("bloque-transferencia").classList.remove("hidden");
+      }
+      if(metodo === "tarjeta"){
+          document.getElementById("bloque-tarjeta").classList.remove("hidden");
+      }
+  }
+
 
