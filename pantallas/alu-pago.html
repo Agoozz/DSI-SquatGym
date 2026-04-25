@@ -1,0 +1,199 @@
+<div id="v-alu-pago" class="view-section space-y-8 italic uppercase">
+
+      <!-- HEADER PERFIL -->
+      <div class="relative glass-card overflow-hidden">
+          <div style="height:120px;background:linear-gradient(135deg,#ea580c,#f97316,#1e293b);opacity:0.7;"></div>
+          <div class="px-8 pb-8">
+              <div class="flex items-end gap-6 -mt-12 mb-6">
+                  <img src="https://images.unsplash.com/photo-1599566150163-29194dcaad36?auto=format&fit=crop&q=80&w=200"
+                      class="w-24 h-24 rounded-2xl border-4 border-orange-500 shadow-2xl grayscale flex-shrink-0">
+                  <div class="pb-2 flex-1">
+                      <div class="flex items-center gap-3 flex-wrap">
+                          <h3 class="text-3xl font-black text-white italic">Valentino <span class="text-orange-500">Perez</span></h3>
+                          <span style="padding:3px 12px;border-radius:9999px;font-size:8px;font-weight:900;background:linear-gradient(135deg,#f97316,#ea580c);color:white;letter-spacing:0.1em;">
+                              PLATINUM
+                          </span>
+                      </div>
+                      <p class="text-slate-500 font-black text-[9px] tracking-[0.3em] mt-1">Socio #4922 · Zumba · Alta: 01/10/2025</p>
+                  </div>
+                  <button onclick="abrirM('modal-pago-selector','cuota')"
+                      class="btn-ui btn-naranja px-6 py-3 text-xs flex-shrink-0">
+                      <i class="fas fa-credit-card mr-2"></i>Pagar Cuota
+                  </button>
+              </div>
+
+              <!-- KPIs rápidos -->
+              <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div class="bg-slate-900/80 rounded-xl p-4 border border-slate-800 text-center">
+                      <p class="text-[8px] text-slate-500 font-black uppercase tracking-widest">Plan</p>
+                      <p class="text-sm font-black text-orange-400 mt-1">Platinum</p>
+                  </div>
+                  <div class="bg-slate-900/80 rounded-xl p-4 border border-slate-800 text-center">
+                      <p class="text-[8px] text-slate-500 font-black uppercase tracking-widest">Vencimiento</p>
+                      <p class="text-sm font-black text-red-400 mt-1">10/05/2026</p>
+                  </div>
+                  <div class="bg-slate-900/80 rounded-xl p-4 border border-slate-800 text-center">
+                      <p class="text-[8px] text-slate-500 font-black uppercase tracking-widest">Asistencia</p>
+                      <p class="text-sm font-black text-blue-400 mt-1">18 días</p>
+                  </div>
+                  <div class="bg-slate-900/80 rounded-xl p-4 border border-slate-800 text-center">
+                      <p class="text-[8px] text-slate-500 font-black uppercase tracking-widest">SquatPoints</p>
+                      <p class="text-sm font-black text-orange-400 mt-1">1.450 ★</p>
+                  </div>
+              </div>
+          </div>
+      </div>
+
+      <!-- BANNERS -->
+      <div id="banner-alerta-cliente"></div>
+      <div id="banner-restriccion-cliente"></div>
+
+      <!-- FILA PRINCIPAL -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+          <!-- ESTADO DE CUENTA + MEMBRESÍA -->
+          <div class="space-y-4">
+              <div class="glass-card p-6 border-l-4 border-orange-500">
+                  <h4 class="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-4">
+                      <i class="fas fa-id-card text-orange-500 mr-2"></i>Membresía Activa
+                  </h4>
+                  <div class="space-y-3">
+                      <div class="flex justify-between text-xs font-black">
+                          <span class="text-slate-400">Plan</span>
+                          <span class="text-white">Platinum Élite</span>
+                      </div>
+                      <div class="flex justify-between text-xs font-black">
+                          <span class="text-slate-400">Cuota mensual</span>
+                          <span class="text-orange-400">$12.500</span>
+                      </div>
+                      <div class="flex justify-between text-xs font-black">
+                          <span class="text-slate-400">Próximo venc.</span>
+                          <span class="text-red-400">10/05/2026</span>
+                      </div>
+                      <div class="flex justify-between text-xs font-black">
+                          <span class="text-slate-400">Miembro desde</span>
+                          <span class="text-white">01/10/2025</span>
+                      </div>
+                  </div>
+              </div>
+
+              <div class="glass-card p-6 border-l-4 border-green-500">
+                  <h4 class="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-4">
+                      <i class="fas fa-receipt text-green-500 mr-2"></i>Estado de Cuenta
+                  </h4>
+                  <div class="space-y-3">
+                      <div class="flex justify-between items-center text-xs font-black">
+                          <span class="text-slate-300">Cuota Abril 2026</span>
+                          <span class="text-green-400">✔ Pagado</span>
+                      </div>
+                      <div class="flex justify-between items-center text-xs font-black border-t border-slate-800 pt-3">
+                          <div>
+                              <p class="text-slate-300">Cuota Mayo 2026</p>
+                              <p class="text-[9px] text-slate-500 font-bold mt-0.5">Vence: 10/05/2026</p>
+                          </div>
+                          <span class="text-red-400">✘ Pendiente</span>
+                      </div>
+                      <button onclick="abrirM('modal-pago-selector','cuota')"
+                          class="btn-ui btn-naranja w-full text-[10px] mt-2">
+                          Pagar $12.500
+                      </button>
+                  </div>
+              </div>
+          </div>
+
+          <!-- RENDIMIENTO + RÉCORDS -->
+          <div class="space-y-4">
+              <div class="glass-card p-6 border-l-4 border-blue-500">
+                  <h4 class="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-4">
+                      <i class="fas fa-chart-line text-blue-400 mr-2"></i>Rendimiento
+                  </h4>
+                  <div class="space-y-4">
+                      <div>
+                          <div class="flex justify-between text-[10px] font-black mb-1">
+                              <span class="text-slate-400">Asistencia Mayo</span>
+                              <span class="text-blue-400">18 / 24 días</span>
+                          </div>
+                          <div class="bar-bg"><div class="bar-fill" style="width:75%;background:#3b82f6;"></div></div>
+                      </div>
+                      <div>
+                          <div class="flex justify-between text-[10px] font-black mb-1">
+                              <span class="text-slate-400">Cuotas al día</span>
+                              <span class="text-green-400">7 / 8</span>
+                          </div>
+                          <div class="bar-bg"><div class="bar-fill" style="width:87%;background:#22c55e;"></div></div>
+                      </div>
+                  </div>
+              </div>
+
+              <div class="glass-card p-6 border-l-4 border-slate-600">
+                  <h4 class="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-4">
+                      <i class="fas fa-trophy text-yellow-500 mr-2"></i>Récords Personales
+                  </h4>
+                  <div class="space-y-2">
+                      <div class="flex justify-between items-center bg-slate-900 rounded-xl px-4 py-3">
+                          <span class="text-[10px] font-black text-slate-300">PB Sentadilla</span>
+                          <span class="text-lg font-black text-white">140 KG</span>
+                      </div>
+                      <div class="flex justify-between items-center bg-slate-900 rounded-xl px-4 py-3">
+                          <span class="text-[10px] font-black text-slate-300">PB Press Banca</span>
+                          <span class="text-lg font-black text-white">95 KG</span>
+                      </div>
+                      <div class="flex justify-between items-center bg-slate-900 rounded-xl px-4 py-3">
+                          <span class="text-[10px] font-black text-slate-300">PB Peso Muerto</span>
+                          <span class="text-lg font-black text-white">175 KG</span>
+                      </div>
+                  </div>
+              </div>
+          </div>
+
+          <!-- SQUATPOINTS + GASTOS KIOSCO -->
+          <div class="space-y-4">
+              <div class="glass-card p-6 border-l-4 border-orange-500 text-center">
+                  <h4 class="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-4">
+                      <i class="fas fa-star text-orange-500 mr-2"></i>SquatPoints
+                  </h4>
+                  <p class="text-5xl font-black text-white italic">1.450 ★</p>
+                  <div class="mt-4 space-y-2 text-left">
+                      <div class="flex justify-between text-[9px] font-black">
+                          <span class="text-slate-400">500 pts</span>
+                          <span class="text-orange-400">$100 OFF en Kiosco</span>
+                      </div>
+                      <div class="flex justify-between text-[9px] font-black">
+                          <span class="text-slate-400">1.000 pts</span>
+                          <span class="text-orange-400">$200 OFF en Kiosco</span>
+                      </div>
+                  </div>
+                  <button onclick="navV('alu-tienda')"
+                      class="btn-ui bg-slate-700 w-full text-[10px] mt-4 border border-orange-500/30">
+                      Canjear en Kiosco →
+                  </button>
+              </div>
+
+              <div class="glass-card p-6 border-l-4 border-yellow-500">
+                  <h4 class="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-4">
+                      <i class="fas fa-shopping-bag text-yellow-500 mr-2"></i>Gastos Kiosco — Mayo
+                  </h4>
+                  <div class="space-y-2 text-xs font-black">
+                      <div class="flex justify-between">
+                          <span class="text-slate-400">Agua 1.5L × 3</span>
+                          <span class="text-white">$3.000</span>
+                      </div>
+                      <div class="flex justify-between">
+                          <span class="text-slate-400">Proteína Whey × 1</span>
+                          <span class="text-white">$5.500</span>
+                      </div>
+                      <div class="flex justify-between border-t border-slate-800 pt-2">
+                          <span class="text-white">Total del mes</span>
+                          <span class="text-orange-400">$8.500</span>
+                      </div>
+                  </div>
+                  <button onclick="navV('alu-historial');renderHistorial();"
+                      class="btn-ui bg-slate-700 w-full text-[10px] mt-4 border border-slate-600">
+                      Ver Historial Completo →
+                  </button>
+              </div>
+          </div>
+
+      </div>
+
+  </div>
