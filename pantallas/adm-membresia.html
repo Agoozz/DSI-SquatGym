@@ -1,0 +1,118 @@
+<div id="v-adm-membresia" class="view-section space-y-8 italic uppercase">
+      <h3 class="text-4xl font-black tracking-tighter">Cobros <span class="text-orange-500">Alumnos</span></h3>
+
+      <!-- VERIFICADOR DE ACCESO -->
+      <div class="glass-card p-5 border border-slate-700">
+          <p class="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-3"><i class="fas fa-id-card mr-2 text-orange-500"></i>Verificar Acceso</p>
+          <div class="flex gap-3">
+              <input id="acceso-dni-input" type="text" placeholder="Ingresar DNI del socio..."
+                  class="flex-1 px-4 py-2.5 rounded-full bg-slate-900 border border-slate-700 text-white text-xs outline-none focus:border-orange-500 transition">
+              <button onclick="verificarAccesoDNI()" class="btn-ui btn-naranja px-6 text-xs">Verificar</button>
+          </div>
+          <div id="acceso-check-resultado" class="mt-3"></div>
+      </div>
+
+      <!-- PRORRATEO INTEGRADO -->
+      <div class="glass-card p-6 border border-orange-500/30">
+          <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center gap-3">
+                  <div class="w-8 h-8 rounded-xl bg-orange-500/10 border border-orange-500/30 flex items-center justify-center">
+                      <i class="fas fa-calculator text-orange-400 text-xs"></i>
+                  </div>
+                  <div>
+                      <p class="text-xs font-black text-white uppercase">Cobro Prorrateado</p>
+                      <p class="text-[9px] text-slate-500 font-bold normal-case">Para socios dados de alta a mitad de mes</p>
+                  </div>
+              </div>
+              <button onclick="toggleProrrateo()" id="btn-toggle-pro"
+                  class="btn-ui bg-slate-700 text-[9px] px-4 py-2 border border-slate-600">
+                  <i class="fas fa-chevron-down mr-1" id="icon-toggle-pro"></i>Calcular
+              </button>
+          </div>
+
+          <div id="panel-prorrateo" class="hidden space-y-4">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                      <label class="text-[9px] font-black text-slate-500 uppercase tracking-widest block mb-1">Cuota Mensual Completa</label>
+                      <input id="pro-cuota" type="number" value="12500" oninput="calcularProrrateo()"
+                          class="w-full p-3 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm outline-none focus:border-orange-500 transition">
+                  </div>
+                  <div>
+                      <label class="text-[9px] font-black text-slate-500 uppercase tracking-widest block mb-1">Fecha de Alta del Socio</label>
+                      <input id="pro-fecha" type="date" oninput="calcularProrrateo()"
+                          class="w-full p-3 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm outline-none focus:border-orange-500 transition">
+                  </div>
+              </div>
+
+              <div id="pro-resultado" class="hidden">
+                  <div class="grid grid-cols-3 gap-3 mb-4">
+                      <div class="bg-slate-900 rounded-xl p-4 text-center border border-slate-800">
+                          <p class="text-[8px] text-slate-500 font-black uppercase tracking-widest">Días del Mes</p>
+                          <p id="pro-dias-mes" class="text-xl font-black text-white mt-1"></p>
+                      </div>
+                      <div class="bg-slate-900 rounded-xl p-4 text-center border border-slate-800">
+                          <p class="text-[8px] text-slate-500 font-black uppercase tracking-widest">Días a Cobrar</p>
+                          <p id="pro-dias-cobrar" class="text-xl font-black text-blue-400 mt-1"></p>
+                      </div>
+                      <div class="bg-slate-900 rounded-xl p-4 text-center border border-slate-800">
+                          <p class="text-[8px] text-slate-500 font-black uppercase tracking-widest">Valor por Día</p>
+                          <p id="pro-valor-dia" class="text-xl font-black text-slate-300 mt-1"></p>
+                      </div>
+                  </div>
+
+                  <div class="flex items-center justify-between p-5 rounded-2xl border-2 border-orange-500 bg-orange-500/5">
+                      <div>
+                          <p class="text-[9px] text-slate-400 font-black uppercase tracking-widest">Total Prorrateado a Cobrar</p>
+                          <p id="pro-total" class="text-3xl font-black text-orange-400 mt-1"></p>
+                      </div>
+                      <button onclick="cobrarConProrrateo()"
+                          class="btn-ui btn-naranja text-xs px-6 py-3">
+                          <i class="fas fa-cash-register mr-2"></i>Cobrar Este Monto
+                      </button>
+                  </div>
+              </div>
+          </div>
+      </div>
+
+      <div class="glass-card p-5">
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+              <input id="search-socio" type="text" onkeyup="filtrarSocios()" placeholder="Buscar por nombre o DNI..."
+                     class="w-full px-5 py-3 rounded-full bg-slate-900 border border-slate-700 text-white text-xs outline-none focus:border-orange-500 transition">
+
+              <select id="filter-estado" onchange="filtrarSocios()" class="bg-slate-900 border border-slate-700 rounded-full px-4 py-3 text-xs text-white outline-none focus:border-orange-500 transition">
+                  <option value="todos">Todos los Estados</option>
+                  <option value="Deudor">Con deuda</option>
+                  <option value="Al día">Al día</option>
+              </select>
+
+              <select id="filter-clase" onchange="filtrarSocios()" class="bg-slate-900 border border-slate-700 rounded-full px-4 py-3 text-xs text-white outline-none focus:border-orange-500 transition">
+                  <option value="todos">Todas las Clases</option>
+                  <option value="Musculación">Musculación</option>
+                  <option value="Zumba">Zumba</option>
+                  <option value="Crossfit">Crossfit</option>
+              </select>
+
+              <select id="filter-orden" onchange="filtrarSocios()" class="bg-slate-900 border border-slate-700 rounded-full px-4 py-3 text-xs text-white outline-none focus:border-orange-500 transition">
+                  <option value="nombre">Ordenar por Nombre</option>
+                  <option value="monto">Ordenar por Monto</option>
+                  <option value="estado">Ordenar por Estado</option>
+              </select>
+          </div>
+      </div>
+
+      <div class="glass-card overflow-hidden">
+          <table class="w-full text-left">
+              <thead class="bg-slate-900 text-[10px] text-slate-500 border-b border-slate-800 uppercase tracking-widest">
+                  <tr>
+                      <th class="p-4">Socio</th>
+                      <th class="p-4">DNI</th>
+                      <th class="p-4">Clase</th>
+                      <th class="p-4">Deuda</th>
+                      <th class="p-4">Estado</th>
+                      <th class="p-4 text-right">Acción</th>
+                  </tr>
+              </thead>
+              <tbody id="tabla-socios-body" class="text-xs font-bold divide-y divide-slate-800/50"></tbody>
+          </table>
+      </div>
+  </div>
