@@ -47,73 +47,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 }
 
-  function buscarCliente(){
-      const dni = document.getElementById("dni-input").value;
-      let c;
-
-      if(dni === "" || !clientes[dni]){
-          
-          c = Object.values(clientes)[0];
-      }else{
-          c = clientes[dni];
-      }
-
-      document.getElementById("cliente-box").classList.remove("hidden");
-
-      document.getElementById("cliente-nombre").innerText = c.nombre;
-      document.getElementById("cliente-id").innerText = c.id;
-
-      renderDeudas(c.deudas);
-  }
-
-  let deudasSeleccionadas = [];
-
-  function renderDeudas(deudas){
-      const cont = document.getElementById("lista-deudas");
-
-      cont.innerHTML = deudas.map((d,i)=>`
-          <label class="flex justify-between items-center p-4 bg-slate-900 rounded-xl cursor-pointer hover:scale-[1.02] transition">
-
-              <div class="flex gap-3 items-center">
-                  <input type="checkbox" onchange="toggleDeuda(${i}, ${d.monto}, this)">
-                  <span class="font-bold">${d.mes}</span>
-              </div>
-
-              <span class="text-orange-400 font-black">$${d.monto}</span>
-
-          </label>
-      `).join("");
-  }
-  let totalCobro = 0;
-
-  function toggleDeuda(i, monto, checkbox){
-      if(checkbox.checked){
-          totalCobro += monto;
-      }else{
-          totalCobro -= monto;
-      }
-
-      updateTotal();
-  }
-
-  function updateTotal(){
-      const el = document.getElementById("total-cobro");
-
-      el.innerText = "$" + totalCobro;
-
-      el.classList.add("scale-110");
-      setTimeout(()=> el.classList.remove("scale-110"), 150);
-  }
-
-  function abrirTerminal(){
-      if(totalCobro === 0){
-          alert("Seleccioná al menos una cuota");
-          return;
-      }
-
-      abrirM('modal-pago-selector', 'cuota');
-  }
-
   function abrirModalInforme(titulo, contenidoHTML) {
       document.getElementById('modal-informe-titulo').innerText = titulo;
       document.getElementById('reporte-tablas').innerHTML = contenidoHTML;
@@ -222,35 +155,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   function irQR() { irAPagoReal('qr'); }
   function irTransfer() { alert('Información bancaria copiada.'); }
   function irAPagoReal(type) { cerrarM(); abrirM(type==='qr'?'modal-mp-qr':'modal-bank-transfer'); }
-
-
-  function renderMarketCatalog(filtro = "") {
-      const g = document.getElementById('catalog-alu-grid');
-      if (!g) return;
-
-      const productosFiltrados = pDBKiosco.filter(p =>
-          p.n.toLowerCase().includes(filtro.toLowerCase())
-      );
-
-      g.innerHTML = productosFiltrados.map(p => {
-          const pts = Math.floor(p.p / 100);
-
-          return `
-          <div class="k-item" onclick="addMarketItem('${p.n}', ${p.p})">
-              <div class="k-img" style="background-image: url('${p.i}')"></div>
-              <p class="font-black text-[8px] uppercase text-white">${p.n}</p>
-              <span class="text-orange-500 font-black">$${p.p}</span>
-              <p class="text-[8px] text-blue-400 font-black">★ +${pts}</p>
-          </div>
-          `;
-      }).join('');
-  }
-
-  function filtrarProductos(){
-      const texto = document.getElementById("buscador-productos").value;
-      renderMarketCatalog(texto);
-  }
-
   function renderInformes(){
       const mesSel  = document.getElementById('inf-mes-sel')?.value  || '2026-04';
       const tipoSel = document.getElementById('inf-tipo-sel')?.value || 'todos';
@@ -364,135 +268,17 @@ document.addEventListener("DOMContentLoaded", async () => {
       abrirModalInforme(`Corte de Caja — ${nombreMes}`, bloques + pie);
   }
 
-  function addMarketItem(n, p, el) {
-      itemsCAlu.push({n, p});
-      tAluK += p;
-      updateMarketCart();
-
-      el.classList.add("added");
-      setTimeout(() => el.classList.remove("added"), 300);
-  }
+  
   function removeItemM(i){
       tAluK -= itemsCAlu[i].p;
       itemsCAlu.splice(i,1);
       updateMarketCart();
   }
-  function updateMarketCart() {
-      const b = document.getElementById('alu-cart-body');
-      const descuento = parseInt(document.getElementById('alu-redeem-select')?.value || 0);
+ 
 
-      if (itemsCAlu.length === 0) {
-          b.innerHTML = `<p class="text-slate-600 text-center text-xs py-4">Carrito vacío</p>`;
-          document.getElementById('alu-total-f').innerText = "$0";
-          return;
-      }
-
-      // agrupar ítems por nombre
-      const agrupado = {};
-      itemsCAlu.forEach(it => {
-          if (!agrupado[it.n]) agrupado[it.n] = { n: it.n, p: it.p, qty: 0 };
-          agrupado[it.n].qty++;
-      });
-
-      b.innerHTML = Object.values(agrupado).map((it, idx) => `
-          <div class="flex justify-between items-center py-2 px-1 border-b border-slate-800/60">
-              <div class="flex-1 min-w-0">
-                  <p class="text-[10px] font-black text-white truncate">${it.n}</p>
-                  <p class="text-[9px] text-slate-500">$${(it.p * it.qty).toLocaleString()}</p>
-              </div>
-              <div class="flex items-center gap-1.5 ml-2">
-                  <button onclick="decrementItem('${it.n}')"
-                      style="background:#c2a8a8; color:#222; width:22px; height:22px; border-radius:6px; font-weight:900; font-size:14px; display:flex; align-items:center; justify-content:center; border:none; cursor:pointer;">−</button>
-                  <span class="text-xs font-black text-white w-5 text-center">${it.qty}</span>
-                  <button onclick="incrementItem('${it.n}', ${it.p})"
-                      style="background:#a8c2aa; color:#222; width:22px; height:22px; border-radius:6px; font-weight:900; font-size:14px; display:flex; align-items:center; justify-content:center; border:none; cursor:pointer;">+</button>
-              </div>
-          </div>
-      `).join('');
-
-      const subtotal = itemsCAlu.reduce((s, it) => s + it.p, 0);
-      const total = Math.max(0, subtotal - descuento);
-      document.getElementById('alu-total-f').innerText = "$" + total.toLocaleString();
-      tAluK = total;
-  }
-
-  function incrementItem(nombre, precio) {
-      itemsCAlu.push({ n: nombre, p: precio });
-      tAluK += precio;
-      updateMarketCart();
-  }
-
-  function decrementItem(nombre) {
-      const idx = itemsCAlu.findLastIndex ? itemsCAlu.findLastIndex(it => it.n === nombre) : [...itemsCAlu].reverse().findIndex(it => it.n === nombre);
-      const realIdx = itemsCAlu.findLastIndex ? idx : itemsCAlu.length - 1 - idx;
-      if (realIdx >= 0) {
-          tAluK -= itemsCAlu[realIdx].p;
-          itemsCAlu.splice(realIdx, 1);
-      }
-      updateMarketCart();
-  }
-
-  function filtrarSocios() {
-      const busq   = document.getElementById('search-socio').value.toLowerCase();
-      const estado = document.getElementById('filter-estado').value;
-      const clase  = document.getElementById('filter-clase').value;
-      const orden  = document.getElementById('filter-orden').value;
-
-      let lista = sociosDB.filter(s => {
-          const matchBusq  = s.nombre.toLowerCase().includes(busq) || s.dni.includes(busq);
-          const matchEstado = estado === 'todos' || s.estado === estado;
-          const matchClase  = clase  === 'todos' || s.clase  === clase;
-          return matchBusq && matchEstado && matchClase;
-      });
-
-      if (orden === 'nombre')  lista.sort((a,b) => a.nombre.localeCompare(b.nombre));
-      if (orden === 'monto')   lista.sort((a,b) => b.deuda - a.deuda);
-      if (orden === 'estado')  lista.sort((a,b) => a.estado.localeCompare(b.estado));
-
-      const tbody = document.getElementById('tabla-socios-body');
-      tbody.innerHTML = lista.map(s => `
-          <tr class="hover:bg-orange-500/5 transition">
-              <td class="p-4 text-white font-black">${s.nombre}</td>
-              <td class="p-4 text-slate-400">${s.dni}</td>
-              <td class="p-4 text-slate-300">${s.clase}</td>
-              <td class="p-4 font-black ${s.deuda > 0 ? 'text-red-400' : 'text-slate-500'}">${s.deuda > 0 ? '$' + s.deuda.toLocaleString() : '—'}</td>
-              <td class="p-4">
-                  <span style="padding:2px 10px; border-radius:9999px; font-size:9px; font-weight:900; text-transform:uppercase;
-                      background:${s.estado === 'Al día' ? 'rgba(34,197,94,0.12)' : 'rgba(239,68,68,0.12)'};
-                      color:${s.estado === 'Al día' ? '#4ade80' : '#f87171'};
-                      border:1px solid ${s.estado === 'Al día' ? 'rgba(34,197,94,0.3)' : 'rgba(239,68,68,0.3)'};">
-                      ${s.estado}
-                  </span>
-              </td>
-              <td class="p-4 text-right">
-                  <button onclick="cobrarSocio('${s.nombre}', ${s.deuda})"
-                      style="padding:5px 14px; border-radius:9999px; background:var(--naranja); color:white; font-size:9px; font-weight:900; text-transform:uppercase; border:none; cursor:pointer;">
-                      Cobrar
-                  </button>
-              </td>
-          </tr>
-      `).join('');
-  }
-
-  let socioActual = null; // guarda el socio que se está cobrando
-
-  function cobrarSocio(nombre, deuda) {
-      if (deuda === 0) { alert(nombre + ' está al día.'); return; }
-      socioActual = sociosDB.find(s => s.nombre === nombre);
-      abrirM('modal-pago-selector', 'cuota');
-  }
-
-  function verificarAccesoDNI() {
-      const dni = document.getElementById('acceso-dni-input').value.trim();
-      const s   = sociosDB.find(x => x.dni === dni);
-      if (!s) {
-          document.getElementById('acceso-check-resultado').innerHTML =
-              `<p style="font-size:10px;color:#94a3b8;padding:8px;">No se encontró ningún socio con ese DNI.</p>`;
-          return;
-      }
-      verificarAccesoSocio(s.nombre, s.deuda);
-  }
-
+  
+  
+  
   function filtrarInventario() {
       const busq  = document.getElementById('inv-search').value.toLowerCase();
       const orden = document.getElementById('inv-filter-orden').value;
@@ -808,32 +594,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   // ══════════════════════════════════════════════
   // PUNTO 3 — RESTRICCIÓN DE INGRESO (staff busca socio)
   // ══════════════════════════════════════════════
-  function verificarAccesoSocio(nombre, deuda) {
-      const s = sociosDB.find(x => x.nombre === nombre);
-      if (!s) return;
-
-      const bloqueado = s.deuda > 0;
-      const msg = bloqueado
-          ? `<div style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);border-radius:1rem;padding:1.2rem;display:flex;align-items:center;gap:1rem;">
-                  <i class="fas fa-ban" style="color:#f87171;font-size:1.5rem;"></i>
-                  <div>
-                      <p style="font-size:11px;font-weight:900;color:#f87171;text-transform:uppercase;">Acceso Denegado — ${s.nombre}</p>
-                      <p style="font-size:9px;color:#94a3b8;">Deuda pendiente: <strong style="color:#f87171;">$${s.deuda.toLocaleString()}</strong>. Debe regularizar para ingresar.</p>
-                  </div>
-                  <button onclick="cobrarSocio('${s.nombre}',${s.deuda})" style="margin-left:auto;padding:5px 14px;border-radius:9999px;background:var(--naranja);color:white;font-size:8px;font-weight:900;text-transform:uppercase;border:none;cursor:pointer;">Cobrar</button>
-             </div>`
-          : `<div style="background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);border-radius:1rem;padding:1.2rem;display:flex;align-items:center;gap:1rem;">
-                  <i class="fas fa-check-circle" style="color:#4ade80;font-size:1.5rem;"></i>
-                  <div>
-                      <p style="font-size:11px;font-weight:900;color:#4ade80;text-transform:uppercase;">Acceso Permitido — ${s.nombre}</p>
-                      <p style="font-size:9px;color:#94a3b8;">Sin deuda pendiente. Puede ingresar.</p>
-                  </div>
-             </div>`;
-
-      const existente = document.getElementById('acceso-check-resultado');
-      if (existente) existente.innerHTML = msg;
-  }
-
+ 
   // ══════════════════════════════════════════════
   // PUNTO 4 — PRORRATEO
   // ══════════════════════════════════════════════
