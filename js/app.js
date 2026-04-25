@@ -1,3 +1,29 @@
+async function cargarPantallas() {
+  const pantallas = [
+    "inicio",
+    "adm-membresia",
+    "adm-monitor",
+    "alu-pago",
+    "alu-historial",
+    "alu-notificaciones",
+    "adm-inventario",
+    "alu-tienda",
+    "adm-kiosco"
+  ];
+
+  const contenedor = document.getElementById("contenedor-pantallas");
+
+  for (const pantalla of pantallas) {
+    const respuesta = await fetch(`pantallas/${pantalla}.html`);
+    const html = await respuesta.text();
+    contenedor.innerHTML += html;
+  }
+}
+
+document.addEventListener("DOMContentLoaded", async () => {
+  await cargarPantallas();
+});
+
 let rRol = 'admin'; let itemsCAlu = []; let tAluK = 0; let itemsCStaff = []; let tStaffK = 0;
   let currentContext = 'cuota'; let cajaResumen = { qr: 42700, tarjeta: 225000, efectivo: 125800 };
   const pDBKiosco = [
