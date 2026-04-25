@@ -1,0 +1,67 @@
+<div id="v-adm-inventario" class="view-section space-y-8 italic uppercase">
+      <div class="flex justify-between items-center">
+          <h3 class="text-4xl font-black tracking-tighter">Gestión de <span class="text-orange-500">Proveedores</span></h3>
+          <button onclick="abrirM('modal-nuevo-proveedor')" class="btn-ui btn-naranja px-6 text-xs">
+              <i class="fas fa-plus mr-2"></i>Nuevo Proveedor
+          </button>
+      </div>
+
+      <!-- KPIs proveedores -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 font-black">
+          <div class="glass-card p-5 border-l-4 border-green-500">
+              <p class="text-[8px] text-slate-500">PROVEEDORES ACTIVOS</p>
+              <p class="text-3xl text-white mt-1">5</p>
+          </div>
+          <div class="glass-card p-5 border-l-4 border-red-500">
+              <p class="text-[8px] text-slate-500">PAGOS PENDIENTES</p>
+              <p class="text-3xl text-white mt-1" id="kpi-pendientes">2</p>
+          </div>
+          <div class="glass-card p-5 border-l-4 border-orange-500">
+              <p class="text-[8px] text-slate-500">EGRESO TOTAL MES</p>
+              <p class="text-xl text-white mt-1" id="kpi-egreso">$9.750</p>
+          </div>
+          <div class="glass-card p-5 border-l-4 border-blue-500">
+              <p class="text-[8px] text-slate-500">MARGEN PROMEDIO</p>
+              <p class="text-3xl text-white mt-1" id="kpi-margen">52%</p>
+          </div>
+      </div>
+
+      <!-- Filtros -->
+      <div class="glass-card p-5">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <input id="inv-search" type="text" oninput="filtrarInventario()" placeholder="Buscar producto o proveedor..."
+                  class="w-full px-5 py-3 rounded-full bg-slate-900 border border-slate-700 text-white text-xs outline-none focus:border-orange-500 transition">
+              <select id="inv-filter-cat" onchange="filtrarInventario()" class="bg-slate-900 border border-slate-700 rounded-full px-4 py-3 text-xs text-white outline-none focus:border-orange-500 transition">
+                  <option value="todos">Todos los Rubros</option>
+                  <option value="Bebidas">Bebidas</option>
+                  <option value="Suplementos">Suplementos</option>
+                  <option value="Snacks">Snacks</option>
+              </select>
+              <select id="inv-filter-orden" onchange="filtrarInventario()" class="bg-slate-900 border border-slate-700 rounded-full px-4 py-3 text-xs text-white outline-none focus:border-orange-500 transition">
+                  <option value="nombre">Ordenar por Nombre</option>
+                  <option value="margen">Mayor Margen de Ganancia</option>
+                  <option value="vencimiento">Por Vencimiento</option>
+                  <option value="egreso-desc">Mayor Egreso</option>
+              </select>
+          </div>
+      </div>
+
+      <!-- Tabla proveedores -->
+      <div class="glass-card overflow-hidden overflow-x-auto">
+          <table class="w-full text-left min-w-[900px]">
+              <thead class="bg-slate-900 text-[10px] text-slate-500 border-b border-slate-800 uppercase tracking-widest">
+                  <tr>
+                      <th class="p-4">Producto / Insumo</th>
+                      <th class="p-4">Proveedor</th>
+                      <th class="p-4">Egreso (Costo)</th>
+                      <th class="p-4">Ingreso (PVP)</th>
+                      <th class="p-4">Margen</th>
+                      <th class="p-4">Vencimiento</th>
+                      <th class="p-4">Estado de Pago</th>
+                      <th class="p-4 text-right">Acción</th>
+                  </tr>
+              </thead>
+              <tbody id="tabla-inventario-body" class="text-xs font-bold divide-y divide-slate-800/50"></tbody>
+          </table>
+      </div>
+  </div>
