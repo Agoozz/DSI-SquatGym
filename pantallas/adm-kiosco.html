@@ -1,0 +1,155 @@
+<div id="v-adm-kiosco" class="view-section space-y-6 italic uppercase">
+
+        <div class="flex justify-between items-center">
+            <h3 class="text-4xl font-black tracking-tighter">Control <span class="text-orange-500">Kiosco</span></h3>
+            <button onclick="abrirM('modal-cierre-turno')" class="btn-ui btn-naranja px-6 text-xs">
+                <i class="fas fa-cash-register mr-2"></i>Cerrar Turno
+            </button>
+        </div>
+
+        <!-- KPIs del turno -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 font-black">
+            <div class="glass-card p-5 border-l-4 border-green-500">
+                <p class="text-[8px] text-slate-500">RECAUDADO HOY</p>
+                <p id="kiosco-recaudado-hoy" class="text-2xl text-green-400 mt-1">$0</p>
+            </div>
+            <div class="glass-card p-5 border-l-4 border-orange-500">
+                <p class="text-[8px] text-slate-500">VENTAS HOY</p>
+                <p id="kiosco-ventas-count" class="text-2xl text-white mt-1">0</p>
+            </div>
+            <div class="glass-card p-5 border-l-4 border-blue-500">
+                <p class="text-[8px] text-slate-500">TICKET PROMEDIO</p>
+                <p id="kiosco-ticket-prom" class="text-2xl text-white mt-1">$0</p>
+            </div>
+            <div class="glass-card p-5 border-l-4 border-red-500">
+                <p class="text-[8px] text-slate-500">PRODUCTOS CRÍTICOS</p>
+                <p id="kiosco-stock-critico" class="text-2xl text-red-400 mt-1">2</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+            <!-- Panel cobros pendientes / ventas recientes -->
+            <div class="space-y-4">
+                <p class="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em]">
+                    <i class="fas fa-clock mr-2 text-orange-500"></i>Ventas del Turno
+                </p>
+                <div class="glass-card overflow-hidden">
+                    <div id="staff-ventas-historial" class="divide-y divide-slate-800/50 max-h-96 overflow-y-auto">
+                        <p class="text-center text-slate-600 text-xs py-8">Sin ventas registradas aún</p>
+                    </div>
+                    <div class="p-3 border-t border-slate-800 flex justify-between items-center">
+                        <span class="text-[9px] text-slate-600 font-black">Total acumulado:</span>
+                        <span id="kiosco-total-acum" class="text-sm font-black text-orange-400">$0</span>
+                    </div>
+                </div>
+
+                <!-- Desglose por método de pago -->
+                <p class="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em]">
+                    <i class="fas fa-chart-pie mr-2 text-blue-500"></i>Desglose por Método
+                </p>
+                <div class="glass-card p-4 space-y-3">
+                    <div id="kiosco-desglose" class="space-y-2">
+                        <div class="flex justify-between text-xs font-black text-slate-500">
+                            <span>Sin datos aún</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panel stock crítico y cobro manual -->
+            <div class="space-y-4">
+                <p class="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em]">
+                    <i class="fas fa-exclamation-triangle mr-2 text-red-400"></i>Stock Crítico
+                </p>
+                <div class="glass-card p-4 space-y-2">
+                    <div class="flex justify-between items-center p-3 bg-red-500/10 border border-red-500/30 rounded-xl">
+                        <div>
+                            <p class="text-xs font-black text-white">Creatina Mon.</p>
+                            <p class="text-[9px] text-slate-500">Proveedor: Star Nutrition</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-lg font-black text-red-400">3 u.</p>
+                            <p class="text-[8px] text-red-300">Stock mínimo</p>
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-center p-3 bg-yellow-500/10 border border-yellow-500/30 rounded-xl">
+                        <div>
+                            <p class="text-xs font-black text-white">Proteína Whey</p>
+                            <p class="text-[9px] text-slate-500">Proveedor: Ena Sport</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-lg font-black text-yellow-400">5 u.</p>
+                            <p class="text-[8px] text-yellow-300">Stock bajo</p>
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-center p-3 bg-slate-900 border border-slate-700 rounded-xl">
+                        <div>
+                            <p class="text-xs font-black text-white">Gatorade Blue</p>
+                            <p class="text-[9px] text-slate-500">Proveedor: Ivess</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-lg font-black text-slate-300">8 u.</p>
+                            <p class="text-[8px] text-slate-500">Normal</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Registro manual de cobro del kiosco (el cliente compró, el staff registra) -->
+                <p class="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em]">
+                    <i class="fas fa-pen mr-2 text-orange-500"></i>Registrar Cobro Manual
+                </p>
+                <div class="glass-card p-5 space-y-4">
+                    <p class="text-[9px] text-slate-500">Registrá el cobro de una venta realizada en el kiosco.</p>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="text-[8px] text-slate-500 font-black uppercase block mb-1">Socio (DNI)</label>
+                            <input id="cobro-manual-dni" type="text" placeholder="Opcional"
+                                class="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs outline-none focus:border-orange-500">
+                        </div>
+                        <div>
+                            <label class="text-[8px] text-slate-500 font-black uppercase block mb-1">Monto Total</label>
+                            <input id="cobro-manual-monto" type="number" placeholder="$0"
+                                class="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs outline-none focus:border-orange-500">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="text-[8px] text-slate-500 font-black uppercase block mb-1">Detalle (productos)</label>
+                        <input id="cobro-manual-detalle" type="text" placeholder="Ej: Agua x2, Proteína x1"
+                            class="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs outline-none focus:border-orange-500">
+                    </div>
+                    <div class="grid grid-cols-4 gap-2">
+                        <button onclick="selMetodoStaff('Efectivo')" id="smk-efectivo"
+                            class="smk-btn py-2.5 rounded-xl text-[9px] font-black border border-slate-700 bg-slate-900 text-slate-400 transition hover:border-green-500 hover:text-green-400">
+                            <i class="fas fa-money-bill-wave block mb-0.5"></i>Efectivo
+                        </button>
+                        <button onclick="selMetodoStaff('QR')" id="smk-qr"
+                            class="smk-btn py-2.5 rounded-xl text-[9px] font-black border border-slate-700 bg-slate-900 text-slate-400 transition hover:border-blue-500 hover:text-blue-400">
+                            <i class="fas fa-qrcode block mb-0.5"></i>QR
+                        </button>
+                        <button onclick="selMetodoStaff('Transferencia')" id="smk-transferencia"
+                            class="smk-btn py-2.5 rounded-xl text-[9px] font-black border border-slate-700 bg-slate-900 text-slate-400 transition hover:border-purple-500 hover:text-purple-400">
+                            <i class="fas fa-exchange-alt block mb-0.5"></i>Transfer.
+                        </button>
+                        <button onclick="selMetodoStaff('Tarjeta')" id="smk-tarjeta"
+                            class="smk-btn py-2.5 rounded-xl text-[9px] font-black border border-slate-700 bg-slate-900 text-slate-400 transition hover:border-orange-500 hover:text-orange-400">
+                            <i class="fas fa-credit-card block mb-0.5"></i>Tarjeta
+                        </button>
+                    </div>
+                    <button onclick="registrarCobroManual()" class="btn-ui btn-naranja w-full py-3 text-xs font-black">
+                        <i class="fas fa-check-circle mr-2"></i>Confirmar y Registrar Cobro
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Exportar turno -->
+        <div class="flex justify-end">
+            <button onclick="exportarVentasTurno()" class="btn-ui bg-slate-700 text-xs px-6">
+                <i class="fas fa-file-export mr-2"></i>Exportar Ventas del Turno
+            </button>
+        </div>
+
+    </div>
+</div>
