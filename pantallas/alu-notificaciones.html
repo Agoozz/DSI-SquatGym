@@ -1,0 +1,23 @@
+<div id="v-alu-notificaciones" class="view-section space-y-8 italic uppercase">
+
+      <div>
+          <p class="text-[9px] font-black text-orange-500 tracking-[0.4em] mb-1">Centro de Alertas</p>
+          <h3 class="text-4xl font-black tracking-tighter text-white">Mis <span class="text-orange-500">Notificaciones</span></h3>
+      </div>
+
+      <!-- Filtros de alerta -->
+      <div class="flex gap-3 flex-wrap">
+          <button onclick="filtrarAlertas('todas')" id="btn-alerta-todas"
+              class="btn-alerta-tab btn-ui btn-naranja text-[10px] px-5 py-2">Todas</button>
+          <button onclick="filtrarAlertas('vencimiento')" id="btn-alerta-vencimiento"
+              class="btn-alerta-tab btn-ui bg-slate-700 text-[10px] px-5 py-2 border border-slate-600">Vencimientos</button>
+          <button onclick="filtrarAlertas('promocion')" id="btn-alerta-promocion"
+              class="btn-alerta-tab btn-ui bg-slate-700 text-[10px] px-5 py-2 border border-slate-600">Promociones</button>
+          <button onclick="filtrarAlertas('informacion')" id="btn-alerta-informacion"
+              class="btn-alerta-tab btn-ui bg-slate-700 text-[10px] px-5 py-2 border border-slate-600">Información</button>
+      </div>
+
+      <!-- Lista de alertas -->
+      <div id="panel-notificaciones" class="space-y-4"></div>
+
+  </div>
