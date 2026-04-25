@@ -1,0 +1,68 @@
+<div id="v-alu-tienda" class="view-section space-y-6 italic uppercase">
+
+      <div>
+          <input 
+              type="text"
+              id="buscador-productos"
+              placeholder="Buscar producto..."
+              onkeyup="filtrarProductos()"
+              class="w-full p-3 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm"
+          >
+      </div>
+
+      <div class="grid grid-cols-12 gap-6 h-[calc(100vh-220px)]">
+
+          <!-- CATÁLOGO -->
+          <div class="col-span-12 lg:col-span-8 flex flex-col gap-3">
+              <input
+                  type="text"
+                  id="buscador-catalogo"
+                  placeholder="Buscar en catálogo..."
+                  onkeyup="filtrarCatalogo()"
+                  class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs outline-none focus:border-orange-500 transition"
+              >
+              <div id="catalog-alu-grid"
+              class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 max-h-[460px] overflow-y-auto content-start pr-2">
+              </div>
+          </div>
+
+          <!-- CARRITO -->
+          <div class="col-span-12 lg:col-span-4">
+              <div class="glass-card p-4 h-[600px] flex flex-col sticky top-4">
+
+                  <h3 class="text-center font-black text-sm mb-4">
+                      Bolsa de Compra
+                  </h3>
+
+                  <div id="alu-cart-body" class="flex-1 overflow-y-auto space-y-2">
+                      <p class="text-center text-slate-500 text-xs">Carrito vacío</p>
+                  </div>
+
+                  <div class="mt-3 p-3 bg-slate-900 rounded-xl border border-slate-700 text-center">
+                      <p class="text-[10px] text-orange-400 font-black mb-2">
+                          Canjear SquatPoints ★
+                      </p>
+                      <select id="alu-redeem-select" onchange="updateMarketCart()"
+                      class="w-full p-2 rounded bg-slate-800 text-white text-[10px]">
+                          <option value="0">NO USAR</option>
+                          <option value="500">500 pts (-$100)</option>
+                          <option value="1000">1000 pts (-$200)</option>
+                      </select>
+                  </div>
+
+                  <div class="mt-4 border-t border-slate-700 pt-3">
+                      <div class="flex justify-between mb-3 font-black text-sm">
+                          <span>Total</span>
+                          <span id="alu-total-f">$0</span>
+                      </div>
+                      <button id="btn-kiosco-accion" class="btn-ui btn-naranja w-full">
+                          Pagar
+                      </button>
+                  </div>
+
+              </div>
+          </div>
+
+      </div>
+
+  </div>
