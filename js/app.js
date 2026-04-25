@@ -252,14 +252,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
 
-      if(ctx) currentContext = ctx;
-      document.getElementById(id).classList.add('active');
-
-      if(id === "modal-cobro-kiosco"){
-          document.getElementById("total-caja").innerText = 
-              "$" + tAluK.toLocaleString();
-      }
-  }
 
   function calcularVuelto(){
       const efectivo = parseInt(document.getElementById("efectivo-input").value) || 0;
