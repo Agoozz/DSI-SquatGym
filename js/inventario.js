@@ -11,12 +11,12 @@ function filtrarInventario() {
 
       if (orden === 'nombre')      lista.sort((a,b) => a.nombre.localeCompare(b.nombre));
       if (orden === 'margen') {
-              lista.sort((a,b) => {
+            lista.sort((a,b) => {
                 const margenA = ((a.precio - a.costo) / a.precio) * 100;
                 const margenB = ((b.precio - b.costo) / b.precio) * 100;
                 return margenB - margenA;
-              });
-            }
+            });
+        }
       if (orden === 'egreso-desc') lista.sort((a,b) => b.costo - a.costo);
       if (orden === 'vencimiento') lista.sort((a,b) => new Date(a.vencimiento) - new Date(b.vencimiento));
 
