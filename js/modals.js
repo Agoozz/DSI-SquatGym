@@ -52,8 +52,14 @@ window.volverPago = function(){
 
     if(!cont || !opciones) return;
 
+    if(!opciones.classList.contains("hidden")){
+        document.getElementById("modal-pago-selector").classList.remove("active");
+        cont.innerHTML = "";
+        cont.classList.add("hidden");
+        return;
+    }
+
     cont.innerHTML = "";
     cont.classList.add("hidden");
-
     opciones.classList.remove("hidden");
 }

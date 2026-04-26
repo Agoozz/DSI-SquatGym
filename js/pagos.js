@@ -44,12 +44,9 @@ function mostrarPago(tipo){
 
       opciones.classList.add("hidden");
       cont.classList.remove("hidden");
-
-      const volver = `<button onclick="window.volverPago()" class="text-xs text-slate-400 mb-3 block">← Volver</button>`;
-
+      
       if(tipo === "qr"){
           cont.innerHTML = `
-              ${volver}
               <p class="text-sm text-blue-400 font-bold mb-3">Escaneá el QR con Mercado Pago</p>
               <div class="bg-white p-4 rounded-xl flex justify-center mb-4">
                   <i class="fas fa-qrcode text-[100px] text-black"></i>
@@ -63,7 +60,6 @@ function mostrarPago(tipo){
 
       if(tipo === "transferencia"){
           cont.innerHTML = `
-              ${volver}
               <p class="text-sm text-orange-400 font-bold mb-2">Datos Bancarios</p>
               <div class="text-left text-xs space-y-1 mb-4 bg-slate-800 p-3 rounded-xl">
                   <p>CBU: <span class="text-white font-black">0000003100001234567890</span></p>
@@ -81,7 +77,6 @@ function mostrarPago(tipo){
 
       if(tipo === "tarjeta"){
           cont.innerHTML = `
-              ${volver}
               <p class="text-sm text-orange-400 font-bold mb-3">Datos de la Tarjeta</p>
               <div class="space-y-2 text-left">
                   <input id="input-titular" placeholder="Nombre del titular" class="w-full p-2 rounded bg-slate-800 text-white text-xs outline-none focus:ring-1 focus:ring-orange-500">
@@ -102,7 +97,6 @@ function mostrarPago(tipo){
           if(rRol !== "admin") return;
           const deudaActual = socioActual ? socioActual.deuda : totalCobro;
           cont.innerHTML = `
-              ${volver}
               <p class="text-sm text-green-400 font-bold mb-3">Pago en Efectivo</p>
               <p class="text-xs text-slate-400 mb-1">Total a cobrar: <span class="text-white font-black">$${deudaActual.toLocaleString()}</span></p>
               <input id="input-efectivo" type="number" placeholder="Monto recibido" min="0"
