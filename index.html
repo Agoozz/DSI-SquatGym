@@ -1,37 +1,94 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>SquatGym OS</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100;300;400;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100;300;400;600;700;800;900&display=swap"
+    rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 
 <body class="flex">
 
-  <section id="login-frame" class="fixed inset-0 z-[15000] flex items-center justify-center p-6 login-hero text-center" style="background: linear-gradient(rgba(2,6,23,0.85), rgba(2,6,23,0.85)), url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&q=80&w=1200'); background-size: cover;">
+  <section id="login-frame" class="fixed inset-0 z-[15000] flex items-center justify-center p-6 login-hero text-center"
+    style="background: linear-gradient(rgba(2,6,23,0.85), rgba(2,6,23,0.85)), url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&q=80&w=1200'); background-size: cover;">
     <div class="relative glass-card p-12 w-full max-w-sm border-t-[12px] border-orange-500 shadow-2xl italic uppercase">
       <div class="mb-10 text-center">
-        <div class="bg-orange-500 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 text-white shadow-xl rotate-3">
+        <div
+          class="bg-orange-500 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 text-white shadow-xl rotate-3">
           <i class="fas fa-dumbbell text-3xl"></i>
         </div>
         <h1 class="text-3xl font-black text-white tracking-tighter leading-none">SquatGym</h1>
         <p class="text-[9px] font-bold text-slate-500 tracking-[0.5em] mt-1">Platinum OS</p>
       </div>
 
-      <div class="flex gap-2 mb-10 bg-slate-900 p-1.5 rounded-full border-2 border-slate-800">
-        <button onclick="setLoginUIRol('admin')" id="l-btn-staff" class="flex-1 py-3.5 rounded-full font-black text-[10px] transition-all role-active uppercase">Staff</button>
-        <button onclick="setLoginUIRol('alumno')" id="l-btn-alumno" class="flex-1 py-3.5 rounded-full font-black text-[10px] transition-all bg-[#0f172a] text-[#64748b] uppercase">Cliente</button>
+      <div class="flex gap-2 mb-6 bg-slate-900 p-1.5 rounded-full border-2 border-slate-800">
+        <button id="l-btn-staff"
+          class="flex-1 py-3.5 rounded-full font-black text-[10px] transition-all role-active uppercase">Staff</button>
+        <button id="l-btn-alumno"
+          class="flex-1 py-3.5 rounded-full font-black text-[10px] transition-all bg-[#0f172a] text-[#64748b] uppercase">Cliente</button>
       </div>
 
-      <div class="space-y-4">
-        <input type="text" placeholder="DNI..." class="w-full p-4 rounded-full bg-slate-950 border-2 border-slate-800 font-bold focus:border-orange-500 outline-none text-white text-xs text-center uppercase">
-        <input type="password" placeholder="PASSWORD" class="w-full p-4 rounded-full bg-slate-950 border-2 border-slate-800 font-bold focus:border-orange-500 outline-none text-white text-xs text-center">
-        <button onclick="entrarApp()" class="w-full btn-ui btn-naranja py-4.5 text-md font-black shadow-2xl mt-4 uppercase">Entrar</button>
+      <!-- Submenu de Staff (Administrador y Secretaria) -->
+      <div id="staff-submenu" class="flex flex-col gap-2 mb-6 pb-4 border-b border-slate-800">
+        <button id="l-btn-admin"
+          class="w-full py-3 rounded-lg font-black text-[10px] transition-all bg-[#0f172a] text-slate-300 border-2 border-[#f97316] uppercase font-['Outfit']">
+          <i class="fas fa-crown text-[#f97316] mr-2"></i>Administrador
+        </button>
+        <button id="l-btn-secretaria"
+          class="w-full py-3 rounded-lg font-black text-[10px] transition-all bg-[#0f172a] text-slate-300 border-2 border-[#1e293b] uppercase font-['Outfit']">
+          <i class="fas fa-clipboard-list text-slate-500 mr-2"></i>Secretaria
+        </button>
+      </div>
+
+      <div id="form-normal">
+        <div class="space-y-4">
+          <input type="text" inputmode="numeric" pattern="[0-9]*" oninput="this.value = this.value.replace(/[^0-9]/g, '')" placeholder="DNI..."
+            class="w-full p-4 rounded-full bg-slate-950 border-2 border-slate-800 font-bold focus:border-[#f97316] outline-none text-white text-xs text-center uppercase">
+          <input type="password" placeholder="PASSWORD"
+            class="w-full p-4 rounded-full bg-slate-950 border-2 border-slate-800 font-bold focus:border-[#f97316] outline-none text-white text-xs text-center">
+          <button onclick="entrarApp()"
+            class="w-full btn-ui btn-naranja py-4.5 text-md font-black shadow-2xl mt-4 uppercase">Entrar</button>
+
+          <!-- Área de errores -->
+          <div id="login-error-msg" style="display: none;" class="text-red-500 text-xs font-bold text-center mt-2">
+          </div>
+        </div>
+
+        <!-- Link Olvidé contraseña -->
+        <div class="mt-6 text-center">
+          <button onclick="toggleRecuperacionPassword()" class="text-[10px] text-[#64748b] hover:text-slate-400 transition font-bold uppercase">¿Olvidaste tu contraseña?</button>
+        </div>
+      </div>
+
+      <!-- Panel de recuperación de contraseña -->
+      <div id="panel-recuperacion-password"
+        class="hidden mt-2 p-5 bg-[#0f172a] border-2 border-[#1e293b] rounded-xl font-['Outfit'] shadow-xl">
+        <p class="text-[10px] text-slate-300 mb-4 font-bold uppercase text-center tracking-widest">Recuperar contraseña
+        </p>
+        <input type="text" id="dni-recuperacion" inputmode="numeric" pattern="[0-9]*" oninput="this.value = this.value.replace(/[^0-9]/g, '')" placeholder="Ingresá tu DNI"
+          class="w-full p-3.5 rounded-lg bg-slate-950 border-2 border-slate-800 font-bold focus:border-[#f97316] outline-none text-white text-xs text-center uppercase mb-4 transition-colors">
+        <button onclick="typeof recuperarPassword === 'function' && recuperarPassword()"
+          class="w-full bg-[#f97316] hover:bg-orange-500 text-white py-3 rounded-lg text-[10px] font-black uppercase mb-3 transition-colors shadow-lg shadow-orange-500/20">Recuperar</button>
+        <button onclick="toggleRecuperacionPassword()"
+          class="w-full text-[#64748b] text-[10px] font-bold py-2 hover:text-slate-300 transition uppercase tracking-wider">Volver
+          al login</button>
+
+        <!-- Mensajes vacíos para JS -->
+        <div id="recuperar-exito"
+          class="hidden mt-4 p-3 bg-green-950/50 border border-green-800 text-green-400 text-[10px] font-bold rounded-lg text-center uppercase tracking-widest">
+        </div>
+        <div id="recuperar-error"
+          class="hidden mt-4 p-3 bg-red-950/50 border border-red-800 text-red-400 text-[10px] font-bold rounded-lg text-center uppercase tracking-widest">
+        </div>
       </div>
     </div>
   </section>
@@ -51,7 +108,8 @@
 
   <div id="app-container" class="hidden main-app">
 
-    <header class="h-16 border-b border-slate-800 flex justify-between items-center px-12 bg-slate-950/50 backdrop-blur-md sticky top-0 z-40 italic uppercase">
+    <header
+      class="h-16 border-b border-slate-800 flex justify-between items-center px-12 bg-slate-950/50 backdrop-blur-md sticky top-0 z-40 italic uppercase">
       <div class="flex items-center gap-3">
         <i class="fas fa-terminal text-orange-500 text-[10px]"></i>
         <h2 id="header-view-title" class="text-[10px] font-bold text-slate-500 italic">Dashboard</h2>
@@ -86,12 +144,16 @@
   </div>
 
   <div id="modal-mp-qr" class="modal-base">
-    <div class="glass-card p-10 w-full max-w-sm bg-white text-slate-950 text-center border-t-[15px] border-[#009EE3] shadow-2xl italic uppercase font-black italic">
+    <div
+      class="glass-card p-10 w-full max-w-sm bg-white text-slate-950 text-center border-t-[15px] border-[#009EE3] shadow-2xl italic uppercase font-black italic">
       <h4 class="text-2xl italic uppercase mb-8 text-[#009EE3]">Escanear QR</h4>
-      <div class="bg-slate-50 p-8 rounded-3xl mb-8 border-4 border-slate-100 flex items-center justify-center shadow-inner italic italic">
+      <div
+        class="bg-slate-50 p-8 rounded-3xl mb-8 border-4 border-slate-100 flex items-center justify-center shadow-inner italic italic">
         <i class="fas fa-qrcode text-[180px] italic"></i>
       </div>
-      <button onclick="pagoCorrecto()" class="btn-ui bg-[#009EE3] text-white w-full py-4 italic uppercase font-black italic italic">Confirmar Pago</button>
+      <button onclick="pagoCorrecto()"
+        class="btn-ui bg-[#009EE3] text-white w-full py-4 italic uppercase font-black italic italic">Confirmar
+        Pago</button>
     </div>
   </div>
 
@@ -102,7 +164,8 @@
       <p class="text-sm mb-2">Total:</p>
       <p id="total-caja" class="text-3xl font-black text-orange-500 mb-6">$0</p>
 
-      <select id="metodo-pago" onchange="cambiarMetodoPago()" class="w-full p-3 mb-6 rounded bg-slate-900 text-white text-sm">
+      <select id="metodo-pago" onchange="cambiarMetodoPago()"
+        class="w-full p-3 mb-6 rounded bg-slate-900 text-white text-sm">
         <option value="efectivo">Efectivo</option>
         <option value="qr">QR (Mercado Pago)</option>
         <option value="transferencia">Transferencia</option>
@@ -111,7 +174,8 @@
 
       <div id="bloque-efectivo">
         <p class="text-xs mb-2">Efectivo recibido</p>
-        <input id="efectivo-input" type="number" class="w-full p-3 rounded bg-slate-900 text-white text-center mb-3" placeholder="$0" oninput="calcularVuelto()">
+        <input id="efectivo-input" type="number" class="w-full p-3 rounded bg-slate-900 text-white text-center mb-3"
+          placeholder="$0" oninput="calcularVuelto()">
         <p class="text-sm mb-4">Vuelto: <span id="vuelto" class="text-green-400">$0</span></p>
       </div>
 
@@ -132,27 +196,32 @@
       <div id="bloque-tarjeta" class="hidden">
         <div class="text-left">
           <p class="text-xs">Nombre del titular</p>
-          <input id="input-nombre" placeholder="Nombre y Apellido" class="w-60 mt-1 p-2 rounded bg-slate-800 text-white text-xs">
+          <input id="input-nombre" placeholder="Nombre y Apellido"
+            class="w-60 mt-1 p-2 rounded bg-slate-800 text-white text-xs">
         </div>
 
         <div class="text-left">
           <p class="text-xs">Número de tarjeta</p>
-          <input id="input-numero" placeholder="XXXX-XXXX-XXXX-XXXX" maxlength="16" class="w-40 mt-1 p-2 rounded bg-slate-800 text-white text-xs">
+          <input id="input-numero" placeholder="XXXX-XXXX-XXXX-XXXX" maxlength="16"
+            class="w-40 mt-1 p-2 rounded bg-slate-800 text-white text-xs">
         </div>
 
         <div class="flex justify-start gap-4 mt-4 text-left">
           <div>
             <p class="text-xs">Código de seguridad</p>
-            <input type="tel" id="input-codigo" placeholder="XXX" maxlength="3" class="w-10 mt-1 p-2 rounded bg-slate-800 text-white text-xs">
+            <input type="tel" id="input-codigo" placeholder="XXX" maxlength="3"
+              class="w-10 mt-1 p-2 rounded bg-slate-800 text-white text-xs">
           </div>
 
           <div>
             <p class="text-xs">Fecha de expiración</p>
-            <input id="input-fecha" maxlength="5" placeholder="MM/AA" class="w-14 mt-1 p-2 rounded bg-slate-800 text-white text-xs">
+            <input id="input-fecha" maxlength="5" placeholder="MM/AA"
+              class="w-14 mt-1 p-2 rounded bg-slate-800 text-white text-xs">
           </div>
         </div>
 
-        <button id="btn-guardar" onclick="guardarDatosTarjeta()" class="w-30 mt-6 p-2 rounded text-gray-500 transition-colors duration-300">Guardar datos</button>
+        <button id="btn-guardar" onclick="guardarDatosTarjeta()"
+          class="w-30 mt-6 p-2 rounded text-gray-500 transition-colors duration-300">Guardar datos</button>
       </div>
 
       <button onclick="confirmarCobro()" class="btn-ui btn-naranja w-full mt-6">Confirmar Cobro</button>
@@ -161,26 +230,87 @@
   </div>
 
   <div id="modal-retiro-cliente" class="modal-base italic uppercase font-black italic italic italic">
-    <div class="glass-card p-12 rounded-[3rem] w-full max-w-sm text-center bg-white text-slate-950 border-b-[20px] border-orange-600 shadow-2xl italic uppercase italic">
+    <div
+      class="glass-card p-12 rounded-[3rem] w-full max-w-sm text-center bg-white text-slate-950 border-b-[20px] border-orange-600 shadow-2xl italic uppercase italic">
       <h4 class="text-2xl uppercase mb-2 italic text-orange-600 italic italic italic">Orden Confirmada</h4>
-      <div id="cod-retiro-cliente" class="bg-slate-100 p-6 rounded-[1.5rem] border-4 border-slate-200 mb-8 text-5xl tracking-tighter italic text-slate-950 italic italic italic italic italic">#OR-0000</div>
-      <button onclick="cerrarM()" class="w-full btn-ui btn-naranja py-5 rounded-full border-none text-white italic text-lg uppercase shadow-xl mt-6 italic italic uppercase italic">Listo</button>
+      <div id="cod-retiro-cliente"
+        class="bg-slate-100 p-6 rounded-[1.5rem] border-4 border-slate-200 mb-8 text-5xl tracking-tighter italic text-slate-950 italic italic italic italic italic">
+        #OR-0000</div>
+      <button onclick="cerrarM()"
+        class="w-full btn-ui btn-naranja py-5 rounded-full border-none text-white italic text-lg uppercase shadow-xl mt-6 italic italic uppercase italic">Listo</button>
+    </div>
+  </div>
+
+  <div id="modal-cierre-turno-kiosco" class="modal-base">
+    <div class="glass-card p-8 w-full max-w-3xl bg-[#020617] border border-slate-800 rounded-3xl shadow-2xl text-white">
+      <div class="flex items-start justify-between gap-4 mb-6">
+        <div>
+          <p class="text-[9px] uppercase tracking-[0.35em] text-orange-500 font-black">Cierre de Turno</p>
+          <h3 class="text-3xl font-black tracking-widest">Resumen de ventas</h3>
+        </div>
+        <button onclick="kioscoCerrarCierreTurno()" class="text-slate-400 hover:text-white text-2xl">✕</button>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div class="rounded-3xl border border-slate-800 bg-slate-950/80 p-4">
+          <p class="text-[9px] uppercase tracking-[0.35em] text-slate-500">Ventas registradas</p>
+          <p id="kiosco-cierre-ventas" class="text-4xl font-black text-white mt-3">0</p>
+        </div>
+        <div class="rounded-3xl border border-slate-800 bg-slate-950/80 p-4">
+          <p class="text-[9px] uppercase tracking-[0.35em] text-slate-500">Total recaudado</p>
+          <p id="kiosco-cierre-recaudado" class="text-4xl font-black text-green-400 mt-3">$0</p>
+        </div>
+        <div class="rounded-3xl border border-slate-800 bg-slate-950/80 p-4">
+          <p class="text-[9px] uppercase tracking-[0.35em] text-slate-500">Ticket promedio</p>
+          <p id="kiosco-cierre-ticket-prom" class="text-4xl font-black text-white mt-3">$0</p>
+        </div>
+      </div>
+
+      <div class="space-y-4 mb-6">
+        <p class="text-[9px] uppercase tracking-[0.35em] text-slate-500 font-black">Desglose por método</p>
+        <div id="kiosco-cierre-breakdown" class="space-y-3"></div>
+      </div>
+
+      <div class="rounded-3xl border border-slate-800 bg-slate-950/80 p-4 max-h-[320px] overflow-y-auto">
+        <div class="mb-3 flex justify-between text-[10px] uppercase tracking-[0.35em] text-slate-400 font-black">
+          <span>Ticket</span>
+          <span>Método</span>
+          <span>Total</span>
+        </div>
+        <div id="kiosco-cierre-table" class="space-y-3"></div>
+      </div>
+
+      <div class="mt-6 flex flex-col gap-3 md:flex-row">
+        <button onclick="kioscoCerrarCierreTurno()"
+          class="btn-ui bg-slate-700 w-full md:w-1/2 text-xs rounded-full uppercase font-black">Seguir
+          trabajando</button>
+        <button onclick="kioscoConfirmarCierreTurno()"
+          class="btn-ui btn-naranja w-full md:w-1/2 text-xs rounded-full uppercase font-black">Confirmar Cierre</button>
+      </div>
     </div>
   </div>
 
   <div id="modal-informe-final" class="modal-base italic uppercase font-black italic italic italic italic">
-    <div class="glass-card p-12 w-full max-w-5xl bg-[#020617] border-2 border-slate-800 shadow-[0_0_100px_rgba(0,0,0,1)] overflow-y-auto max-h-[90vh] italic uppercase uppercase italic italic italic italic">
-      <div class="flex justify-between items-start mb-12 border-b border-white/10 pb-10 uppercase italic italic italic italic">
+    <div
+      class="glass-card p-12 w-full max-w-5xl bg-[#020617] border-2 border-slate-800 shadow-[0_0_100px_rgba(0,0,0,1)] overflow-y-auto max-h-[90vh] italic uppercase uppercase italic italic italic italic">
+      <div
+        class="flex justify-between items-start mb-12 border-b border-white/10 pb-10 uppercase italic italic italic italic">
         <div>
-          <h4 class="text-5xl font-black text-white tracking-tighter uppercase italic italic italic italic italic italic italic">Informe <br><span class="text-orange-500 italic italic italic italic">Auditoría</span></h4>
-          <p class="text-[9px] font-bold text-slate-500 mt-4 tracking-[0.5em] italic italic italic italic">PLATINUM MASTER FINANCIAL SYSTEM</p>
+          <h4
+            class="text-5xl font-black text-white tracking-tighter uppercase italic italic italic italic italic italic italic">
+            Informe <br><span class="text-orange-500 italic italic italic italic">Auditoría</span></h4>
+          <p class="text-[9px] font-bold text-slate-500 mt-4 tracking-[0.5em] italic italic italic italic">PLATINUM
+            MASTER FINANCIAL SYSTEM</p>
         </div>
 
         <div class="text-right uppercase italic italic italic">
           <div class="flex gap-2 justify-end mb-6 uppercase italic italic italic italic italic">
-            <button onclick="cerrarM()" class="bg-slate-800 text-white px-6 py-2.5 rounded-full font-black text-[9px] uppercase italic uppercase italic italic italic italic">Cerrar</button>
-            <button class="bg-red-600 text-white px-6 py-2.5 rounded-full font-black text-[9px] uppercase italic italic italic">PDF</button>
-            <button class="bg-green-600 text-white px-6 py-2.5 rounded-full font-black text-[9px] uppercase italic italic italic">EXCEL</button>
+            <button onclick="cerrarM()"
+              class="bg-slate-800 text-white px-6 py-2.5 rounded-full font-black text-[9px] uppercase italic uppercase italic italic italic italic">Cerrar</button>
+            <button
+              class="bg-red-600 text-white px-6 py-2.5 rounded-full font-black text-[9px] uppercase italic italic italic">PDF</button>
+            <button
+              class="bg-green-600 text-white px-6 py-2.5 rounded-full font-black text-[9px] uppercase italic italic italic">EXCEL</button>
           </div>
           <p class="text-[10px] text-slate-500 mt-4 font-black">09/04/2026</p>
         </div>
@@ -189,9 +319,12 @@
       <div id="reporte-content-pos" class="space-y-16 italic uppercase italic italic"></div>
 
       <div class="mt-20 pt-10 border-t-4 border-white italic uppercase italic italic">
-        <div class="flex justify-between items-center mb-12 uppercase italic italic italic uppercase italic italic italic italic">
-          <span class="text-xl font-black text-slate-500 uppercase italic italic italic italic italic">TOTAL GENERAL RECAUDADO</span>
-          <span id="reporte-total-massive" class="text-7xl font-black text-white tracking-tighter italic italic italic italic italic italic italic italic italic">$393.500</span>
+        <div
+          class="flex justify-between items-center mb-12 uppercase italic italic italic uppercase italic italic italic italic">
+          <span class="text-xl font-black text-slate-500 uppercase italic italic italic italic italic">TOTAL GENERAL
+            RECAUDADO</span>
+          <span id="reporte-total-massive"
+            class="text-7xl font-black text-white tracking-tighter italic italic italic italic italic italic italic italic italic">$393.500</span>
         </div>
       </div>
     </div>
@@ -244,43 +377,151 @@
     <div class="glass-card p-8 w-full max-w-md text-center space-y-4">
 
       <h3 class="text-xl font-black text-white">Pago a Proveedor</h3>
-  
+
       <div class="bg-slate-900 rounded-2xl p-5 text-left space-y-3 border border-slate-700">
         <p class="text-xs text-slate-400">
           Producto:
           <span id="prov-pago-nombre" class="text-white font-black"></span>
         </p>
-  
+
         <p class="text-xs text-slate-400">
           Proveedor:
           <span id="prov-pago-proveedor" class="text-white font-black"></span>
         </p>
-  
+
         <p class="text-xs text-slate-400">
           Monto:
           <span id="prov-pago-monto" class="text-orange-400 font-black"></span>
         </p>
       </div>
-  
+
       <select id="prov-metodo" class="w-full p-3 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs">
         <option value="Efectivo">Efectivo</option>
         <option value="Transferencia">Transferencia</option>
         <option value="QR">QR</option>
         <option value="Tarjeta">Tarjeta</option>
       </select>
-  
+
       <button onclick="confirmarPagoProveedor()" class="btn-ui btn-naranja w-full">
         Confirmar Pago
       </button>
-  
+
       <button onclick="cerrarM()" class="text-slate-400 text-xs">
         Cancelar
       </button>
 
+    </div>
   </div>
-</div>
+
+  <!-- MODAL PERFIL SOCIO (LECTURA STAFF) -->
+  <div id="modal-perfil-socio" class="modal-base">
+    <div class="bg-[#020617] border-t-4 border-t-orange-500 border border-slate-800 rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl relative flex flex-col max-h-[90vh]">
+      
+      <!-- Botón Cerrar -->
+      <button onclick="cerrarM()" class="absolute top-4 right-4 text-slate-500 hover:text-white transition">
+        <i class="fas fa-times text-xl"></i>
+      </button>
+
+      <div class="p-6 overflow-y-auto custom-scrollbar">
+        <!-- HEADER -->
+        <div class="flex items-center gap-4 mb-6">
+          <div class="w-16 h-16 rounded-full bg-orange-500 flex items-center justify-center text-white text-2xl font-black shadow-lg">
+            <span id="perfil-iniciales">--</span>
+          </div>
+          <div>
+            <h3 id="perfil-nombre" class="text-2xl font-black text-white tracking-tight uppercase italic">Cargando...</h3>
+            <div id="perfil-estado-badge" class="mt-1 inline-block px-3 py-1 bg-slate-800 text-slate-300 text-[10px] font-black rounded-full uppercase tracking-widest border border-slate-700">
+              Cargando
+            </div>
+          </div>
+        </div>
+
+        <!-- SECCIÓN 1: DATOS -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+          <div class="bg-slate-900/50 p-3 rounded-xl border border-slate-800">
+            <p class="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1">DNI</p>
+            <p id="perfil-dni" class="text-xs font-black text-white">--</p>
+          </div>
+          <div class="bg-slate-900/50 p-3 rounded-xl border border-slate-800">
+            <p class="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1">Clase</p>
+            <p id="perfil-clase" class="text-xs font-black text-white">--</p>
+          </div>
+          <div class="bg-slate-900/50 p-3 rounded-xl border border-slate-800">
+            <p class="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1">Cuenta</p>
+            <p id="perfil-estado-cuenta" class="text-xs font-black text-white">--</p>
+          </div>
+          <div class="bg-slate-900/50 p-3 rounded-xl border border-slate-800">
+            <p class="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1">Alta</p>
+            <p id="perfil-alta" class="text-xs font-black text-white">--</p>
+          </div>
+        </div>
+
+        <!-- SECCIÓN 2: FINANZAS -->
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-orange-500/5 p-4 rounded-xl border border-orange-500/20 mb-6 gap-4">
+          <div>
+            <p id="perfil-titulo-monto" class="text-[10px] font-black text-orange-500 uppercase tracking-widest mb-1">Adeudado Actual</p>
+            <div class="flex items-baseline gap-2">
+              <p id="perfil-monto" class="text-3xl font-black text-white">$0</p>
+              <p id="perfil-mora" class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Al día</p>
+            </div>
+          </div>
+          <div id="perfil-restriccion-badge" class="px-4 py-2 bg-green-500/20 text-green-400 text-[10px] font-black rounded-lg uppercase tracking-widest border border-green-500/30 text-center w-full sm:w-auto">
+            Acceso Permitido
+          </div>
+        </div>
+
+        <!-- SECCIÓN 4: INDICADORES RÁPIDOS -->
+        <div class="grid grid-cols-3 gap-4 mb-6">
+          <div class="text-center">
+            <p class="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1">Total Pagado</p>
+            <p id="perfil-total-pagado" class="text-sm font-black text-orange-400">--</p>
+          </div>
+          <div class="text-center border-x border-slate-800">
+            <p class="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1">Pagos</p>
+            <p id="perfil-cantidad-pagos" class="text-sm font-black text-white">--</p>
+          </div>
+          <div class="text-center">
+            <p class="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1">Método Fav.</p>
+            <p id="perfil-metodo-fav" class="text-sm font-black text-white">--</p>
+          </div>
+        </div>
+
+        <!-- SECCIÓN 3: HISTORIAL -->
+        <div>
+          <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 border-b border-slate-800 pb-2">Historial de Pagos</p>
+          <div class="bg-slate-900/50 rounded-xl border border-slate-800 overflow-hidden">
+            <table class="w-full text-left">
+              <thead class="bg-slate-800/50 text-[9px] font-black text-slate-400 uppercase tracking-widest">
+                <tr>
+                  <th class="p-3">Fecha</th>
+                  <th class="p-3">Concepto</th>
+                  <th class="p-3">Método</th>
+                  <th class="p-3 text-right">Monto</th>
+                  <th class="p-3 text-center">Estado</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-historial" class="divide-y divide-slate-800 text-[10px] font-black text-white">
+                <!-- Inyectado desde JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- FOOTER -->
+      <div class="p-4 border-t border-slate-800 bg-slate-900/30 flex justify-between items-center">
+        <p class="text-[9px] font-black text-slate-500 uppercase tracking-widest italic">Perfil de solo lectura — Administrador</p>
+        <button onclick="cerrarM()" class="px-6 py-2 bg-slate-800 text-slate-300 hover:bg-slate-700 text-[10px] font-black uppercase italic rounded-lg transition border border-slate-700">
+          Cerrar
+        </button>
+      </div>
+
+    </div>
+  </div>
 
   <script src="js/data.js"></script>
+  <script src="js/auth.js"></script>
   <script src="js/navigation.js"></script>
   <script src="js/modals.js"></script>
   <script src="js/pagos.js"></script>
@@ -290,4 +531,5 @@
   <script src="js/informes.js"></script>
   <script src="js/app.js"></script>
 </body>
+
 </html>

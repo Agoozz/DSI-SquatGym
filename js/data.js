@@ -1,4 +1,6 @@
-let rRol = 'admin'; let itemsCAlu = []; let tAluK = 0; let itemsCStaff = []; let tStaffK = 0;
+let rRol = 'admin'; 
+let usuarioActual = { dni: '', nombre: '', rol: '' };
+let itemsCAlu = []; let tAluK = 0; let itemsCStaff = []; let tStaffK = 0;
         let currentContext = 'cuota'; let cajaResumen = { qr: 42700, tarjeta: 225000, efectivo: 125800 };
         const pDBKiosco = [
             {n:"Agua 1.5L",p:1000,i:"https://cdn-icons-png.flaticon.com/512/3100/3100566.png"},

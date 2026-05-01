@@ -1,155 +1,127 @@
-<div id="v-adm-kiosco" class="view-section space-y-6 italic uppercase">
+<div id="v-adm-kiosco" class="view-section space-y-6 italic uppercase bg-[#020617] p-4 rounded-3xl">
 
-        <div class="flex justify-between items-center">
-            <h3 class="text-4xl font-black tracking-tighter">Control <span class="text-orange-500">Kiosco</span></h3>
-            <button onclick="abrirM('modal-cierre-turno')" class="btn-ui btn-naranja px-6 text-xs">
+        <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+                <h3 class="text-4xl font-black tracking-widest">Control <span class="text-orange-500">Kiosco</span></h3>
+                <p class="mt-2 max-w-2xl text-sm text-slate-400">Punto de venta para staff. Abre caja, selecciona productos, elige medio de pago y confirma la venta con un resumen claro.</p>
+            </div>
+            <button onclick="kioscoAbrirCierreTurno()" class="btn-ui btn-naranja rounded-full px-6 py-3 text-xs font-black uppercase tracking-widest">
                 <i class="fas fa-cash-register mr-2"></i>Cerrar Turno
             </button>
         </div>
 
-        <!-- KPIs del turno -->
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 font-black">
-            <div class="glass-card p-5 border-l-4 border-green-500">
-                <p class="text-[8px] text-slate-500">RECAUDADO HOY</p>
-                <p id="kiosco-recaudado-hoy" class="text-2xl text-green-400 mt-1">$0</p>
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 font-black">
+            <div class="glass-card p-5 border-l-4 border-orange-500 bg-slate-900/90">
+                <p class="text-[8px] text-slate-500 uppercase tracking-[0.35em]">Ventas de Hoy</p>
+                <p id="kiosco-ventas-count" class="text-3xl text-white mt-3">0</p>
             </div>
-            <div class="glass-card p-5 border-l-4 border-orange-500">
-                <p class="text-[8px] text-slate-500">VENTAS HOY</p>
-                <p id="kiosco-ventas-count" class="text-2xl text-white mt-1">0</p>
+            <div class="glass-card p-5 border-l-4 border-orange-500 bg-slate-900/90">
+                <p class="text-[8px] text-slate-500 uppercase tracking-[0.35em]">Total Recaudado</p>
+                <p id="kiosco-recaudado-hoy" class="text-3xl text-green-400 mt-3">$0</p>
             </div>
-            <div class="glass-card p-5 border-l-4 border-blue-500">
-                <p class="text-[8px] text-slate-500">TICKET PROMEDIO</p>
-                <p id="kiosco-ticket-prom" class="text-2xl text-white mt-1">$0</p>
+            <div class="glass-card p-5 border-l-4 border-orange-500 bg-slate-900/90">
+                <p class="text-[8px] text-slate-500 uppercase tracking-[0.35em]">Ticket Promedio</p>
+                <p id="kiosco-ticket-prom" class="text-3xl text-white mt-3">$0</p>
             </div>
-            <div class="glass-card p-5 border-l-4 border-red-500">
-                <p class="text-[8px] text-slate-500">PRODUCTOS CRÍTICOS</p>
-                <p id="kiosco-stock-critico" class="text-2xl text-red-400 mt-1">2</p>
+            <div class="glass-card p-5 border-l-4 border-orange-500 bg-slate-900/90">
+                <p class="text-[8px] text-slate-500 uppercase tracking-[0.35em]">Efectivo en Caja</p>
+                <p id="kiosco-efectivo-caja" class="text-3xl text-orange-400 mt-3">$0</p>
             </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="grid grid-cols-1 xl:grid-cols-[1.7fr_1fr] gap-6">
 
-            <!-- Panel cobros pendientes / ventas recientes -->
-            <div class="space-y-4">
-                <p class="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em]">
-                    <i class="fas fa-clock mr-2 text-orange-500"></i>Ventas del Turno
-                </p>
-                <div class="glass-card overflow-hidden">
-                    <div id="staff-ventas-historial" class="divide-y divide-slate-800/50 max-h-96 overflow-y-auto">
-                        <p class="text-center text-slate-600 text-xs py-8">Sin ventas registradas aún</p>
+            <div class="space-y-5">
+                <div class="glass-card p-5 bg-slate-900/90 border border-slate-800">
+                    <div class="flex items-center justify-between mb-5">
+                        <div>
+                            <p class="text-[9px] text-slate-500 uppercase tracking-[0.3em]">Catálogo POS</p>
+                            <h4 class="text-xl font-black text-white">Productos rápidos</h4>
+                        </div>
+                        <span class="rounded-full border border-orange-500/30 bg-orange-500/10 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-orange-300">Dark Platinum</span>
                     </div>
-                    <div class="p-3 border-t border-slate-800 flex justify-between items-center">
-                        <span class="text-[9px] text-slate-600 font-black">Total acumulado:</span>
-                        <span id="kiosco-total-acum" class="text-sm font-black text-orange-400">$0</span>
-                    </div>
+                    <div id="kiosco-product-grid" class="grid grid-cols-2 md:grid-cols-3 gap-3"></div>
                 </div>
 
-                <!-- Desglose por método de pago -->
-                <p class="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em]">
-                    <i class="fas fa-chart-pie mr-2 text-blue-500"></i>Desglose por Método
-                </p>
-                <div class="glass-card p-4 space-y-3">
-                    <div id="kiosco-desglose" class="space-y-2">
-                        <div class="flex justify-between text-xs font-black text-slate-500">
-                            <span>Sin datos aún</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Panel stock crítico y cobro manual -->
-            <div class="space-y-4">
-                <p class="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em]">
-                    <i class="fas fa-exclamation-triangle mr-2 text-red-400"></i>Stock Crítico
-                </p>
-                <div class="glass-card p-4 space-y-2">
-                    <div class="flex justify-between items-center p-3 bg-red-500/10 border border-red-500/30 rounded-xl">
+                <div class="glass-card p-5 bg-slate-900/90 border border-slate-800">
+                    <div class="flex items-center justify-between mb-4">
                         <div>
-                            <p class="text-xs font-black text-white">Creatina Mon.</p>
-                            <p class="text-[9px] text-slate-500">Proveedor: Star Nutrition</p>
+                            <p class="text-[9px] text-slate-500 uppercase tracking-[0.3em]">Movimientos del turno</p>
+                            <h4 class="text-lg font-black text-white">Últimas ventas</h4>
                         </div>
-                        <div class="text-right">
-                            <p class="text-lg font-black text-red-400">3 u.</p>
-                            <p class="text-[8px] text-red-300">Stock mínimo</p>
-                        </div>
+                        <span id="kiosco-caja-estado" class="rounded-full bg-slate-800 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-orange-500">Caja cerrada</span>
                     </div>
-                    <div class="flex justify-between items-center p-3 bg-yellow-500/10 border border-yellow-500/30 rounded-xl">
-                        <div>
-                            <p class="text-xs font-black text-white">Proteína Whey</p>
-                            <p class="text-[9px] text-slate-500">Proveedor: Ena Sport</p>
+                    <div id="kiosco-transacciones-historial" class="space-y-3 max-h-80 overflow-y-auto text-sm text-slate-300"></div>
+                    <div class="mt-5 rounded-3xl border border-slate-800 bg-slate-950/70 p-4 text-xs text-slate-400">
+                        <div class="flex justify-between mb-2">
+                            <span>Total actual</span>
+                            <span id="kiosco-total-acum" class="font-black text-orange-400">$0</span>
                         </div>
-                        <div class="text-right">
-                            <p class="text-lg font-black text-yellow-400">5 u.</p>
-                            <p class="text-[8px] text-yellow-300">Stock bajo</p>
-                        </div>
+                        <div id="kiosco-desglose" class="space-y-2 text-[11px] text-slate-400"></div>
                     </div>
-                    <div class="flex justify-between items-center p-3 bg-slate-900 border border-slate-700 rounded-xl">
-                        <div>
-                            <p class="text-xs font-black text-white">Gatorade Blue</p>
-                            <p class="text-[9px] text-slate-500">Proveedor: Ivess</p>
-                        </div>
-                        <div class="text-right">
-                            <p class="text-lg font-black text-slate-300">8 u.</p>
-                            <p class="text-[8px] text-slate-500">Normal</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Registro manual de cobro del kiosco (el cliente compró, el staff registra) -->
-                <p class="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em]">
-                    <i class="fas fa-pen mr-2 text-orange-500"></i>Registrar Cobro Manual
-                </p>
-                <div class="glass-card p-5 space-y-4">
-                    <p class="text-[9px] text-slate-500">Registrá el cobro de una venta realizada en el kiosco.</p>
-                    <div class="grid grid-cols-2 gap-3">
-                        <div>
-                            <label class="text-[8px] text-slate-500 font-black uppercase block mb-1">Socio (DNI)</label>
-                            <input id="cobro-manual-dni" type="text" placeholder="Opcional"
-                                class="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs outline-none focus:border-orange-500">
-                        </div>
-                        <div>
-                            <label class="text-[8px] text-slate-500 font-black uppercase block mb-1">Monto Total</label>
-                            <input id="cobro-manual-monto" type="number" placeholder="$0"
-                                class="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs outline-none focus:border-orange-500">
-                        </div>
-                    </div>
-                    <div>
-                        <label class="text-[8px] text-slate-500 font-black uppercase block mb-1">Detalle (productos)</label>
-                        <input id="cobro-manual-detalle" type="text" placeholder="Ej: Agua x2, Proteína x1"
-                            class="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs outline-none focus:border-orange-500">
-                    </div>
-                    <div class="grid grid-cols-4 gap-2">
-                        <button onclick="selMetodoStaff('Efectivo')" id="smk-efectivo"
-                            class="smk-btn py-2.5 rounded-xl text-[9px] font-black border border-slate-700 bg-slate-900 text-slate-400 transition hover:border-green-500 hover:text-green-400">
-                            <i class="fas fa-money-bill-wave block mb-0.5"></i>Efectivo
-                        </button>
-                        <button onclick="selMetodoStaff('QR')" id="smk-qr"
-                            class="smk-btn py-2.5 rounded-xl text-[9px] font-black border border-slate-700 bg-slate-900 text-slate-400 transition hover:border-blue-500 hover:text-blue-400">
-                            <i class="fas fa-qrcode block mb-0.5"></i>QR
-                        </button>
-                        <button onclick="selMetodoStaff('Transferencia')" id="smk-transferencia"
-                            class="smk-btn py-2.5 rounded-xl text-[9px] font-black border border-slate-700 bg-slate-900 text-slate-400 transition hover:border-purple-500 hover:text-purple-400">
-                            <i class="fas fa-exchange-alt block mb-0.5"></i>Transfer.
-                        </button>
-                        <button onclick="selMetodoStaff('Tarjeta')" id="smk-tarjeta"
-                            class="smk-btn py-2.5 rounded-xl text-[9px] font-black border border-slate-700 bg-slate-900 text-slate-400 transition hover:border-orange-500 hover:text-orange-400">
-                            <i class="fas fa-credit-card block mb-0.5"></i>Tarjeta
-                        </button>
-                    </div>
-                    <button onclick="registrarCobroManual()" class="btn-ui btn-naranja w-full py-3 text-xs font-black">
-                        <i class="fas fa-check-circle mr-2"></i>Confirmar y Registrar Cobro
-                    </button>
                 </div>
             </div>
 
+            <aside class="space-y-5">
+                <div class="glass-card p-5 bg-slate-900/90 border border-slate-800">
+                    <div class="flex items-center justify-between mb-5">
+                        <div>
+                            <p class="text-[9px] text-slate-500 uppercase tracking-[0.3em]">Carrito de venta</p>
+                            <h4 class="text-lg font-black text-white">Mostrador</h4>
+                        </div>
+                        <span id="kiosco-cart-count" class="rounded-full bg-slate-800 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-orange-500">0 items</span>
+                    </div>
+                    <div id="kiosco-cart-items" class="min-h-[240px] rounded-3xl border border-slate-800 bg-slate-950/70 p-3 text-slate-300"></div>
+                    <div class="mt-4 rounded-3xl border border-slate-800 bg-slate-900/90 p-4">
+                        <div class="flex items-center justify-between mb-4 text-slate-400 uppercase tracking-[0.3em] text-[10px] font-black">
+                            <span>Subtotal</span>
+                            <span id="kiosco-cart-subtotal" class="text-white">$0</span>
+                        </div>
+                        <p class="mb-4 text-[10px] text-slate-500">Seleccioná un método de pago para completar la venta.</p>
+                        <div class="grid grid-cols-2 gap-2 text-[10px] font-black uppercase tracking-widest">
+                            <button id="metodo-Efectivo" onclick="kioscoCambiarMetodoPago('Efectivo')" class="payment-btn rounded-xl border border-slate-700 bg-slate-900 px-3 py-3 text-left transition">Efectivo</button>
+                            <button id="metodo-QR" onclick="kioscoCambiarMetodoPago('QR')" class="payment-btn rounded-xl border border-slate-700 bg-slate-900 px-3 py-3 text-left transition">QR</button>
+                            <button id="metodo-Tarjeta" onclick="kioscoCambiarMetodoPago('Tarjeta')" class="payment-btn rounded-xl border border-slate-700 bg-slate-900 px-3 py-3 text-left transition">Tarjeta</button>
+                            <button id="metodo-Transferencia" onclick="kioscoCambiarMetodoPago('Transferencia')" class="payment-btn rounded-xl border border-slate-700 bg-slate-900 px-3 py-3 text-left transition">Transferencia</button>
+                        </div>
+                        <div id="kiosco-efectivo-panel" class="mt-4 hidden rounded-3xl border border-emerald-500/20 bg-emerald-500/5 p-4">
+                            <label class="text-[9px] uppercase tracking-[0.35em] text-slate-400">Monto recibido</label>
+                            <input id="kiosco-monto-recibido" type="number" min="0" placeholder="Ej: 12000" oninput="kioscoCalcularVuelto()" class="mt-3 w-full rounded-3xl border border-slate-700 bg-slate-900 px-4 py-3 text-white outline-none focus:border-emerald-500" />
+                            <div class="mt-3 flex items-center justify-between text-[10px] font-black uppercase tracking-[0.35em] text-slate-300">
+                                <span>Vuelto estimado</span>
+                                <span id="kiosco-vuelto-display" class="text-emerald-300">$0</span>
+                            </div>
+                        </div>
+                        <button id="btn-confirmar-cobro" onclick="kioscoConfirmarCobro()" class="mt-5 btn-ui btn-naranja w-full rounded-xl py-3 text-xs font-black uppercase tracking-widest disabled:opacity-40">Confirmar Cobro</button>
+                    </div>
+                </div>
+                <div class="glass-card p-5 bg-slate-900/90 border border-slate-800 text-slate-400 text-sm rounded-3xl">
+                    <p class="text-[9px] uppercase tracking-[0.3em] font-black text-slate-500">Apertura de caja</p>
+                    <p class="mt-3 text-slate-300">El kiosco no cobra hasta que se registre el fondo inicial del turno. Abre caja para activar el POS.</p>
+                </div>
+            </aside>
         </div>
 
-        <!-- Exportar turno -->
         <div class="flex justify-end">
-            <button onclick="exportarVentasTurno()" class="btn-ui bg-slate-700 text-xs px-6">
+            <button onclick="kioscoExportarVentasTurno()" class="btn-ui bg-slate-700 text-xs rounded-xl px-6 py-3 uppercase tracking-widest font-black">
                 <i class="fas fa-file-export mr-2"></i>Exportar Ventas del Turno
             </button>
         </div>
+
+        <div id="kiosco-apertura-overlay" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/95 p-4">
+            <div class="w-full max-w-xl rounded-3xl border border-slate-800 bg-[#020617]/95 p-8 shadow-2xl backdrop-blur-xl">
+                <p class="text-sm uppercase tracking-[0.35em] text-orange-500">Apertura de Caja</p>
+                <h2 class="mt-4 text-3xl font-black text-white">Ingresá el Fondo Inicial</h2>
+                <p class="mt-2 text-slate-400">El punto de venta se habilita solo después de registrar el monto de apertura del turno.</p>
+                <div class="mt-8 grid gap-4">
+                    <label class="block text-[10px] uppercase tracking-[0.35em] text-slate-500">Monto de apertura</label>
+                    <input id="kiosco-inicio-monto" type="number" placeholder="Ej: 10000" class="w-full rounded-3xl border border-slate-700 bg-slate-900 px-4 py-3 text-lg font-black text-white outline-none focus:border-orange-500" />
+                    <button onclick="guardarFondoCaja()" class="btn-ui btn-naranja rounded-full py-3 text-sm font-black uppercase tracking-widest">Guardar Fondo de Caja</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="kiosco-toast" class="fixed right-6 bottom-6 z-50 hidden rounded-3xl border border-orange-500/40 bg-slate-900/95 px-6 py-4 text-sm text-white shadow-2xl backdrop-blur-xl transition-all duration-300"></div>
 
     </div>
 </div>

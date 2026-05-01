@@ -24,80 +24,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   await cargarPantallas();
 });
 
-
-  function setLoginUIRol(rol){
-
-  rRol = rol;
-
-  const staff = document.getElementById("l-btn-staff");
-  const alumno = document.getElementById("l-btn-alumno");
-
-  staff.classList.remove("role-active");
-  alumno.classList.remove("role-active");
-
-  staff.classList.add("bg-[#0f172a]","text-[#64748b]");
-  alumno.classList.add("bg-[#0f172a]","text-[#64748b]");
-
-  if(rol === "admin"){
-      staff.classList.add("role-active");
-      staff.classList.remove("bg-[#0f172a]","text-[#64748b]");
-  } else {
-      alumno.classList.add("role-active");
-      alumno.classList.remove("bg-[#0f172a]","text-[#64748b]");
-  }
-}
-
-
-  function entrarApp() {
-      document.getElementById('login-frame').style.display = 'none';
-      document.getElementById('sidebar-ui').classList.remove('hidden');
-      document.getElementById('app-container').classList.remove('hidden');
-      document.body.classList.add('flex');
-      const sTxt = document.getElementById('txt-saludo'); const hTag = document.getElementById('hero-tag'); const hTitle = document.getElementById('hero-title'); const hFrame = document.getElementById('hero-inicio');
-      const sDashboard = document.getElementById('staff-home-dashboard'); const cGallery = document.getElementById('client-home-gallery');
-      const bStaffHero = document.getElementById('btn-hero-action'); const bClientProfile = document.getElementById('btn-goto-profile');
-      const btnEf = document.getElementById("btn-efectivo");
-
-      if(btnEf){
-          btnEf.style.display = (rRol === "admin") ? "block" : "none";
-      }
-      if(rRol === 'admin') {
-          sTxt.innerText = '¡Hola, Melisa!'; hTag.innerText = 'Centro de Mandos v35.0'; hTitle.innerHTML = 'Gestión Global <br><span class="text-orange-500 italic italic">SquatGym Platinum.</span>';
-          hFrame.style.backgroundImage = "linear-gradient(to right, rgba(2,6,23,0.98), rgba(2,6,23,0.5)), url('https://images.unsplash.com/photo-1593079831268-3381b0db4a77?auto=format&fit=crop&q=80&w=1200')";
-          sDashboard.classList.remove('hidden'); cGallery.classList.add('hidden'); bStaffHero.classList.remove('hidden'); bClientProfile.classList.add('hidden');
-          document.getElementById('header-username').innerText = '👤 Melisa — Staff';
-      } else {
-          sTxt.innerText = '¡Hola, Valentino!'; hTag.innerText = 'Socio Platinum Élite'; hTitle.innerHTML = 'Disciplina <br><span class="text-orange-500 italic italic">Sin Límites.</span>';
-          hFrame.style.backgroundImage = "linear-gradient(to right, rgba(2,6,23,0.98), rgba(2,6,23,0.4)), url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&q=80&w=1200')";
-          sDashboard.classList.add('hidden'); cGallery.classList.remove('hidden'); bStaffHero.classList.add('hidden'); bClientProfile.classList.remove('hidden');
-          document.getElementById('header-username').innerText = '👤 Valentino — Cliente';
-      }
-      configMenu(); navV('inicio'); renderMarketCatalog();
-    
-      if(rRol === 'admin') setTimeout(renderizarAlertasStaff, 100);
-      if(rRol === 'alumno') setTimeout(renderizarAlertaCliente, 100);
-      const btn = document.getElementById("btn-kiosco-accion");
-
-      if(btn){
-          if(rRol === "admin"){
-              btn.innerText = "Cobrar";
-              btn.onclick = () => abrirM('modal-cobro-kiosco');
-          }else{
-              btn.innerText = "Pagar";
-              btn.onclick = () => abrirM('modal-pago-selector','kiosco');
-          }
-      }
-      const btnEntregas = document.getElementById('btn-entregas');
-
-      if(btnEntregas){
-          if (rRol === 'admin') {
-              btnEntregas.style.display = 'flex';
-          } else {
-              btnEntregas.style.display = 'none';
-          }
-      }
-  }
-
   
   
   
@@ -285,31 +211,101 @@ document.addEventListener("DOMContentLoaded", async () => {
   function renderizarAlertasStaff() {
       const panel = document.getElementById('panel-alertas-staff');
       if (!panel) return;
-      panel.innerHTML = alertasVencimiento.map(a => {
-          const vencido = a.dias < 0;
-          const pronto  = a.dias >= 0 && a.dias <= 5;
-          const color   = vencido ? 'border-red-500 bg-red-500/5' : 'border-yellow-500 bg-yellow-500/5';
-          const badge   = vencido
-              ? `<span style="padding:2px 8px;border-radius:9999px;font-size:8px;font-weight:900;background:rgba(239,68,68,0.15);color:#f87171;border:1px solid rgba(239,68,68,0.3)">VENCIDA hace ${Math.abs(a.dias)}d</span>`
-              : `<span style="padding:2px 8px;border-radius:9999px;font-size:8px;font-weight:900;background:rgba(234,179,8,0.15);color:#facc15;border:1px solid rgba(234,179,8,0.3)">VENCE en ${a.dias}d</span>`;
-          return `
-          <div class="glass-card p-4 border-l-4 ${color} flex justify-between items-center">
-              <div class="flex items-center gap-3">
-                  <i class="fas fa-bell text-sm ${vencido ? 'text-red-400' : 'text-yellow-400'}"></i>
-                  <div>
-                      <p class="text-xs font-black text-white">${a.nombre}</p>
-                      <p class="text-[9px] text-slate-500">DNI ${a.dni} · Deuda: <span class="text-red-400 font-black">$${a.deuda.toLocaleString()}</span></p>
+
+      const total = alertasVencimiento.length;
+      const bloqueadosList = alertasVencimiento.filter(a => a.dias <= -15);
+      const vencidosList   = alertasVencimiento.filter(a => a.dias < 0 && a.dias > -15);
+      const porVencerList  = alertasVencimiento.filter(a => a.dias >= 0);
+
+      let html = `
+          <!-- Encabezado Resumen -->
+          <div class="flex items-center gap-2 mb-6">
+              <div class="flex gap-2 w-full flex-wrap">
+                  <span class="px-2.5 py-1 bg-slate-800 text-slate-300 text-[9px] font-black rounded-md border border-slate-700 uppercase tracking-widest">${total} activas</span>
+                  <span class="px-2.5 py-1 bg-red-500/20 text-red-400 text-[9px] font-black rounded-md border border-red-500/30 uppercase tracking-widest">${bloqueadosList.length} bloqueados</span>
+                  <span class="px-2.5 py-1 bg-orange-500/20 text-orange-400 text-[9px] font-black rounded-md border border-orange-500/30 uppercase tracking-widest">${vencidosList.length} en mora</span>
+                  <span class="px-2.5 py-1 bg-yellow-500/20 text-yellow-400 text-[9px] font-black rounded-md border border-yellow-500/30 uppercase tracking-widest">${porVencerList.length} por vencer</span>
+              </div>
+          </div>
+      `;
+
+      // Grupo 1: Acceso Bloqueado
+      if (bloqueadosList.length > 0) {
+          html += `<div class="mb-6">
+              <p class="text-[10px] font-black text-red-500 uppercase tracking-widest mb-3 border-b border-red-900/50 pb-1">Acceso Bloqueado</p>
+              <div class="space-y-3">`;
+          
+          html += bloqueadosList.map(a => `
+              <div class="glass-card p-4 flex justify-between items-center" style="border-left: 4px solid #ef4444; background: rgba(239,68,68,0.08);">
+                  <div class="flex flex-col">
+                      <span class="px-2 py-0.5 bg-red-500/20 text-red-400 text-[8px] font-black rounded border border-red-500/30 w-max mb-1.5">ACCESO BLOQUEADO</span>
+                      <p class="text-sm font-black text-white">${a.nombre}</p>
+                      <p class="text-[10px] text-slate-400 mt-0.5">DNI ${a.dni} · Mora: ${Math.abs(a.dias)} días</p>
                   </div>
-              </div>
-              <div class="flex items-center gap-3">
-                  ${badge}
-                  <button onclick="cobrarSocio('${a.nombre}', ${a.deuda})"
-                      style="padding:4px 12px;border-radius:9999px;background:var(--naranja);color:white;font-size:8px;font-weight:900;text-transform:uppercase;border:none;cursor:pointer;">
-                      Cobrar
-                  </button>
-              </div>
-          </div>`;
-      }).join('');
+                  <div class="flex items-center gap-5">
+                      <p class="text-2xl font-black text-red-500">$${a.deuda.toLocaleString()}</p>
+                      <div class="flex flex-col gap-1.5">
+                          <button onclick="verPerfilSocio('${a.nombre}')" class="btn-ui px-5 py-2 text-[9px] font-black italic uppercase bg-slate-800 text-slate-300 hover:bg-slate-700 shadow-md">Ver Perfil</button>
+                      </div>
+                  </div>
+              </div>`).join('');
+          
+          html += `</div></div>`;
+      }
+
+      // Grupo 2: En Mora (Vencidos pero no bloqueados)
+      if (vencidosList.length > 0) {
+          html += `<div class="mb-6">
+              <p class="text-[10px] font-black text-orange-500 uppercase tracking-widest mb-3 border-b border-orange-900/50 pb-1">En Mora (Período de Gracia)</p>
+              <div class="space-y-3">`;
+          
+          html += vencidosList.map(a => `
+              <div class="glass-card p-4 flex justify-between items-center" style="border-left: 4px solid #f97316; background: rgba(249,115,22,0.08);">
+                  <div class="flex flex-col">
+                      <span class="px-2 py-0.5 bg-orange-500/20 text-orange-400 text-[8px] font-black rounded border border-orange-500/30 w-max mb-1.5">VENCIDA HACE ${Math.abs(a.dias)}d</span>
+                      <p class="text-sm font-black text-white">${a.nombre}</p>
+                      <p class="text-[10px] text-slate-400 mt-0.5">DNI ${a.dni}</p>
+                  </div>
+                  <div class="flex items-center gap-5">
+                      <p class="text-2xl font-black text-orange-500">$${a.deuda.toLocaleString()}</p>
+                      <div class="flex flex-col gap-1.5">
+                          <button onclick="verPerfilSocio('${a.nombre}')" class="btn-ui px-5 py-2 text-[9px] font-black italic uppercase bg-slate-800 text-slate-300 hover:bg-slate-700 shadow-md">Ver Perfil</button>
+                      </div>
+                  </div>
+              </div>`).join('');
+          
+          html += `</div></div>`;
+      }
+
+      // Grupo 3: Próximos a Vencer
+      if (porVencerList.length > 0) {
+          html += `<div>
+              <p class="text-[10px] font-black text-yellow-500 uppercase tracking-widest mb-3 border-b border-yellow-900/50 pb-1">Próximos a Vencer</p>
+              <div class="space-y-3">`;
+          
+          html += porVencerList.map(a => {
+              const badgeText = a.dias === 0 ? "VENCE HOY" : `VENCE EN ${a.dias}d`;
+
+              return `
+              <div class="glass-card p-4 flex justify-between items-center" style="border-left: 4px solid #eab308; background: rgba(234,179,8,0.06);">
+                  <div class="flex flex-col">
+                      <span class="px-2 py-0.5 bg-yellow-500/20 text-yellow-400 text-[8px] font-black rounded border border-yellow-500/30 w-max mb-1.5">${badgeText}</span>
+                      <p class="text-sm font-black text-white">${a.nombre}</p>
+                      <p class="text-[10px] text-slate-400 mt-0.5">DNI ${a.dni}</p>
+                  </div>
+                  <div class="flex items-center gap-5">
+                      <p class="text-2xl font-black text-yellow-500">$${a.deuda.toLocaleString()}</p>
+                      <div class="flex flex-col gap-1.5">
+                          <button onclick="verPerfilSocio('${a.nombre}')" class="btn-ui px-5 py-2 text-[9px] font-black italic uppercase bg-slate-800 text-slate-300 hover:bg-slate-700 shadow-md">Ver Perfil</button>
+                      </div>
+                  </div>
+              </div>`;
+          }).join('');
+          
+          html += `</div></div>`;
+      }
+
+      panel.innerHTML = html;
   }
 
   function renderizarAlertaCliente() {
