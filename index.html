@@ -130,7 +130,14 @@
   <div id="modal-pago-selector" class="modal-base italic uppercase">
     <div class="glass-card p-6 w-full max-w-md text-center space-y-4">
       <button onclick="window.volverPago()" class="text-xs text-slate-400 mb-3 block">← Volver</button>
-      <h3 class="text-lg font-black">Medio de Pago</h3>
+      <h3 class="text-lg font-black mb-2">Medio de Pago</h3>
+
+      <!-- Cupones -->
+      <div id="cupon-container" class="flex gap-2 mb-4 bg-slate-900/50 p-2 rounded-lg border border-slate-800 transition-all duration-300">
+        <input type="text" id="input-cupon-cobro" placeholder="Ingresar código de cupón" class="flex-1 p-2 rounded bg-slate-950 text-white text-[10px] font-black uppercase tracking-widest border border-slate-700 focus:outline-none focus:border-orange-500 transition">
+        <button id="btn-aplicar-cupon" onclick="aplicarCuponCobro()" class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded text-[10px] font-black uppercase tracking-widest transition shadow-lg">Aplicar</button>
+      </div>
+      <p id="msg-cupon-cobro" class="hidden text-[10px] font-black text-green-400 uppercase tracking-widest mb-4 mt-[-8px] text-left ml-1 animate-fade-in"><i class="fas fa-check-circle mr-1"></i>Cupón aplicado exitosamente (-<span id="valor-cupon-aplicado">0</span>%)</p>
 
       <div id="pago-opciones" class="space-y-3">
         <button onclick="mostrarPago('qr')" class="btn-ui bg-[#009EE3] w-full">Mercado Pago (QR)</button>
@@ -159,9 +166,7 @@
 
   <div id="modal-cobro-kiosco" class="modal-base">
     <div class="glass-card p-10 w-full max-w-md text-center">
-      <h4 class="text-xl font-black mb-6">Cobro en Caja</h4>
-
-      <p class="text-sm mb-2">Total:</p>
+      <p class="text-sm mb-2">Total a Pagar:</p>
       <p id="total-caja" class="text-3xl font-black text-orange-500 mb-6">$0</p>
 
       <select id="metodo-pago" onchange="cambiarMetodoPago()"
@@ -517,6 +522,65 @@
         </button>
       </div>
 
+    </div>
+  </div>
+
+  <!-- MODAL DE CONFIGURACIÓN DE PLANES Y PROMOS -->
+  <div id="modal-precios" class="modal-base">
+    <div class="bg-[#020617] border border-slate-800 rounded-2xl w-full max-w-5xl overflow-hidden shadow-2xl relative flex flex-col max-h-[90vh]">
+      <!-- Header -->
+      <div class="flex justify-between items-center p-6 border-b border-slate-800 bg-slate-900/50">
+        <div class="flex items-center gap-3">
+          <i class="fas fa-tags text-orange-500 text-2xl"></i>
+          <h2 class="text-xl font-black text-white uppercase tracking-widest">Planes y Promociones</h2>
+        </div>
+        <button onclick="cerrarM()" class="text-slate-500 hover:text-white transition">
+          <i class="fas fa-times text-2xl"></i>
+        </button>
+      </div>
+      
+      <!-- Body -->
+      <div class="flex flex-1 overflow-hidden flex-col md:flex-row">
+        <!-- Izquierda: Lista -->
+        <div class="w-full md:w-1/2 border-r border-slate-800 p-6 overflow-y-auto" id="lista-planes-admin">
+          <!-- Inyectado por JS -->
+        </div>
+
+        <!-- Derecha: Formulario -->
+        <div class="w-full md:w-1/2 p-6 bg-slate-900/20 overflow-y-auto">
+          <h3 class="text-sm font-black text-orange-500 uppercase tracking-widest mb-6">Editar Configuración</h3>
+          <div class="space-y-5">
+            <div>
+              <label class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Nombre del Plan</label>
+              <input type="text" id="edit-nombre-plan" disabled class="w-full bg-slate-900 border border-slate-800 text-slate-400 p-3 rounded-xl font-black uppercase cursor-not-allowed">
+            </div>
+            <div>
+              <label class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Precio Base ($)</label>
+              <input type="number" id="edit-precio-base" class="w-full bg-slate-900 border border-slate-700 text-white p-3 rounded-xl font-black uppercase focus:outline-none focus:border-orange-500 transition">
+            </div>
+            <div>
+              <label class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Tipo de Promoción</label>
+              <select id="edit-tipo-promo" onchange="cambiarTipoPromo()" class="w-full bg-slate-900 border border-slate-700 text-white p-3 rounded-xl font-black uppercase focus:outline-none focus:border-orange-500 transition appearance-none">
+                <option value="ninguna">Ninguna</option>
+                <option value="dia_especial">Día Especial</option>
+                <option value="amigos">Por Amigos</option>
+                <option value="cupon">Cupón de Descuento</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Detalle de la Promoción</label>
+              <div id="contenedor-valor-promo">
+                <input type="text" id="edit-valor-promo" disabled class="w-full bg-slate-900 border border-slate-800 text-slate-500 p-3 rounded-xl font-black uppercase cursor-not-allowed" placeholder="Seleccione un tipo de promoción...">
+              </div>
+            </div>
+            <div class="pt-4">
+              <button class="w-full bg-orange-500 hover:bg-orange-600 text-white p-4 rounded-xl font-black uppercase tracking-widest transition shadow-lg flex justify-center items-center gap-2">
+                <i class="fas fa-save"></i> Guardar Configuración
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 

@@ -495,3 +495,154 @@ function verPerfilSocio(nombre) {
 
     abrirM('modal-perfil-socio');
 }
+
+// ══════════════════════════════════════════════
+// GESTIÓN DE PLANES Y PROMOCIONES (Administrador)
+// ══════════════════════════════════════════════
+
+let planEditandoId = null;
+
+function abrirModalPrecios() {
+    const lista = document.getElementById('lista-planes-admin');
+    if (!lista) return;
+
+    lista.innerHTML = '';
+
+    planesDB.forEach(plan => {
+        let promoBadge = '';
+        if (plan.tipoPromo !== 'ninguna') {
+            promoBadge = `<span class="mt-2 inline-block px-2 py-1 bg-orange-500/20 text-orange-400 text-[9px] uppercase font-black tracking-widest rounded border border-orange-500/30">Promo Activa: ${plan.tipoPromo} (${plan.valorPromo})</span>`;
+        }
+
+        const isSelected = plan.id === planEditandoId;
+        const borderClass = isSelected ? 'border-orange-500 bg-slate-900/80 shadow-[0_0_15px_rgba(249,115,22,0.2)]' : 'border-slate-800 bg-slate-900/50 hover:border-slate-700';
+
+        lista.innerHTML += `
+            <div onclick="cargarPlanFormulario(${plan.id})" class="glass-card p-4 border ${borderClass} rounded-xl mb-4 flex justify-between items-center transition-all cursor-pointer">
+                <div>
+                    <h4 class="text-white font-black uppercase tracking-widest text-sm mb-1">${plan.nombre}</h4>
+                    <p class="text-slate-400 text-xs font-bold">Base: $${plan.precioBase.toLocaleString()}</p>
+                    ${promoBadge}
+                </div>
+                <button class="btn-ui bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white px-4 py-2 text-[10px] uppercase font-black tracking-widest rounded-lg transition border border-slate-700 pointer-events-none">
+                    ${isSelected ? 'Editando' : 'Editar'}
+                </button>
+            </div>
+        `;
+    });
+
+    // Conectar dinámicamente el botón Guardar
+    const btnGuardar = document.querySelector('#modal-precios .fa-save')?.parentElement;
+    if (btnGuardar) {
+        btnGuardar.onclick = guardarCambiosPlan;
+    }
+
+    abrirM('modal-precios');
+}
+
+function cargarPlanFormulario(id) {
+    const plan = planesDB.find(p => p.id === id);
+    if (!plan) return;
+
+    planEditandoId = id;
+
+    // Refrescar la lista para pintar el recuadro seleccionado
+    abrirModalPrecios();
+
+    document.getElementById('edit-nombre-plan').value = plan.nombre;
+    document.getElementById('edit-precio-base').value = plan.precioBase;
+
+    // Setear tipo y renderizar el input/select correcto
+    document.getElementById('edit-tipo-promo').value = plan.tipoPromo;
+    cambiarTipoPromo(plan.valorPromo);
+
+    // Limpiar mensaje de éxito previo si existe
+    const msg = document.getElementById('msg-exito-promo');
+    if (msg) msg.remove();
+}
+
+function guardarCambiosPlan() {
+    if (!planEditandoId) return;
+
+    const plan = planesDB.find(p => p.id === planEditandoId);
+    if (!plan) return;
+
+    const nuevoTipo = document.getElementById('edit-tipo-promo').value;
+    const nuevoValor = document.getElementById('edit-valor-promo').value;
+
+    // Validación
+    if (nuevoTipo !== 'ninguna' && !nuevoValor.trim()) {
+        mostrarMensajePromo('Debe indicar un detalle para la promoción.', 'red');
+        return; // No guardar
+    }
+
+    plan.precioBase = parseInt(document.getElementById('edit-precio-base').value) || 0;
+    plan.tipoPromo = nuevoTipo;
+    plan.valorPromo = nuevoValor;
+
+    // Persistir cambios
+    localStorage.setItem('squatgym_planesDB', JSON.stringify(planesDB));
+
+    abrirModalPrecios(); // Actualiza la lista izquierda
+
+    // Mostrar mensaje temporal de éxito
+    mostrarMensajePromo('¡Configuración guardada correctamente!', 'green');
+}
+
+function mostrarMensajePromo(texto, color) {
+    let msg = document.getElementById('msg-exito-promo');
+    if (!msg) {
+        msg = document.createElement('div');
+        msg.id = 'msg-exito-promo';
+
+        const btnGuardar = document.querySelector('#modal-precios .fa-save')?.parentElement;
+        if (btnGuardar && btnGuardar.parentNode) {
+            btnGuardar.parentNode.appendChild(msg);
+        }
+    }
+
+    // Configurar color según el tipo (éxito o error)
+    if (color === 'red') {
+        msg.className = 'mt-4 p-3 bg-red-500/20 text-red-400 text-[10px] font-black uppercase tracking-widest rounded-lg border border-red-500/30 text-center transition-all opacity-100';
+    } else {
+        msg.className = 'mt-4 p-3 bg-green-500/20 text-green-400 text-[10px] font-black uppercase tracking-widest rounded-lg border border-green-500/30 text-center transition-all opacity-100';
+    }
+
+    msg.innerText = texto;
+
+    setTimeout(() => {
+        if (msg) {
+            msg.classList.replace('opacity-100', 'opacity-0');
+            setTimeout(() => msg.remove(), 300);
+        }
+    }, 3000);
+}
+
+function cambiarTipoPromo(valorPorDefecto = '') {
+    const tipo = document.getElementById('edit-tipo-promo').value;
+    const contenedor = document.getElementById('contenedor-valor-promo');
+
+    if (tipo === 'ninguna') {
+        contenedor.innerHTML = '<input type="text" id="edit-valor-promo" disabled class="w-full bg-slate-900 border border-slate-800 text-slate-500 p-3 rounded-xl font-black uppercase cursor-not-allowed" placeholder="Sin promoción activa" value="">';
+    } else if (tipo === 'dia_especial') {
+        contenedor.innerHTML = `
+            <select id="edit-valor-promo" class="w-full bg-slate-900 border border-slate-700 text-white p-3 rounded-xl font-black uppercase focus:outline-none focus:border-orange-500 transition appearance-none">
+                <option value="" disabled ${!valorPorDefecto ? 'selected' : ''} class="text-slate-500">Seleccionar...</option>
+                <option value="Lunes" ${valorPorDefecto === 'Lunes' ? 'selected' : ''}>Día Lunes</option>
+                <option value="Fines de Semana" ${valorPorDefecto === 'Fines de Semana' ? 'selected' : ''}>Fines de Semana</option>
+                <option value="BlackFriday" ${valorPorDefecto === 'BlackFriday' ? 'selected' : ''}>Black Friday</option>
+            </select>
+        `;
+    } else if (tipo === 'amigos') {
+        contenedor.innerHTML = `
+            <select id="edit-valor-promo" class="w-full bg-slate-900 border border-slate-700 text-white p-3 rounded-xl font-black uppercase focus:outline-none focus:border-orange-500 transition appearance-none">
+                <option value="" disabled ${!valorPorDefecto ? 'selected' : ''} class="text-slate-500">Seleccionar...</option>
+                <option value="2x1" ${valorPorDefecto === '2x1' ? 'selected' : ''}>Mecánica 2x1</option>
+                <option value="Plan Familiar" ${valorPorDefecto === 'Plan Familiar' ? 'selected' : ''}>Plan Familiar (3+ integrantes)</option>
+                <option value="50% Segundo" ${valorPorDefecto === '50% Segundo' ? 'selected' : ''}>50% Off al Segundo</option>
+            </select>
+        `;
+    } else if (tipo === 'cupon') {
+        contenedor.innerHTML = `<input type="text" id="edit-valor-promo" class="w-full bg-slate-900 border border-slate-700 text-white p-3 rounded-xl font-black uppercase focus:outline-none focus:border-orange-500 transition placeholder-slate-600" placeholder="Ej: CROSS20" value="${valorPorDefecto}">`;
+    }
+}

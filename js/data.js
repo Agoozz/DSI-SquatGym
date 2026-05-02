@@ -73,3 +73,23 @@ let itemsCAlu = []; let tAluK = 0; let itemsCStaff = []; let tStaffK = 0;
             { tipo: "QR",           monto: 5500,  cliente: "Juan Romero",      fecha: "2026-04-18", concepto: "Kiosco" },
             { tipo: "Tarjeta",      monto: 1000,  cliente: "Camila Torres",    fecha: "2026-04-22", concepto: "Kiosco" },
         ];
+
+// ══════════════════════════════════════════════
+// PLANES Y PROMOCIONES (Gestión de Precios)
+// ══════════════════════════════════════════════
+let planesDB = [
+    { id: 1, nombre: "Musculación", precioBase: 15000, tipoPromo: "ninguna", valorPromo: 0 },
+    { id: 2, nombre: "Zumba", precioBase: 12000, tipoPromo: "ninguna", valorPromo: 0 },
+    { id: 3, nombre: "Crossfit", precioBase: 18000, tipoPromo: "cupon", valorPromo: "CROSS20" },
+    { id: 4, nombre: "Pack Grupo Familiar", precioBase: 40000, tipoPromo: "amigos", valorPromo: "2x1" }
+];
+
+// Cargar desde localStorage si existe
+const planesGuardados = localStorage.getItem('squatgym_planesDB');
+if (planesGuardados) {
+    try {
+        planesDB = JSON.parse(planesGuardados);
+    } catch(e) {
+        console.error("Error cargando planesDB de localStorage", e);
+    }
+}
