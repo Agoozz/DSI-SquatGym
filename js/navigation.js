@@ -1,18 +1,21 @@
 function configMenu() {
-      const side = document.getElementById('nav-list-ui');
+    const side = document.getElementById('nav-list-ui');
 
-      if (rRol === 'admin') {
-            side.innerHTML = `
+    if (rRol === 'admin') {
+        side.innerHTML = `
             <div onclick="navV('inicio')" class="nav-item active" id="li-inicio">
                 <i class="fas fa-home"></i> Inicio
             </div>
-            
+            <div onclick="navV('adm-planes')" class="nav-item" id="li-adm-planes">
+                <i class="fas fa-tags"></i> Config. de Planes
+            </div>
+
             <div onclick="navV('adm-monitor')" class="nav-item" id="li-adm-monitor">
                 <i class="fas fa-chart-line"></i> Informes
             </div>
             `;
-      } else if (rRol === 'secretaria') {
-            side.innerHTML = `
+    } else if (rRol === 'secretaria') {
+        side.innerHTML = `
             <div onclick="navV('inicio')" class="nav-item active" id="li-inicio">
                 <i class="fas fa-home"></i> Inicio
             </div>
@@ -29,8 +32,8 @@ function configMenu() {
                 <i class="fas fa-truck"></i> Proveedores
             </div>
             `;
-      } else {
-            side.innerHTML = `
+    } else {
+        side.innerHTML = `
             <div onclick="navV('inicio')" class="nav-item active" id="li-inicio">
                 <i class="fas fa-home"></i> Inicio
             </div>
@@ -52,36 +55,38 @@ function configMenu() {
                 <i class="fas fa-shopping-basket"></i> Kiosco
             </div>
             `;
-      }
-  }
+    }
+}
 
 function navV(id) {
-      // Validar acceso a pantallas restringidas
-      if (id === 'adm-monitor' && rRol !== 'admin') return;
-      if (id !== 'adm-monitor' && id !== 'inicio' && rRol === 'admin') return;
-      
-      if(id === "adm-monitor")    renderInformes();
-      if(id === "adm-membresia") setTimeout(filtrarSocios, 50);
-      if(id === "adm-inventario") setTimeout(filtrarInventario, 50);
+    // Validar acceso a pantallas restringidas
+    if (id === 'adm-monitor' && rRol !== 'admin') return;
+    if (id === 'adm-planes'  && rRol !== 'admin') return;
+    if (id !== 'adm-monitor' && id !== 'adm-planes' && id !== 'inicio' && rRol === 'admin') return;
 
-      document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
-      document.querySelectorAll('.nav-item').forEach(l => l.classList.remove('active'));
+    if (id === "adm-monitor") renderInformes();
+    if(id === "adm-planes")     abrirModalPrecios();
+    if (id === "adm-membresia") setTimeout(filtrarSocios, 50);
+    if (id === "adm-inventario") setTimeout(filtrarInventario, 50);
 
-      document.getElementById(`v-${id}`).classList.add('active');
+    document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(l => l.classList.remove('active'));
 
-      const item = document.getElementById(`li-${id}`);
-      if(item) item.classList.add('active');
+    document.getElementById(`v-${id}`).classList.add('active');
 
-      document.getElementById('header-view-title').innerText =
-          `Gestión / ${id.replace('adm-','').toUpperCase()}`;
+    const item = document.getElementById(`li-${id}`);
+    if (item) item.classList.add('active');
 
-      document.querySelector('.view-scroller').scrollTo(0,0);
-  }
+    document.getElementById('header-view-title').innerText =
+        `Gestión / ${id.replace('adm-', '').toUpperCase()}`;
+
+    document.querySelector('.view-scroller').scrollTo(0, 0);
+}
 
 // Mostrar toast de acceso denegado
 function mostrarToastAccesoDenegado() {
-      const toast = document.createElement('div');
-      toast.style.cssText = `
+    const toast = document.createElement('div');
+    toast.style.cssText = `
             position: fixed;
             top: 20px;
             right: 20px;
@@ -94,18 +99,18 @@ function mostrarToastAccesoDenegado() {
             z-index: 10000;
             animation: slideIn 0.3s ease-out;
       `;
-      toast.textContent = '❌ Acceso denegado: Solo administradores pueden ver Informes';
-      document.body.appendChild(toast);
-      
-      setTimeout(() => {
-            toast.style.animation = 'slideOut 0.3s ease-out';
-            setTimeout(() => toast.remove(), 300);
-      }, 3000);
+    toast.textContent = '❌ Acceso denegado: Solo administradores pueden ver Informes';
+    document.body.appendChild(toast);
+
+    setTimeout(() => {
+        toast.style.animation = 'slideOut 0.3s ease-out';
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
 }
 
-function quickAction() { 
-      if (rRol === 'admin') {
-            navV('adm-monitor');
-      }
+function quickAction() {
+    if (rRol === 'admin') {
+        navV('adm-monitor');
+    }
 }
 

@@ -3,6 +3,7 @@ async function cargarPantallas() {
     "inicio",
     "adm-membresia",
     "adm-monitor",
+    "adm-planes",
     "alu-pago",
     "alu-historial",
     "alu-notificaciones",
