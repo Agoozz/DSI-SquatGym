@@ -4,7 +4,7 @@
           <h3 class="text-3xl font-black text-white">Informes <span class="text-orange-500">Financieros</span></h3>
       </div>
 
-      <!-- Selector de mes -->
+      <!-- Filtros -->
       <div class="glass-card p-5">
           <div class="flex flex-wrap gap-3 items-center">
               <label class="text-[9px] font-black text-slate-500 uppercase tracking-widest flex-shrink-0">Período:</label>
@@ -15,14 +15,49 @@
                   <option value="2026-04" selected>Abril 2026</option>
               </select>
               <select id="inf-tipo-sel" onchange="renderInformes()" class="bg-slate-900 border border-slate-700 rounded-full px-5 py-2.5 text-xs text-white outline-none focus:border-orange-500 transition">
-                  <option value="todos">Todos los conceptos</option>
-                  <option value="Cuota">Solo Cuotas</option>
-                  <option value="Kiosco">Solo Kiosco</option>
+                  <option value="Cuota">Cuotas</option>
               </select>
+              <select id="inf-sede-sel" onchange="renderInformes()" class="bg-slate-900 border border-slate-700 rounded-full px-5 py-2.5 text-xs text-white outline-none focus:border-orange-500 transition">
+                  <option value="todas">Todas las Sedes</option>
+                  <option value="Sede Centro">Sede Centro</option>
+                  <option value="Sede Norte">Sede Norte</option>
+                  <option value="Sede Sur">Sede Sur</option>
+              </select>
+              <input id="inf-cliente-sel" oninput="renderInformes()" type="text" placeholder="Buscar cliente..."
+                  class="bg-slate-900 border border-slate-700 rounded-full px-5 py-2.5 text-xs text-white outline-none focus:border-orange-500 transition placeholder-slate-600">
+              <input id="inf-dni-sel" oninput="renderInformes()" type="text" placeholder="Buscar DNI..."
+                  class="bg-slate-900 border border-slate-700 rounded-full px-5 py-2.5 text-xs text-white outline-none focus:border-orange-500 transition placeholder-slate-600 w-32">
           </div>
       </div>
 
-      <!-- KPIs del mes -->
+      <!-- Tabla Detalle de Alumnos -->
+      <div class="glass-card overflow-hidden">
+          <div class="p-4 border-b border-slate-800 flex justify-between items-center">
+              <p class="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em]">
+                  <i class="fas fa-users mr-2 text-orange-500"></i>Detalle de Alumnos
+              </p>
+          </div>
+          <div class="overflow-x-auto">
+              <table class="w-full text-left min-w-[750px]">
+                  <thead class="bg-slate-900 text-[9px] text-slate-500 uppercase tracking-widest border-b border-slate-800">
+                      <tr>
+                          <th class="p-3">#</th>
+                          <th class="p-3">Fecha</th>
+                          <th class="p-3">Cliente</th>
+                          <th class="p-3">DNI</th>
+                          <th class="p-3">Sede</th>
+                          <th class="p-3">Concepto</th>
+                          <th class="p-3">Método</th>
+                          <th class="p-3 text-right">Monto</th>
+                          <th class="p-3">Estado</th>
+                      </tr>
+                  </thead>
+                  <tbody id="lista-transacciones" class="text-xs font-bold divide-y divide-slate-800/50"></tbody>
+              </table>
+          </div>
+      </div>
+
+      <!-- KPIs por método de pago -->
       <div class="grid grid-cols-2 md:grid-cols-4 gap-4 font-black">
           <div class="glass-card p-5 border-l-4 border-blue-500 text-center">
               <p class="text-[8px] text-slate-500">QR</p>
@@ -42,53 +77,33 @@
           </div>
       </div>
 
-      <!-- Total del mes destacado -->
-      <div class="glass-card p-5 border border-orange-500/40 flex justify-between items-center">
+      <!-- Totales Consolidados (Conectados con el Informe) -->
+      <div class="glass-card p-5 border border-orange-500/40 grid grid-cols-2 md:grid-cols-4 gap-6">
           <div>
-              <p class="text-[9px] text-slate-500 font-black uppercase tracking-widest">Total Recaudado del Mes</p>
-              <p id="inf-total-mes" class="text-4xl font-black text-orange-400 mt-1">$0</p>
+              <p class="text-[9px] text-slate-500 font-black uppercase tracking-widest">Total Recaudado</p>
+              <p id="inf-total-mes" class="text-3xl font-black text-green-400 mt-1">$0</p>
           </div>
-          <div class="text-right">
-              <p class="text-[9px] text-slate-500 font-black uppercase tracking-widest">Pagos Registrados</p>
-              <p id="inf-count-mes" class="text-3xl font-black text-white mt-1">0</p>
+          <div>
+              <p class="text-[9px] text-slate-500 font-black uppercase tracking-widest">Pendiente de Cobro</p>
+              <p id="inf-total-pendiente" class="text-3xl font-black text-orange-400 mt-1">$0</p>
           </div>
-      </div>
-
-      <!-- Tabla de transacciones del mes -->
-      <div class="glass-card overflow-hidden">
-          <div class="p-4 border-b border-slate-800 flex justify-between items-center">
-              <p class="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em]">
-                  <i class="fas fa-list mr-2 text-orange-500"></i>Detalle de Pagos del Mes
-              </p>
+          <div>
+              <p class="text-[9px] text-slate-500 font-black uppercase tracking-widest">En Mora c/ Restricción</p>
+              <p id="inf-total-mora" class="text-3xl font-black text-red-400 mt-1">$0</p>
           </div>
-          <div class="overflow-x-auto">
-              <table class="w-full text-left min-w-[600px]">
-                  <thead class="bg-slate-900 text-[9px] text-slate-500 uppercase tracking-widest border-b border-slate-800">
-                      <tr>
-                          <th class="p-3">#</th>
-                          <th class="p-3">Fecha</th>
-                          <th class="p-3">Cliente</th>
-                          <th class="p-3">Concepto</th>
-                          <th class="p-3">Método</th>
-                          <th class="p-3 text-right">Monto</th>
-                          <th class="p-3">Estado</th>
-                      </tr>
-                  </thead>
-                  <tbody id="lista-transacciones" class="text-xs font-bold divide-y divide-slate-800/50"></tbody>
-              </table>
+          <div class="text-right border-l border-slate-800 pl-6">
+              <p class="text-[9px] text-slate-500 font-black uppercase tracking-widest">Efectividad de Cobro</p>
+              <p id="inf-efectividad" class="text-3xl font-black text-white mt-1">0%</p>
           </div>
       </div>
 
-      <!-- Botones de acción -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <button onclick="generarCorteCaja()"
-              class="btn-ui bg-orange-600 hover:bg-orange-500 w-full py-4 text-xs font-black rounded-full tracking-widest transition-all shadow-lg">
-              <i class="fas fa-file-invoice-dollar mr-2"></i>Generar Corte de Caja Mensual
-          </button>
-          <button onclick="generarListadoMorosos()"
-              class="btn-ui bg-slate-700 hover:bg-slate-600 w-full py-4 text-xs font-black rounded-full tracking-widest transition-all shadow-lg border border-slate-600">
-              <i class="fas fa-exclamation-triangle mr-2 text-red-400"></i>Listado Crítico de Socios con Deudas
+      <!-- Botón principal CU7 -->
+      <div>
+          <button onclick="generarReporteCobranzas()"
+              class="btn-ui bg-orange-600 hover:bg-orange-500 w-full py-4 text-xs font-black rounded-full tracking-widest transition-all shadow-lg shadow-orange-500/20 flex justify-center items-center gap-3">
+              <i class="fas fa-chart-bar text-base"></i> Generar Informe Consolidado
           </button>
       </div>
 
-  </div>      
+  </div>
+

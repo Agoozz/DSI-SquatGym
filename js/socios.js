@@ -35,6 +35,7 @@ function renderDeudas(deudas) {
           </label>
       `).join("");
 }
+
 let totalCobro = 0;
 
 function toggleDeuda(i, monto, checkbox) {
@@ -69,8 +70,10 @@ function filtrarSocios() {
     const clase = document.getElementById('filter-clase')?.value || 'todos';
     const orden = document.getElementById('filter-orden')?.value || 'nombre';
 
-    // 1. Usar sociosDB
-    let lista = [...sociosDB];
+    // 1. Filtrar por sede si el usuario es Secretaria
+    let lista = sedeActual
+        ? sociosDB.filter(s => s.sede === sedeActual)
+        : [...sociosDB];
 
     // 2. Filtramos
     lista = lista.filter(s => {
@@ -109,10 +112,11 @@ function filtrarSocios() {
                 </span>
             </td>
             <td class="p-4 text-right">
+                ${rRol !== 'admin' ? `
                 <button onclick="cobrarSocio('${s.dni}')" 
                         class="bg-orange-500 hover:bg-orange-600 text-white text-[10px] px-4 py-2 rounded-full transition font-black uppercase tracking-tighter">
                     Ver
-                </button>
+                </button>` : ''}
             </td>
         </tr>
     `).join('');

@@ -1,9 +1,11 @@
 // Base de datos simulada de usuarios
 const usuariosDB = [
-    { dni: "11111111", password: "admin123", rol: "admin", nombre: "Melisa López" },
-    { dni: "22222222", password: "secre123", rol: "secretaria", nombre: "Laura García" },
-    { dni: "123", password: "cliente123", rol: "alumno", nombre: "Valentino P." },
-    { dni: "456", password: "cliente456", rol: "alumno", nombre: "Melisa L." },
+    { dni: "11111111", password: "admin123",   rol: "admin",      nombre: "Melisa López",   sede: null },
+    { dni: "22222222", password: "secre123",   rol: "secretaria", nombre: "Laura García",   sede: "Sede Centro" },
+    { dni: "33333333", password: "secre456",   rol: "secretaria", nombre: "Carlos Pérez",   sede: "Sede Norte" },
+    { dni: "44444444", password: "secre789",   rol: "secretaria", nombre: "Ana Ramírez",    sede: "Sede Sur" },
+    { dni: "123",      password: "cliente123", rol: "alumno",     nombre: "Valentino P.",  sede: "Sede Centro" },
+    { dni: "456",      password: "cliente456", rol: "alumno",     nombre: "Melisa L.",     sede: "Sede Centro" },
 ];
 
 // Variables globales para el estado del login
@@ -71,6 +73,7 @@ function entrarApp() {
     // Si todo es correcto, entrar al sistema
     rRol = usuario.rol;
     rNombre = usuario.nombre;
+    sedeActual = usuario.sede;
 
     usuarioActual = {
         dni: dni,

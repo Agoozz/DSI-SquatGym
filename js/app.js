@@ -203,10 +203,12 @@ document.addEventListener("DOMContentLoaded", async () => {
   // PUNTO 2 — ALERTAS DE VENCIMIENTO Y DEUDA
   // ══════════════════════════════════════════════
   const alertasVencimiento = [
-      { nombre: "Rodrigo Sosa",     dni: "55443322", dias: -3,  deuda: 23000 },
-      { nombre: "Valentino Perez",  dni: "12345678", dias: -10, deuda: 31500 },
-      { nombre: "Matías Alvarez",   dni: "77889900", dias: 2,   deuda: 10000 },
-      { nombre: "Juan Romero",      dni: "33221100", dias: 5,   deuda: 12500 },
+      { nombre: "Rodrigo Sosa",      dni: "55443322", dias: -3,  deuda: 23000 },
+      { nombre: "Valentino Perez",   dni: "12345678", dias: -10, deuda: 31500 },
+      { nombre: "Matías Alvarez",    dni: "77889900", dias: 2,   deuda: 10000 },
+      { nombre: "Juan Romero",       dni: "33221100", dias: 5,   deuda: 12500 },
+      { nombre: "Florencia Medina",  dni: "66778899", dias: -20, deuda: 27000 },
+      { nombre: "Lucía Fernández",   dni: "11223344", dias: -17, deuda: 18500 },
   ];
 
   function renderizarAlertasStaff() {

@@ -21,7 +21,7 @@ function configMenu() {
             </div>
 
             <div onclick="navV('adm-membresia')" class="nav-item" id="li-adm-membresia">
-                <i class="fas fa-receipt"></i> Cobros Alumnos
+                <i class="fas fa-users"></i> Gestión Alumnos
             </div>
 
             <div onclick="navV('adm-kiosco')" class="nav-item" id="li-adm-kiosco">
