@@ -112,6 +112,8 @@ function ingresarAlSistema() {
         bStaffHero.classList.remove('hidden');
         bClientProfile.classList.add('hidden');
         document.getElementById('header-username').innerText = `${rNombre} — Admin`;
+        const btnConfig = document.getElementById('btn-config-planes-container');
+        if(btnConfig) btnConfig.classList.remove('hidden');
     } else if (rRol === 'secretaria') {
         sTxt.innerText = `¡Hola, ${rNombre}!`;
         hTag.innerText = 'Gestión de Socios';
@@ -122,6 +124,8 @@ function ingresarAlSistema() {
         bStaffHero.classList.remove('hidden');
         bClientProfile.classList.add('hidden');
         document.getElementById('header-username').innerText = `${rNombre} — Secretaria`;
+        const btnConfig = document.getElementById('btn-config-planes-container');
+        if(btnConfig) btnConfig.classList.add('hidden');
     } else {
         sTxt.innerText = `¡Hola, ${rNombre}!`;
         hTag.innerText = 'Socio Platinum Élite';
