@@ -39,18 +39,15 @@
 
       <!-- Submenu de Staff: Administrador / Secretaria / Encargado -->
       <div id="staff-submenu" class="hidden flex-col gap-2 mb-4 pb-4 border-b border-slate-800">
-        <button id="l-btn-admin"
-          onclick="seleccionarSubrol('admin')"
+        <button id="l-btn-admin" onclick="seleccionarSubrol('admin')"
           class="w-full py-3 rounded-lg font-black text-[10px] transition-all bg-[#0f172a] text-slate-300 border-2 border-[#1e293b] uppercase font-['Outfit'] hover:border-orange-500/50">
           <i class="fas fa-crown text-slate-500 mr-2"></i>Administrador
         </button>
-        <button id="l-btn-secretaria"
-          onclick="seleccionarSubrol('secretaria')"
+        <button id="l-btn-secretaria" onclick="seleccionarSubrol('secretaria')"
           class="w-full py-3 rounded-lg font-black text-[10px] transition-all bg-[#0f172a] text-slate-300 border-2 border-[#1e293b] uppercase font-['Outfit'] hover:border-orange-500/50">
           <i class="fas fa-id-badge text-slate-500 mr-2"></i>Secretaria
         </button>
-        <button id="l-btn-encargado"
-          onclick="seleccionarSubrol('encargado')"
+        <button id="l-btn-encargado" onclick="seleccionarSubrol('encargado')"
           class="w-full py-3 rounded-lg font-black text-[10px] transition-all bg-[#0f172a] text-slate-300 border-2 border-[#1e293b] uppercase font-['Outfit'] hover:border-orange-500/50">
           <i class="fas fa-user-tie text-slate-500 mr-2"></i>Encargado
         </button>
@@ -83,7 +80,8 @@
 
       <div id="form-normal">
         <div class="space-y-4">
-          <input type="text" inputmode="numeric" pattern="[0-9]*" oninput="this.value = this.value.replace(/[^0-9]/g, '')" placeholder="DNI..."
+          <input type="text" inputmode="numeric" pattern="[0-9]*"
+            oninput="this.value = this.value.replace(/[^0-9]/g, '')" placeholder="DNI..."
             class="w-full p-4 rounded-full bg-slate-950 border-2 border-slate-800 font-bold focus:border-[#f97316] outline-none text-white text-xs text-center uppercase">
           <input type="password" placeholder="PASSWORD"
             class="w-full p-4 rounded-full bg-slate-950 border-2 border-slate-800 font-bold focus:border-[#f97316] outline-none text-white text-xs text-center">
@@ -97,7 +95,9 @@
 
         <!-- Link Olvidé contraseña -->
         <div class="mt-6 text-center">
-          <button onclick="toggleRecuperacionPassword()" class="text-[10px] text-[#64748b] hover:text-slate-400 transition font-bold uppercase">¿Olvidaste tu contraseña?</button>
+          <button onclick="toggleRecuperacionPassword()"
+            class="text-[10px] text-[#64748b] hover:text-slate-400 transition font-bold uppercase">¿Olvidaste tu
+            contraseña?</button>
         </div>
       </div>
 
@@ -106,7 +106,8 @@
         class="hidden mt-2 p-5 bg-[#0f172a] border-2 border-[#1e293b] rounded-xl font-['Outfit'] shadow-xl">
         <p class="text-[10px] text-slate-300 mb-4 font-bold uppercase text-center tracking-widest">Recuperar contraseña
         </p>
-        <input type="text" id="dni-recuperacion" inputmode="numeric" pattern="[0-9]*" oninput="this.value = this.value.replace(/[^0-9]/g, '')" placeholder="Ingresá tu DNI"
+        <input type="text" id="dni-recuperacion" inputmode="numeric" pattern="[0-9]*"
+          oninput="this.value = this.value.replace(/[^0-9]/g, '')" placeholder="Ingresá tu DNI"
           class="w-full p-3.5 rounded-lg bg-slate-950 border-2 border-slate-800 font-bold focus:border-[#f97316] outline-none text-white text-xs text-center uppercase mb-4 transition-colors">
         <button onclick="typeof recuperarPassword === 'function' && recuperarPassword()"
           class="w-full bg-[#f97316] hover:bg-orange-500 text-white py-3 rounded-lg text-[10px] font-black uppercase mb-3 transition-colors shadow-lg shadow-orange-500/20">Recuperar</button>
@@ -165,11 +166,17 @@
       <h3 class="text-lg font-black mb-2">Medio de Pago</h3>
 
       <!-- Cupones -->
-      <div id="cupon-container" class="flex gap-2 mb-4 bg-slate-900/50 p-2 rounded-lg border border-slate-800 transition-all duration-300">
-        <input type="text" id="input-cupon-cobro" placeholder="Ingresar código de cupón" class="flex-1 p-2 rounded bg-slate-950 text-white text-[10px] font-black uppercase tracking-widest border border-slate-700 focus:outline-none focus:border-orange-500 transition">
-        <button id="btn-aplicar-cupon" onclick="aplicarCuponCobro()" class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded text-[10px] font-black uppercase tracking-widest transition shadow-lg">Aplicar</button>
+      <div id="cupon-container"
+        class="flex gap-2 mb-4 bg-slate-900/50 p-2 rounded-lg border border-slate-800 transition-all duration-300">
+        <input type="text" id="input-cupon-cobro" placeholder="Ingresar código de cupón"
+          class="flex-1 p-2 rounded bg-slate-950 text-white text-[10px] font-black uppercase tracking-widest border border-slate-700 focus:outline-none focus:border-orange-500 transition">
+        <button id="btn-aplicar-cupon" onclick="aplicarCuponCobro()"
+          class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded text-[10px] font-black uppercase tracking-widest transition shadow-lg">Aplicar</button>
       </div>
-      <p id="msg-cupon-cobro" class="hidden text-[10px] font-black text-green-400 uppercase tracking-widest mb-4 mt-[-8px] text-left ml-1 animate-fade-in"><i class="fas fa-check-circle mr-1"></i>Cupón aplicado exitosamente (-<span id="valor-cupon-aplicado">0</span>%)</p>
+      <p id="msg-cupon-cobro"
+        class="hidden text-[10px] font-black text-green-400 uppercase tracking-widest mb-4 mt-[-8px] text-left ml-1 animate-fade-in">
+        <i class="fas fa-check-circle mr-1"></i>Cupón aplicado exitosamente (-<span id="valor-cupon-aplicado">0</span>%)
+      </p>
 
       <div id="pago-opciones" class="space-y-3">
         <button onclick="mostrarPago('qr')" class="btn-ui bg-[#009EE3] w-full">Mercado Pago (QR)</button>
@@ -452,8 +459,9 @@
 
   <!-- MODAL PERFIL SOCIO (LECTURA STAFF) -->
   <div id="modal-perfil-socio" class="modal-base">
-    <div class="bg-[#020617] border-t-4 border-t-orange-500 border border-slate-800 rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl relative flex flex-col max-h-[90vh]">
-      
+    <div
+      class="bg-[#020617] border-t-4 border-t-orange-500 border border-slate-800 rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl relative flex flex-col max-h-[90vh]">
+
       <!-- Botón Cerrar -->
       <button onclick="cerrarM()" class="absolute top-4 right-4 text-slate-500 hover:text-white transition">
         <i class="fas fa-times text-xl"></i>
@@ -462,12 +470,15 @@
       <div class="p-6 overflow-y-auto custom-scrollbar">
         <!-- HEADER -->
         <div class="flex items-center gap-4 mb-6">
-          <div class="w-16 h-16 rounded-full bg-orange-500 flex items-center justify-center text-white text-2xl font-black shadow-lg">
+          <div
+            class="w-16 h-16 rounded-full bg-orange-500 flex items-center justify-center text-white text-2xl font-black shadow-lg">
             <span id="perfil-iniciales">--</span>
           </div>
           <div>
-            <h3 id="perfil-nombre" class="text-2xl font-black text-white tracking-tight uppercase italic">Cargando...</h3>
-            <div id="perfil-estado-badge" class="mt-1 inline-block px-3 py-1 bg-slate-800 text-slate-300 text-[10px] font-black rounded-full uppercase tracking-widest border border-slate-700">
+            <h3 id="perfil-nombre" class="text-2xl font-black text-white tracking-tight uppercase italic">Cargando...
+            </h3>
+            <div id="perfil-estado-badge"
+              class="mt-1 inline-block px-3 py-1 bg-slate-800 text-slate-300 text-[10px] font-black rounded-full uppercase tracking-widest border border-slate-700">
               Cargando
             </div>
           </div>
@@ -494,15 +505,18 @@
         </div>
 
         <!-- SECCIÓN 2: FINANZAS -->
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-orange-500/5 p-4 rounded-xl border border-orange-500/20 mb-6 gap-4">
+        <div
+          class="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-orange-500/5 p-4 rounded-xl border border-orange-500/20 mb-6 gap-4">
           <div>
-            <p id="perfil-titulo-monto" class="text-[10px] font-black text-orange-500 uppercase tracking-widest mb-1">Adeudado Actual</p>
+            <p id="perfil-titulo-monto" class="text-[10px] font-black text-orange-500 uppercase tracking-widest mb-1">
+              Adeudado Actual</p>
             <div class="flex items-baseline gap-2">
               <p id="perfil-monto" class="text-3xl font-black text-white">$0</p>
               <p id="perfil-mora" class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Al día</p>
             </div>
           </div>
-          <div id="perfil-restriccion-badge" class="px-4 py-2 bg-green-500/20 text-green-400 text-[10px] font-black rounded-lg uppercase tracking-widest border border-green-500/30 text-center w-full sm:w-auto">
+          <div id="perfil-restriccion-badge"
+            class="px-4 py-2 bg-green-500/20 text-green-400 text-[10px] font-black rounded-lg uppercase tracking-widest border border-green-500/30 text-center w-full sm:w-auto">
             Acceso Permitido
           </div>
         </div>
@@ -525,7 +539,9 @@
 
         <!-- SECCIÓN 3: HISTORIAL -->
         <div>
-          <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 border-b border-slate-800 pb-2">Historial de Pagos</p>
+          <p
+            class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 border-b border-slate-800 pb-2">
+            Historial de Pagos</p>
           <div class="bg-slate-900/50 rounded-xl border border-slate-800 overflow-hidden">
             <table class="w-full text-left">
               <thead class="bg-slate-800/50 text-[9px] font-black text-slate-400 uppercase tracking-widest">
@@ -548,8 +564,10 @@
 
       <!-- FOOTER -->
       <div class="p-4 border-t border-slate-800 bg-slate-900/30 flex justify-between items-center">
-        <p class="text-[9px] font-black text-slate-500 uppercase tracking-widest italic">Perfil de solo lectura — Administrador</p>
-        <button onclick="cerrarM()" class="px-6 py-2 bg-slate-800 text-slate-300 hover:bg-slate-700 text-[10px] font-black uppercase italic rounded-lg transition border border-slate-700">
+        <p class="text-[9px] font-black text-slate-500 uppercase tracking-widest italic">Perfil de solo lectura —
+          Administrador</p>
+        <button onclick="cerrarM()"
+          class="px-6 py-2 bg-slate-800 text-slate-300 hover:bg-slate-700 text-[10px] font-black uppercase italic rounded-lg transition border border-slate-700">
           Cerrar
         </button>
       </div>
@@ -559,7 +577,8 @@
 
   <!-- MODAL DE CONFIGURACIÓN DE PLANES Y PROMOS -->
   <div id="modal-precios" class="modal-base">
-    <div class="bg-[#020617] border border-slate-800 rounded-2xl w-full max-w-5xl overflow-hidden shadow-2xl relative flex flex-col max-h-[90vh]">
+    <div
+      class="bg-[#020617] border border-slate-800 rounded-2xl w-full max-w-5xl overflow-hidden shadow-2xl relative flex flex-col max-h-[90vh]">
       <!-- Header -->
       <div class="flex justify-between items-center p-6 border-b border-slate-800 bg-slate-900/50">
         <div class="flex items-center gap-3">
@@ -570,7 +589,7 @@
           <i class="fas fa-times text-2xl"></i>
         </button>
       </div>
-      
+
       <!-- Body -->
       <div class="flex flex-1 overflow-hidden flex-col md:flex-row">
         <!-- Izquierda: Lista -->
@@ -583,16 +602,22 @@
           <h3 class="text-sm font-black text-orange-500 uppercase tracking-widest mb-6">Editar Configuración</h3>
           <div class="space-y-5">
             <div>
-              <label class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Nombre del Plan</label>
-              <input type="text" id="edit-nombre-plan" disabled class="w-full bg-slate-900 border border-slate-800 text-slate-400 p-3 rounded-xl font-black uppercase cursor-not-allowed">
+              <label class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Nombre del
+                Plan</label>
+              <input type="text" id="edit-nombre-plan" disabled
+                class="w-full bg-slate-900 border border-slate-800 text-slate-400 p-3 rounded-xl font-black uppercase cursor-not-allowed">
             </div>
             <div>
-              <label class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Precio Base ($)</label>
-              <input type="number" id="edit-precio-base" class="w-full bg-slate-900 border border-slate-700 text-white p-3 rounded-xl font-black uppercase focus:outline-none focus:border-orange-500 transition">
+              <label class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Precio Base
+                ($)</label>
+              <input type="number" id="edit-precio-base"
+                class="w-full bg-slate-900 border border-slate-700 text-white p-3 rounded-xl font-black uppercase focus:outline-none focus:border-orange-500 transition">
             </div>
             <div>
-              <label class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Tipo de Promoción</label>
-              <select id="edit-tipo-promo" onchange="cambiarTipoPromo()" class="w-full bg-slate-900 border border-slate-700 text-white p-3 rounded-xl font-black uppercase focus:outline-none focus:border-orange-500 transition appearance-none">
+              <label class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Tipo de
+                Promoción</label>
+              <select id="edit-tipo-promo" onchange="cambiarTipoPromo()"
+                class="w-full bg-slate-900 border border-slate-700 text-white p-3 rounded-xl font-black uppercase focus:outline-none focus:border-orange-500 transition appearance-none">
                 <option value="ninguna">Ninguna</option>
                 <option value="dia_especial">Día Especial</option>
                 <option value="amigos">Por Amigos</option>
@@ -600,19 +625,121 @@
               </select>
             </div>
             <div>
-              <label class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Detalle de la Promoción</label>
+              <label class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Detalle de la
+                Promoción</label>
               <div id="contenedor-valor-promo">
-                <input type="text" id="edit-valor-promo" disabled class="w-full bg-slate-900 border border-slate-800 text-slate-500 p-3 rounded-xl font-black uppercase cursor-not-allowed" placeholder="Seleccione un tipo de promoción...">
+                <input type="text" id="edit-valor-promo" disabled
+                  class="w-full bg-slate-900 border border-slate-800 text-slate-500 p-3 rounded-xl font-black uppercase cursor-not-allowed"
+                  placeholder="Seleccione un tipo de promoción...">
               </div>
             </div>
             <div class="pt-4">
-              <button class="w-full bg-orange-500 hover:bg-orange-600 text-white p-4 rounded-xl font-black uppercase tracking-widest transition shadow-lg flex justify-center items-center gap-2">
+              <button
+                class="w-full bg-orange-500 hover:bg-orange-600 text-white p-4 rounded-xl font-black uppercase tracking-widest transition shadow-lg flex justify-center items-center gap-2">
                 <i class="fas fa-save"></i> Guardar Configuración
               </button>
             </div>
           </div>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════ -->
+  <!-- MODAL: ESTADO DE CUENTA CONSOLIDADO           -->
+  <!-- ══════════════════════════════════════════════ -->
+  <!-- MODAL ESTADO DE CUENTA (ALUMNO) -->
+  <!-- ══════════════════════════════════════════════ -->
+  <div id="modal-estado-cuenta" class="modal-base" onclick="if(event.target===this)cerrarM()">
+    <div
+      class="bg-[#020617] border-t-4 border-t-orange-500 border border-slate-800 rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl relative flex flex-col max-h-[90vh] p-6 custom-scrollbar overflow-y-auto">
+
+      <!-- Header -->
+      <div class="flex items-center justify-between mb-6">
+        <div>
+          <p class="text-[9px] font-black text-orange-500 uppercase tracking-[0.3em] mb-1">
+            <i class="fas fa-file-invoice-dollar mr-1"></i>Perfil Financiero
+          </p>
+          <h2 class="text-xl font-black text-white uppercase italic">Estado de Cuenta <span
+              class="text-orange-500">Consolidado</span></h2>
+        </div>
+        <button onclick="cerrarM()" class="text-slate-500 hover:text-white transition text-xl">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
+      <!-- Resumen -->
+      <div class="grid grid-cols-2 gap-4 mb-6">
+        <div class="bg-slate-900 rounded-2xl p-5 border border-slate-800 border-l-4 border-l-red-500 text-center">
+          <p class="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-2">Saldo Pendiente Total</p>
+          <p id="resumen-deuda-total" class="text-2xl font-black text-red-400 italic">$0</p>
+        </div>
+        <div class="bg-slate-900 rounded-2xl p-5 border border-slate-800 border-l-4 border-l-orange-500 text-center">
+          <p class="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-2">Próximo Vencimiento</p>
+          <p id="resumen-fecha-vencimiento" class="text-2xl font-black text-orange-400 italic">—</p>
+        </div>
+      </div>
+
+      <!-- Detalle de Deudas -->
+      <div class="mb-6">
+        <h3 class="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-3 flex items-center gap-2">
+          <i class="fas fa-exclamation-circle text-red-400"></i>Detalle de Deudas Pendientes
+        </h3>
+
+        <!-- Mensaje "al día" (oculto por defecto) -->
+        <div id="mensaje-sin-deuda"
+          class="hidden bg-green-500/10 border border-green-500/30 rounded-xl p-4 text-center mb-3">
+          <i class="fas fa-check-circle text-green-400 text-lg mb-1 block"></i>
+          <p class="text-[11px] font-black text-green-400 uppercase tracking-widest">¡Estás al día! No tenés pagos
+            pendientes.</p>
+        </div>
+
+        <div class="overflow-x-auto rounded-xl border border-slate-800">
+          <table class="w-full text-[10px] font-black">
+            <thead>
+              <tr class="bg-slate-900 text-slate-500 uppercase tracking-widest">
+                <th class="p-3 text-left">Concepto</th>
+                <th class="p-3 text-right">Monto</th>
+                <th class="p-3 text-right">Vencimiento</th>
+              </tr>
+            </thead>
+            <tbody id="tabla-deudas-body">
+              <!-- Llenado dinámico por JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Historial de Pagos -->
+      <div class="mb-6">
+        <h3 class="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-3 flex items-center gap-2">
+          <i class="fas fa-history text-orange-400"></i>Historial de Pagos
+        </h3>
+        <div class="overflow-x-auto rounded-xl border border-slate-800">
+          <table class="w-full text-[10px] font-black">
+            <thead>
+              <tr class="bg-slate-900 text-slate-500 uppercase tracking-widest">
+                <th class="p-3 text-left">Fecha</th>
+                <th class="p-3 text-left">Concepto</th>
+                <th class="p-3 text-center">Método</th>
+                <th class="p-3 text-right">Monto</th>
+              </tr>
+            </thead>
+            <tbody id="tabla-historial-estado-body">
+              <!-- Llenado dinámico por JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="flex justify-end pt-2 border-t border-slate-800">
+        <button onclick="cerrarM()"
+          class="px-8 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white font-black text-[10px] uppercase tracking-widest transition border border-slate-700">
+          <i class="fas fa-times mr-2"></i>Cerrar
+        </button>
+      </div>
+
     </div>
   </div>
 

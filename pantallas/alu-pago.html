@@ -1,199 +1,186 @@
-<div id="v-alu-pago" class="view-section space-y-8 italic uppercase">
+<div id="v-alu-pago" class="view-section space-y-6 italic uppercase">
 
-                <!-- HEADER PERFIL -->
-                <div class="relative glass-card overflow-hidden">
-                    <div style="height:120px;background:linear-gradient(135deg,#ea580c,#f97316,#1e293b);opacity:0.7;"></div>
-                    <div class="px-8 pb-8">
-                        <div class="flex items-end gap-6 -mt-12 mb-6">
-                            <img src="https://images.unsplash.com/photo-1599566150163-29194dcaad36?auto=format&fit=crop&q=80&w=200"
-                                class="w-24 h-24 rounded-2xl border-4 border-orange-500 shadow-2xl grayscale flex-shrink-0">
-                            <div class="pb-2 flex-1">
-                                <div class="flex items-center gap-3 flex-wrap">
-                                    <h3 class="text-3xl font-black text-white italic">Valentino <span class="text-orange-500">Perez</span></h3>
-                                    <span style="padding:3px 12px;border-radius:9999px;font-size:8px;font-weight:900;background:linear-gradient(135deg,#f97316,#ea580c);color:white;letter-spacing:0.1em;">
-                                        PLATINUM
-                                    </span>
-                                </div>
-                                <p class="text-slate-500 font-black text-[9px] tracking-[0.3em] mt-1">Socio #4922 · Zumba · Alta: 01/10/2025</p>
-                            </div>
-                            <button onclick="abrirM('modal-pago-selector','cuota')"
-                                class="btn-ui btn-naranja px-6 py-3 text-xs flex-shrink-0">
-                                <i class="fas fa-credit-card mr-2"></i>Pagar Cuota
-                            </button>
+    <!-- DASHBOARD LAYOUT -->
+    <div class="grid grid-cols-1 lg:grid-cols-[1fr_3.5fr] gap-8">
+
+        <!-- COLUMNA IZQUIERDA: PERFIL & STATUS -->
+        <aside class="space-y-6">
+
+            <!-- TARJETA PERFIL FINTECH -->
+            <div class="glass-card p-6 border-t-4 border-slate-800 bg-slate-900/40 relative overflow-hidden group">
+                <div
+                    class="absolute top-0 right-0 w-32 h-32 bg-orange-500/5 rounded-full -mr-16 -mt-16 blur-3xl group-hover:bg-orange-500/10 transition-all duration-700">
+                </div>
+
+                <div class="relative flex flex-col items-center text-center">
+                    <div class="relative mb-5">
+                        <div
+                            class="absolute inset-0 bg-orange-500/20 blur-2xl rounded-full scale-150 opacity-0 group-hover:opacity-100 transition-opacity">
                         </div>
+                        <img src="https://images.unsplash.com/photo-1599566150163-29194dcaad36?auto=format&fit=crop&q=80&w=200"
+                            class="w-28 h-28 rounded-3xl border-2 border-slate-800 p-1.5 bg-slate-900 shadow-2xl grayscale group-hover:grayscale-0 transition-all duration-500 relative z-10">
+                    </div>
 
-                        <!-- KPIs rápidos -->
-                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                            <div class="bg-slate-900/80 rounded-xl p-4 border border-slate-800 text-center">
-                                <p class="text-[8px] text-slate-500 font-black uppercase tracking-widest">Plan</p>
-                                <p class="text-sm font-black text-orange-400 mt-1">Platinum</p>
-                            </div>
-                            <div class="bg-slate-900/80 rounded-xl p-4 border border-slate-800 text-center">
-                                <p class="text-[8px] text-slate-500 font-black uppercase tracking-widest">Vencimiento</p>
-                                <p class="text-sm font-black text-red-400 mt-1">10/05/2026</p>
-                            </div>
-                            <div class="bg-slate-900/80 rounded-xl p-4 border border-slate-800 text-center">
-                                <p class="text-[8px] text-slate-500 font-black uppercase tracking-widest">Asistencia</p>
-                                <p class="text-sm font-black text-blue-400 mt-1">18 días</p>
-                            </div>
-                            <div class="bg-slate-900/80 rounded-xl p-4 border border-slate-800 text-center">
-                                <p class="text-[8px] text-slate-500 font-black uppercase tracking-widest">SquatPoints</p>
-                                <p class="text-sm font-black text-orange-400 mt-1">1.450 ★</p>
-                            </div>
+                    <h3 id="al-perfil-nombre" class="text-xl font-black text-white tracking-tighter leading-tight mb-1">
+                        Valentino <span class="text-orange-500">Perez</span>
+                    </h3>
+                    <p id="al-perfil-dni" class="text-[9px] font-bold text-slate-500 tracking-[0.3em]">DNI: 12.345.678
+                    </p>
+
+                    <div class="mt-6 w-full space-y-2">
+                        <div
+                            class="flex justify-between items-center bg-slate-950/50 p-2.5 rounded-xl border border-slate-800/50">
+                            <span class="text-[8px] font-black text-slate-500">PLAN CONTRATADO</span>
+                            <span id="al-perfil-plan" class="text-[9px] font-black text-orange-400">PLATINUM
+                                ÉLITE</span>
+                        </div>
+                        <div
+                            class="flex justify-between items-center bg-slate-950/50 p-2.5 rounded-xl border border-slate-800/50">
+                            <span class="text-[8px] font-black text-slate-500">SEDE ASIGNADA</span>
+                            <span id="al-perfil-sede" class="text-[9px] font-black text-slate-300">SEDE CENTRAL</span>
+                        </div>
+                        <div
+                            class="flex justify-between items-center bg-slate-950/50 p-2.5 rounded-xl border border-slate-800/50">
+                            <span class="text-[8px] font-black text-slate-500">FECHA DE ALTA</span>
+                            <span id="al-perfil-alta" class="text-[9px] font-black text-slate-400">01/10/2025</span>
+                        </div>
+                        <div
+                            class="flex justify-between items-center bg-slate-950/50 p-2.5 rounded-xl border border-slate-800/50">
+                            <span class="text-[8px] font-black text-slate-500">ÚLTIMO PAGO</span>
+                            <span id="al-perfil-ultimo-pago"
+                                class="text-[9px] font-black text-green-400">10/04/2026</span>
+                        </div>
+                        <div
+                            class="flex justify-between items-center bg-slate-950/50 p-2.5 rounded-xl border border-slate-800/50">
+                            <span class="text-[8px] font-black text-slate-500">ASISTENCIA MES</span>
+                            <span id="al-perfil-asistencia" class="text-[9px] font-black text-blue-400">12 / 20
+                                DÍAS</span>
                         </div>
                     </div>
                 </div>
-
-                <!-- BANNERS -->
-                <div id="banner-alerta-cliente"></div>
-                <div id="banner-restriccion-cliente"></div>
-
-                <!-- FILA PRINCIPAL -->
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
-                    <!-- ESTADO DE CUENTA + MEMBRESÍA -->
-                    <div class="space-y-4">
-                        <div class="glass-card p-6 border-l-4 border-orange-500">
-                            <h4 class="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-4">
-                                <i class="fas fa-id-card text-orange-500 mr-2"></i>Membresía Activa
-                            </h4>
-                            <div class="space-y-3">
-                                <div class="flex justify-between text-xs font-black">
-                                    <span class="text-slate-400">Plan</span>
-                                    <span class="text-white">Platinum Élite</span>
-                                </div>
-                                <div class="flex justify-between text-xs font-black">
-                                    <span class="text-slate-400">Cuota mensual</span>
-                                    <span class="text-orange-400">$12.500</span>
-                                </div>
-                                <div class="flex justify-between text-xs font-black">
-                                    <span class="text-slate-400">Próximo venc.</span>
-                                    <span class="text-red-400">10/05/2026</span>
-                                </div>
-                                <div class="flex justify-between text-xs font-black">
-                                    <span class="text-slate-400">Miembro desde</span>
-                                    <span class="text-white">01/10/2025</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="glass-card p-6 border-l-4 border-green-500">
-                            <h4 class="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-4">
-                                <i class="fas fa-receipt text-green-500 mr-2"></i>Estado de Cuenta
-                            </h4>
-                            <div class="space-y-3">
-                                <div class="flex justify-between items-center text-xs font-black">
-                                    <span class="text-slate-300">Cuota Abril 2026</span>
-                                    <span class="text-green-400">✔ Pagado</span>
-                                </div>
-                                <div class="flex justify-between items-center text-xs font-black border-t border-slate-800 pt-3">
-                                    <div>
-                                        <p class="text-slate-300">Cuota Mayo 2026</p>
-                                        <p class="text-[9px] text-slate-500 font-bold mt-0.5">Vence: 10/05/2026</p>
-                                    </div>
-                                    <span class="text-red-400">✘ Pendiente</span>
-                                </div>
-                                <button onclick="abrirM('modal-pago-selector','cuota')"
-                                    class="btn-ui btn-naranja w-full text-[10px] mt-2">
-                                    Pagar $12.500
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- RENDIMIENTO + RÉCORDS -->
-                    <div class="space-y-4">
-                        <div class="glass-card p-6 border-l-4 border-blue-500">
-                            <h4 class="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-4">
-                                <i class="fas fa-chart-line text-blue-400 mr-2"></i>Rendimiento
-                            </h4>
-                            <div class="space-y-4">
-                                <div>
-                                    <div class="flex justify-between text-[10px] font-black mb-1">
-                                        <span class="text-slate-400">Asistencia Mayo</span>
-                                        <span class="text-blue-400">18 / 24 días</span>
-                                    </div>
-                                    <div class="bar-bg"><div class="bar-fill" style="width:75%;background:#3b82f6;"></div></div>
-                                </div>
-                                <div>
-                                    <div class="flex justify-between text-[10px] font-black mb-1">
-                                        <span class="text-slate-400">Cuotas al día</span>
-                                        <span class="text-green-400">7 / 8</span>
-                                    </div>
-                                    <div class="bar-bg"><div class="bar-fill" style="width:87%;background:#22c55e;"></div></div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="glass-card p-6 border-l-4 border-slate-600">
-                            <h4 class="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-4">
-                                <i class="fas fa-trophy text-yellow-500 mr-2"></i>Récords Personales
-                            </h4>
-                            <div class="space-y-2">
-                                <div class="flex justify-between items-center bg-slate-900 rounded-xl px-4 py-3">
-                                    <span class="text-[10px] font-black text-slate-300">PB Sentadilla</span>
-                                    <span class="text-lg font-black text-white">140 KG</span>
-                                </div>
-                                <div class="flex justify-between items-center bg-slate-900 rounded-xl px-4 py-3">
-                                    <span class="text-[10px] font-black text-slate-300">PB Press Banca</span>
-                                    <span class="text-lg font-black text-white">95 KG</span>
-                                </div>
-                                <div class="flex justify-between items-center bg-slate-900 rounded-xl px-4 py-3">
-                                    <span class="text-[10px] font-black text-slate-300">PB Peso Muerto</span>
-                                    <span class="text-lg font-black text-white">175 KG</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- SQUATPOINTS + GASTOS KIOSCO -->
-                    <div class="space-y-4">
-                        <div class="glass-card p-6 border-l-4 border-orange-500 text-center">
-                            <h4 class="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-4">
-                                <i class="fas fa-star text-orange-500 mr-2"></i>SquatPoints
-                            </h4>
-                            <p class="text-5xl font-black text-white italic">1.450 ★</p>
-                            <div class="mt-4 space-y-2 text-left">
-                                <div class="flex justify-between text-[9px] font-black">
-                                    <span class="text-slate-400">500 pts</span>
-                                    <span class="text-orange-400">$100 OFF en Kiosco</span>
-                                </div>
-                                <div class="flex justify-between text-[9px] font-black">
-                                    <span class="text-slate-400">1.000 pts</span>
-                                    <span class="text-orange-400">$200 OFF en Kiosco</span>
-                                </div>
-                            </div>
-                            <button onclick="navV('alu-tienda')"
-                                class="btn-ui bg-slate-700 w-full text-[10px] mt-4 border border-orange-500/30">
-                                Canjear en Kiosco →
-                            </button>
-                        </div>
-
-                        <div class="glass-card p-6 border-l-4 border-yellow-500">
-                            <h4 class="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-4">
-                                <i class="fas fa-shopping-bag text-yellow-500 mr-2"></i>Gastos Kiosco — Mayo
-                            </h4>
-                            <div class="space-y-2 text-xs font-black">
-                                <div class="flex justify-between">
-                                    <span class="text-slate-400">Agua 1.5L × 3</span>
-                                    <span class="text-white">$3.000</span>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span class="text-slate-400">Proteína Whey × 1</span>
-                                    <span class="text-white">$5.500</span>
-                                </div>
-                                <div class="flex justify-between border-t border-slate-800 pt-2">
-                                    <span class="text-white">Total del mes</span>
-                                    <span class="text-orange-400">$8.500</span>
-                                </div>
-                            </div>
-                            <button onclick="navV('alu-historial');renderHistorial();"
-                                class="btn-ui bg-slate-700 w-full text-[10px] mt-4 border border-slate-600">
-                                Ver Historial Completo →
-                            </button>
-                        </div>
-                    </div>
-
-                </div>
-
             </div>
+
+            <!-- BADGE STATUS GLOBAL -->
+            <div id="al-perfil-status-card"
+                class="glass-card p-4 border-2 border-red-500/30 bg-red-500/5 text-center animate-pulse">
+                <span id="al-perfil-status-label" class="text-[8px] font-black text-red-500/60 tracking-widest block mb-1">ESTADO DE ACCESO</span>
+                <h4 id="al-perfil-status-text" class="text-lg font-black text-red-500 italic">ACCESO DENEGADO</h4>
+            </div>
+
+            <!-- BOTONES RÁPIDOS -->
+            <div class="space-y-3">
+                <button
+                    class="w-full flex items-center justify-center gap-3 py-3 rounded-xl border border-slate-700 bg-transparent text-slate-400 text-[10px] font-black hover:text-white hover:border-slate-500 transition-all">
+                    <i class="fas fa-file-pdf text-red-500"></i> DESCARGAR ESTADO (PDF)
+                </button>
+                <button onclick="navV('alu-historial');renderHistorial();"
+                    class="w-full flex items-center justify-center gap-3 py-3 rounded-xl border border-slate-700 bg-transparent text-slate-400 text-[10px] font-black hover:text-white hover:border-slate-500 transition-all">
+                    <i class="fas fa-history text-orange-500"></i> VER HISTORIAL DE PAGOS
+                </button>
+            </div>
+
+            <!-- TARJETA SOPORTE -->
+            <div class="glass-card p-5 bg-gradient-to-br from-slate-900 to-slate-950 border border-slate-800">
+                <h5 class="text-[10px] font-black text-white mb-2 tracking-widest">¿PROBLEMAS CON TU PAGO?</h5>
+                <p class="text-[9px] text-slate-500 font-bold leading-relaxed mb-4">Si realizaste una transferencia y no
+                    se acreditó, podés iniciar un reclamo aquí.</p>
+                <button
+                    class="w-full py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-[9px] font-black rounded-lg border border-slate-700 transition-all">
+                    INICIAR RECLAMO
+                </button>
+            </div>
+        </aside>
+
+        <!-- COLUMNA DERECHA: DASHBOARD FINANCIERO -->
+        <main class="space-y-6">
+
+            <!-- BANNER DE ALERTA DINÁMICO -->
+            <div id="al-banner-mora"
+                class="p-4 rounded-2xl bg-red-600 border border-red-500 shadow-[0_0_30px_rgba(220,38,38,0.2)] flex items-center gap-4">
+                <div class="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center text-white text-xl">
+                    <i class="fas fa-exclamation-triangle animate-bounce"></i>
+                </div>
+                <div>
+                    <h4 class="text-[11px] font-black text-white tracking-widest">DEUDA VENCIDA</h4>
+                    <p class="text-[10px] font-bold text-white/90 normal-case italic">Tu acceso a las instalaciones se
+                        encuentra DENEGADO por mora mayor a 15 días.</p>
+                </div>
+            </div>
+
+            <!-- RESUMEN FINANCIERO -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="glass-card p-6 bg-slate-900/60 border-l-4 border-red-500">
+                    <span class="text-[8px] font-black text-slate-500 tracking-widest block mb-2">TOTAL ADEUDADO</span>
+                    <h2 id="al-resumen-deuda" class="text-4xl font-black text-white italic">$31.500</h2>
+                </div>
+                <div class="glass-card p-6 bg-slate-900/60 border-l-4 border-slate-700">
+                    <span class="text-[8px] font-black text-slate-500 tracking-widest block mb-2">PRÓXIMO
+                        VENCIMIENTO</span>
+                    <h2 id="al-resumen-vencimiento" class="text-2xl font-black text-white italic">10/MAY/2026</h2>
+                </div>
+            </div>
+
+            <!-- DETALLE DE DEUDA (TABLA INTERACTIVA) -->
+            <div class="glass-card overflow-hidden border border-slate-800">
+                <div class="px-6 py-4 border-b border-slate-800 bg-slate-900/40 flex items-center justify-between">
+                    <h3 class="text-[10px] font-black text-white tracking-widest">DETALLE DE LA DEUDA</h3>
+                    <span class="text-[8px] font-black text-slate-500">SELECCIONÁ LAS CUOTAS A PAGAR</span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead>
+                            <tr class="bg-slate-950/50 text-[9px] font-black text-slate-500 border-b border-slate-800">
+                                <th class="px-6 py-4">PERÍODO</th>
+                                <th class="px-6 py-4">VENCIMIENTO</th>
+                                <th class="px-6 py-4 text-right">MONTO BASE</th>
+                                <th class="px-6 py-4 text-right">RECARGOS</th>
+                                <th class="px-6 py-4 text-right">SUBTOTAL</th>
+                                <th class="px-6 py-4 text-right">ESTADO</th>
+                            </tr>
+                        </thead>
+                        <tbody id="al-tabla-pendientes-checkout">
+                            <!-- ÚNICA FILA DE DEUDA -->
+                            <tr class="border-b border-slate-800 hover:bg-white/5 transition-colors group">
+                                <td class="px-6 py-5">
+                                    <p class="text-[10px] font-black text-white">MAYO 2026</p>
+                                    <p class="text-[8px] text-slate-500 font-bold mt-1">CUOTA MENSUAL</p>
+                                </td>
+                                <td class="px-6 py-5">
+                                    <p class="text-[10px] font-black text-red-400 italic">VENCIDO 10/MAY</p>
+                                </td>
+                                <td class="px-6 py-5 text-right font-black text-[10px] text-slate-300">$15.000</td>
+                                <td class="px-6 py-5 text-right font-black text-[10px] text-red-500">+$750</td>
+                                <td class="px-6 py-5 text-right font-black text-[11px] text-white">$15.750</td>
+                                <td class="px-6 py-5 text-right">
+                                    <span
+                                        class="px-3 py-1 bg-red-500/10 text-red-500 border border-red-500/30 rounded-lg text-[8px] font-black uppercase">EN
+                                        MORA</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- CHECKOUT SECTION -->
+            <div id="al-checkout-section" class="glass-card p-8 border-2 border-orange-500/30 bg-slate-900/80 relative overflow-hidden">
+                <div class="flex flex-col lg:flex-row justify-between items-center gap-8 relative z-10">
+                    <div class="text-center lg:text-left">
+                        <span class="text-[9px] font-black text-slate-500 tracking-[0.3em]">TOTAL SELECCIONADO</span>
+                        <h2 id="al-checkout-total" class="text-5xl font-black text-white italic mt-1">$15.750</h2>
+                        <p id="al-checkout-msg" class="text-[9px] text-orange-500 font-bold mt-2 uppercase">Incluye recargos por mora aplicada</p>
+                    </div>
+
+                    <div class="w-full lg:w-64">
+                        <button onclick="abrirM('modal-pago-selector','cuota')"
+                            class="w-full py-5 bg-orange-500 hover:bg-orange-600 text-white text-sm font-black italic rounded-2xl shadow-[0_15px_40px_rgba(249,115,22,0.3)] hover:scale-[1.02] active:scale-95 transition-all uppercase tracking-widest">
+                            PAGAR AHORA <i class="fas fa-chevron-right ml-3"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+</div>

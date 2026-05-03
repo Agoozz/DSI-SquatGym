@@ -509,6 +509,171 @@ function verPerfilSocio(nombre) {
 }
 
 // ══════════════════════════════════════════════
+// CASO DE USO 4 — ESTADO DE CUENTA DEL ALUMNO
+// ══════════════════════════════════════════════
+function consultarEstadoCuenta() {
+    // ... (esta función se mantiene por compatibilidad si se llama desde otro lado, pero cargarPerfilAlumno será la principal)
+    cargarPerfilAlumno();
+}
+
+function cargarPerfilAlumno() {
+    try {
+        console.log("Cargando Perfil del Alumno...");
+        
+        // 1. Obtener Datos
+        const dni = usuarioActual.dni || '';
+        const socio = sociosDB.find(s => s.dni === dni) || 
+                      sociosDB.find(s => s.nombre.toLowerCase().includes((usuarioActual.nombre || '').split(' ')[0].toLowerCase()));
+
+        if (!socio) {
+            console.warn("No se encontró socio vinculado para el perfil.");
+            return;
+        }
+
+        // Asignar a socioActual global para que el flujo de pago lo reconozca
+        socioActual = socio;
+
+        // Cálculos financieros base
+        const precioClase = 15750;
+        const mesesPendientes = socio.deuda > 0 ? Math.ceil(socio.deuda / precioClase) : 0;
+
+        // 2. Renderizar Datos del Perfil (Izquierda)
+        const elNom  = document.getElementById('al-perfil-nombre');
+        const elDni  = document.getElementById('al-perfil-dni');
+        const elPlan = document.getElementById('al-perfil-plan');
+        const elSede = document.getElementById('al-perfil-sede');
+        const elMora = document.getElementById('al-perfil-mora-badge');
+        const elStatusText = document.getElementById('al-perfil-status-text');
+        const elStatusLabel = document.getElementById('al-perfil-status-label');
+        const elStatusCard = document.getElementById('al-perfil-status-card');
+        const elAlta = document.getElementById('al-perfil-alta');
+        const elUltimoPago = document.getElementById('al-perfil-ultimo-pago');
+        const elAsistencia = document.getElementById('al-perfil-asistencia');
+
+        if (elNom) elNom.innerHTML = socio.nombre.replace(' ', ' <br><span class="text-orange-500">') + '</span>';
+        if (elDni) elDni.innerText = `DNI: ${socio.dni}`;
+        if (elPlan) elPlan.innerText = socio.clase ? socio.clase.toUpperCase() : 'PLATINUM';
+        if (elSede) elSede.innerText = socio.sede ? socio.sede.toUpperCase() : 'SEDE CENTRO';
+        
+        // Simulación de datos adicionales
+        if (elAlta) elAlta.innerText = "12/03/2024";
+        
+        const txSocio = transacciones.filter(t => t.cliente.toLowerCase() === socio.nombre.toLowerCase());
+        if (elUltimoPago) {
+            const ultima = txSocio.sort((a,b)=>new Date(b.fecha)-new Date(a.fecha))[0];
+            elUltimoPago.innerText = ultima ? ultima.fecha : "—";
+        }
+        if (elAsistencia) elAsistencia.innerText = "14 / 24 DÍAS";
+
+        // Lógica de Acceso Dinámica
+        const diasMoraSimulados = socio.deuda > 0 ? (socio.deuda > 15000 ? 20 : 5) : 0; // Simulación ajustada
+        const elBanner = document.getElementById('al-banner-mora');
+
+        if (elStatusCard && elStatusText) {
+            if (socio.deuda === 0) {
+                elStatusText.innerText = "ACCESO PERMITIDO";
+                elStatusText.className = "text-lg font-black text-green-500 italic";
+                if (elStatusLabel) elStatusLabel.className = "text-[8px] font-black text-green-500/60 tracking-widest block mb-1";
+                elStatusCard.className = "glass-card p-4 border-2 border-green-500/30 bg-green-500/5 text-center";
+                if (elBanner) elBanner.classList.add('hidden');
+            } else if (diasMoraSimulados >= 15) {
+                elStatusText.innerText = "ACCESO DENEGADO";
+                elStatusText.className = "text-lg font-black text-red-500 italic";
+                if (elStatusLabel) elStatusLabel.className = "text-[8px] font-black text-red-500/60 tracking-widest block mb-1";
+                elStatusCard.className = "glass-card p-4 border-2 border-red-500/30 bg-red-500/5 text-center animate-pulse";
+                
+                if (elBanner) {
+                    elBanner.classList.remove('hidden', 'bg-yellow-600', 'border-yellow-500');
+                    elBanner.classList.add('bg-red-600', 'border-red-500');
+                    elBanner.querySelector('h4').innerText = "DEUDA VENCIDA";
+                    elBanner.querySelector('p').innerText = "Tu acceso a las instalaciones se encuentra DENEGADO por mora mayor a 15 días.";
+                }
+            } else {
+                elStatusText.innerText = "ACCESO RESTRINGIDO";
+                elStatusText.className = "text-lg font-black text-yellow-500 italic";
+                if (elStatusLabel) elStatusLabel.className = "text-[8px] font-black text-yellow-500/60 tracking-widest block mb-1";
+                elStatusCard.className = "glass-card p-4 border-2 border-yellow-500/30 bg-yellow-500/5 text-center";
+                
+                if (elBanner) {
+                    elBanner.classList.remove('hidden', 'bg-red-600', 'border-red-500');
+                    elBanner.classList.add('bg-yellow-600', 'border-yellow-500');
+                    elBanner.querySelector('h4').innerText = "PAGO PENDIENTE";
+                    elBanner.querySelector('p').innerText = "Recordá regularizar tu cuota para evitar restricciones en el acceso.";
+                }
+            }
+        }
+
+        // 3. Renderizar Dashboard (Derecha)
+        const elDeuda = document.getElementById('al-resumen-deuda');
+        const elVenc  = document.getElementById('al-resumen-vencimiento');
+        const elCheckoutTotal = document.getElementById('al-checkout-total');
+        const elTablaCheckout = document.getElementById('al-tabla-pendientes-checkout');
+
+        if (elDeuda) elDeuda.innerText = `$${socio.deuda.toLocaleString()}`;
+        if (elCheckoutTotal) elCheckoutTotal.innerText = `$${socio.deuda.toLocaleString()}`;
+
+        // Ocultar sección de checkout si no hay deuda
+        const elCheckoutSection = document.getElementById('al-checkout-section');
+        if (elCheckoutSection) {
+            if (socio.deuda === 0) elCheckoutSection.classList.add('hidden');
+            else elCheckoutSection.classList.remove('hidden');
+        }
+
+        const hoy = new Date();
+        const vencFmt = `15/${(hoy.getMonth() + 1).toString().padStart(2, '0')}/${hoy.getFullYear()}`;
+        if (elVenc) elVenc.innerText = socio.deuda > 0 ? vencFmt : '—';
+
+        // 4. Renderizar Detalle de Deuda Dinámico (Máx 1 fila)
+        if (elTablaCheckout) {
+            if (socio.deuda === 0) {
+                elTablaCheckout.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-green-500 font-black uppercase tracking-widest text-[10px]">Sin deudas pendientes</td></tr>`;
+                if (document.getElementById('al-checkout-msg')) document.getElementById('al-checkout-msg').classList.add('hidden');
+            } else {
+                const montoBase = socio.deuda > 15000 ? socio.deuda - 1500 : socio.deuda;
+                const recargos = socio.deuda - montoBase;
+                const mesActual = hoy.toLocaleDateString('es-AR', { month: 'long', year: 'numeric' }).toUpperCase();
+                
+                // Ocultar mensaje de recargos si no los hay
+                const elCheckoutMsg = document.getElementById('al-checkout-msg');
+                if (elCheckoutMsg) {
+                    if (recargos > 0) elCheckoutMsg.classList.remove('hidden');
+                    else elCheckoutMsg.classList.add('hidden');
+                }
+
+                const statusLabel = diasMoraSimulados >= 15 ? 'EN MORA' : 'PENDIENTE';
+                const statusClass = diasMoraSimulados >= 15 
+                    ? 'bg-red-500/10 text-red-500 border-red-500/30' 
+                    : 'bg-yellow-500/10 text-yellow-500 border-yellow-500/30';
+
+                elTablaCheckout.innerHTML = `
+                    <tr class="border-b border-slate-800 hover:bg-white/5 transition-colors group">
+                        <td class="px-6 py-5">
+                            <p class="text-[10px] font-black text-white">${mesActual}</p>
+                            <p class="text-[8px] text-slate-500 font-bold mt-1">CUOTA MENSUAL</p>
+                        </td>
+                        <td class="px-6 py-5">
+                            <p class="text-[10px] font-black ${diasMoraSimulados >= 15 ? 'text-red-400' : 'text-yellow-400'} italic">
+                                ${diasMoraSimulados >= 15 ? 'VENCIDO' : 'VENCE'} 10/${(hoy.getMonth() + 1).toString().padStart(2, '0')}
+                            </p>
+                        </td>
+                        <td class="px-6 py-5 text-right font-black text-[10px] text-slate-300">$${montoBase.toLocaleString()}</td>
+                        <td class="px-6 py-5 text-right font-black text-[10px] ${recargos > 0 ? 'text-red-500' : 'text-slate-500'}">
+                            ${recargos > 0 ? '+$' + recargos.toLocaleString() : '$0'}
+                        </td>
+                        <td class="px-6 py-5 text-right font-black text-[11px] text-white">$${socio.deuda.toLocaleString()}</td>
+                        <td class="px-6 py-5 text-right">
+                            <span class="px-3 py-1 border rounded-lg text-[8px] font-black uppercase ${statusClass}">${statusLabel}</span>
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+    } catch (e) {
+        console.error("Error al cargar perfil:", e);
+    }
+}
+
+// ══════════════════════════════════════════════
 // GESTIÓN DE PLANES Y PROMOCIONES (Administrador)
 // ══════════════════════════════════════════════
 

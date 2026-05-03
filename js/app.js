@@ -1,4 +1,5 @@
 async function cargarPantallas() {
+
     const pantallas = [
         "inicio",
         "adm-membresia",
@@ -401,16 +402,7 @@ function cobrarConProrrateo() {
     abrirM('modal-pago-selector', 'cuota');
 }
 
-// ══════════════════════════════════════════════
-// HOOK: registrarPagoExitoso → genera recibo
-// ══════════════════════════════════════════════
-const _registrarPagoExitosoOrig = registrarPagoExitoso;
-registrarPagoExitoso = function (metodo) {
-    const nombre = socioActual ? socioActual.nombre : 'Socio';
-    const monto = socioActual ? socioActual.deuda : totalCobro;
-    _registrarPagoExitosoOrig(metodo);
-    generarRecibo(nombre, monto, metodo);
-};
+// Lógica de registro de pago centralizada en pagos.js
 
 
 // ══════════════════════════════════════════════
@@ -783,7 +775,6 @@ const historialPagosCliente = [
     { id: 'REC-240009', fecha: '2026-03-06', concepto: 'Cuota Marzo 2026', metodo: 'Transferencia', monto: 12500, estado: 'Pagado' },
     { id: 'REC-240010', fecha: '2026-04-04', concepto: 'Cuota Abril 2026', metodo: 'QR', monto: 12500, estado: 'Pagado' },
     { id: 'REC-240011', fecha: '2026-04-14', concepto: 'Kiosco', metodo: 'Efectivo', monto: 1200, estado: 'Pagado' },
-    { id: 'REC-PEND-1', fecha: '2026-05-01', concepto: 'Cuota Mayo 2026', metodo: '—', monto: 12500, estado: 'Pendiente' },
 ];
 
 const metodoBadge = {
@@ -804,6 +795,19 @@ function renderHistorial() {
         const matchMetodo = metodo === 'todos' || p.metodo === metodo;
         return matchTipo && matchMetodo;
     });
+
+    // AGREGAR DEUDA ACTUAL SI EXISTE (Dinámico)
+    if (socioActual && socioActual.deuda > 0) {
+        const mesHoy = new Date().toLocaleDateString('es-AR', { month: 'long', year: 'numeric' }).toUpperCase();
+        lista.push({
+            id: 'REC-PEND-1',
+            fecha: new Date().toISOString().split('T')[0],
+            concepto: `Cuota ${mesHoy}`,
+            metodo: '—',
+            monto: socioActual.deuda,
+            estado: 'Pendiente'
+        });
+    }
 
     if (orden === 'fecha-desc') lista.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
     if (orden === 'fecha-asc') lista.sort((a, b) => new Date(a.fecha) - new Date(b.fecha));

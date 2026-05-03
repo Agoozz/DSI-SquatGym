@@ -27,7 +27,7 @@ let itemsCAlu = []; let tAluK = 0; let itemsCStaff = []; let tStaffK = 0;
         };
 
         const sociosDB = [
-            { nombre: "Valentino Perez",   dni: "12345678", clase: "Zumba",        estado: "Deudor",  deuda: 31500, sede: "Sede Centro" },
+            { nombre: "Valentino Perez",   dni: "12345678", clase: "Zumba",        estado: "Deudor",  deuda: 12500, sede: "Sede Centro" },
             { nombre: "Melisa Lopez",      dni: "87654321", clase: "Musculación",   estado: "Al día",  deuda: 0,     sede: "Sede Centro" },
             { nombre: "Juan Romero",       dni: "33221100", clase: "Crossfit",      estado: "Deudor",  deuda: 12500, sede: "Sede Norte" },
             { nombre: "Camila Torres",     dni: "44556677", clase: "Musculación",   estado: "Al día",  deuda: 0,     sede: "Sede Norte" },

@@ -36,7 +36,7 @@ function renderDeudas(deudas) {
       `).join("");
 }
 
-let totalCobro = 0;
+var totalCobro = 0;
 
 function toggleDeuda(i, monto, checkbox) {
     if (checkbox.checked) {
@@ -122,7 +122,7 @@ function filtrarSocios() {
     `).join('');
 }
 
-let socioActual = null; // guarda el socio que se está cobrando
+var socioActual = null; // guarda el socio que se está cobrando
 
 function cobrarSocio(dni) {
     const s = sociosDB.find(x => x.dni === dni);

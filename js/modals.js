@@ -16,7 +16,12 @@
     }
 }
 
-function cerrarM() { document.querySelectorAll('.modal-base').forEach(m => m.classList.remove('active')); }
+function cerrarM() { 
+    document.querySelectorAll('.modal-base').forEach(m => {
+        m.classList.remove('active');
+        m.style.display = ''; // Limpiar display inline para que vuelva a regir el CSS
+    });
+}
 
 function closeModal(){
 

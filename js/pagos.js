@@ -120,15 +120,32 @@ function calcularVueltoModal(total){
       document.getElementById("vuelto-texto").innerText = "Vuelto: $" + Math.max(0, rec - total).toLocaleString();
   }
 
- function registrarPagoExitoso(metodo) {
-      // Actualizar sociosDB si hay un socio activo
-      if (socioActual) {
-          socioActual.deuda   = 0;
-          socioActual.estado  = 'Al día';
-          const monto = socioActual.deuda || totalCobro;
-          transacciones.push({ tipo: metodo, monto: monto, cliente: socioActual.nombre });
-          socioActual = null;
-      }
+    function registrarPagoExitoso(metodo) {
+        let nombre = 'Socio';
+        let montoPagado = typeof totalCobro !== 'undefined' ? totalCobro : 0;
+
+        // Actualizar sociosDB si hay un socio activo
+        if (socioActual) {
+            nombre = socioActual.nombre;
+            montoPagado = socioActual.deuda; // Capturar antes de resetear
+            socioActual.deuda = 0;
+            socioActual.estado = 'Al día';
+            
+            transacciones.push({ 
+                tipo: metodo, 
+                monto: montoPagado, 
+                cliente: nombre,
+                fecha: new Date().toISOString().split('T')[0],
+                concepto: 'Cuota'
+            });
+            
+            socioActual = null;
+        }
+
+        // Generar Recibo Electrónico
+        if (typeof generarRecibo === 'function') {
+            generarRecibo(nombre, montoPagado, metodo);
+        }
       
       // Reiniciar el estado del cupón
       descuentoCobroAplicado = false;

@@ -82,9 +82,10 @@ function navV(id) {
     if (rRol === 'encargado' && !pantallasEncargado.includes(id)) return;
 
     if (id === "adm-monitor") renderInformes();
-    if(id === "adm-planes")     abrirModalPrecios();
+    if (id === "adm-planes")     abrirModalPrecios();
     if (id === "adm-membresia") setTimeout(filtrarSocios, 50);
     if (id === "adm-inventario") setTimeout(filtrarInventario, 50);
+    if (id === "alu-pago")       setTimeout(cargarPerfilAlumno, 50);
 
     document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(l => l.classList.remove('active'));
