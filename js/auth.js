@@ -1,11 +1,18 @@
 // Base de datos simulada de usuarios
 const usuariosDB = [
-    { dni: "11111111", password: "admin123",   rol: "admin",      nombre: "Melisa López",   sede: null },
-    { dni: "22222222", password: "secre123",   rol: "secretaria", nombre: "Laura García",   sede: "Sede Centro" },
-    { dni: "33333333", password: "secre456",   rol: "secretaria", nombre: "Carlos Pérez",   sede: "Sede Norte" },
-    { dni: "44444444", password: "secre789",   rol: "secretaria", nombre: "Ana Ramírez",    sede: "Sede Sur" },
-    { dni: "123",      password: "cliente123", rol: "alumno",     nombre: "Valentino P.",  sede: "Sede Centro" },
-    { dni: "456",      password: "cliente456", rol: "alumno",     nombre: "Melisa L.",     sede: "Sede Centro" },
+    // Admin
+    { dni: "1", password: "admin",      rol: "admin",      nombre: "Admin General", sede: null          },
+    // Secretarias
+    { dni: "2", password: "secretaria", rol: "secretaria", nombre: "S. Centro",     sede: "Sede Centro" },
+    { dni: "3", password: "secretaria", rol: "secretaria", nombre: "S. Norte",      sede: "Sede Norte"  },
+    { dni: "4", password: "secretaria", rol: "secretaria", nombre: "S. Sur",        sede: "Sede Sur"    },
+    // Encargados
+    { dni: "5", password: "encargado",  rol: "encargado",  nombre: "E. Centro",     sede: "Sede Centro" },
+    { dni: "6", password: "encargado",  rol: "encargado",  nombre: "E. Norte",      sede: "Sede Norte"  },
+    { dni: "7", password: "encargado",  rol: "encargado",  nombre: "E. Sur",        sede: "Sede Sur"    },
+    // Alumnos (Pruebas)
+    { dni: "8", password: "alumno",     rol: "alumno",     nombre: "Valentino P.",  sede: "Sede Centro" },
+    { dni: "9", password: "alumno",     rol: "alumno",     nombre: "Melisa L.",     sede: "Sede Norte"  },
 ];
 
 // Variables globales para el estado del login
@@ -41,9 +48,13 @@ function entrarApp() {
     const dniInput = document.querySelector('input[placeholder="DNI..."]');
     const passInput = document.querySelector('input[placeholder="PASSWORD"]');
 
-    const dni = dniInput.value.trim();
+    const dni      = dniInput.value.trim();
     const password = passInput.value.trim();
-    const rolSeleccionado = loginRolSeleccionado;
+
+    // Leer el subrol seleccionado en la nueva UI (window._loginSubrol)
+    const subrolUI = (typeof window._loginSubrol !== 'undefined' && window._loginSubrol)
+        ? window._loginSubrol
+        : loginRolSeleccionado;
 
     // Validación 1: Campos vacíos
     if (!dni || !password) {
@@ -51,34 +62,41 @@ function entrarApp() {
         return;
     }
 
-    // Validación 2: DNI existe
+    // Validación 2: Selección de rol
+    if (!subrolUI) {
+        mostrarErrorLogin("Seleccioná un rol para continuar");
+        return;
+    }
+
+    // Validación 3: DNI existe
     const usuario = usuariosDB.find(u => u.dni === dni);
     if (!usuario) {
         mostrarErrorLogin("DNI no encontrado en el sistema");
         return;
     }
 
-    // Validación 3: Contraseña correcta
+    // Validación 4: Contraseña correcta
     if (usuario.password !== password) {
         mostrarErrorLogin("Contraseña incorrecta");
         return;
     }
 
-    // Validación 4: Rol seleccionado coincide
-    if (usuario.rol !== rolSeleccionado) {
+    // Validación 5: El rol del usuario coincide con la selección en UI
+    if (usuario.rol !== subrolUI) {
         mostrarErrorLogin("El rol seleccionado no corresponde a este usuario");
         return;
     }
 
-    // Si todo es correcto, entrar al sistema
-    rRol = usuario.rol;
-    rNombre = usuario.nombre;
-    sedeActual = usuario.sede;
+    // ── Todo correcto: asignar datos de sesión directamente desde la DB ──
+    rRol       = usuario.rol;
+    rNombre    = usuario.nombre;
+    sedeActual = usuario.sede; // se asigna automáticamente, sin selector HTML
 
     usuarioActual = {
-        dni: dni,
+        dni:    dni,
         nombre: usuario.nombre,
-        rol: usuario.rol
+        rol:    usuario.rol,
+        sede:   usuario.sede
     };
 
     ingresarAlSistema();
@@ -114,7 +132,7 @@ function ingresarAlSistema() {
         cGallery.classList.add('hidden');
         bStaffHero.classList.remove('hidden');
         bClientProfile.classList.add('hidden');
-        document.getElementById('header-username').innerText = `${rNombre} — Admin`;
+        document.getElementById('header-username').innerText = `${rNombre}`;
         const btnConfig = document.getElementById('btn-config-planes-container');
         if (btnConfig) btnConfig.classList.remove('hidden');
     } else if (rRol === 'secretaria') {
@@ -129,6 +147,18 @@ function ingresarAlSistema() {
         document.getElementById('header-username').innerText = `${rNombre} — Secretaria`;
         const btnConfig = document.getElementById('btn-config-planes-container');
         if (btnConfig) btnConfig.classList.add('hidden');
+    } else if (rRol === 'encargado') {
+        sTxt.innerText = `¡Hola, ${rNombre}!`;
+        hTag.innerText = 'Panel de Encargado';
+        hTitle.innerHTML = 'Encargado <br><span class="text-orange-500 italic italic">SquatGym Platinum.</span>';
+        hFrame.style.backgroundImage = "linear-gradient(to right, rgba(2,6,23,0.98), rgba(2,6,23,0.5)), url('https://images.unsplash.com/photo-1593079831268-3381b0db4a77?auto=format&fit=crop&q=80&w=1200')";
+        sDashboard.classList.remove('hidden');
+        cGallery.classList.add('hidden');
+        bStaffHero.classList.remove('hidden');
+        bClientProfile.classList.add('hidden');
+        document.getElementById('header-username').innerText = `${rNombre} — Encargado`;
+        const btnConfigEnc = document.getElementById('btn-config-planes-container');
+        if (btnConfigEnc) btnConfigEnc.classList.add('hidden');
     } else {
         sTxt.innerText = `¡Hola, ${rNombre}!`;
         hTag.innerText = 'Socio Platinum Élite';
@@ -146,7 +176,7 @@ function ingresarAlSistema() {
     // renderMarketCatalog(); // Esta función se llamará cuando se navegue al Kiosco
 
 
-    if (rRol === 'admin' || rRol === 'secretaria') {
+    if (rRol === 'admin' || rRol === 'secretaria' || rRol === 'encargado') {
         setTimeout(renderizarAlertasStaff, 100);
     }
     if (rRol === 'alumno') {
@@ -155,7 +185,7 @@ function ingresarAlSistema() {
 
     const btn = document.getElementById("btn-kiosco-accion");
     if (btn) {
-        if (rRol === "admin" || rRol === "secretaria") {
+        if (rRol === "admin" || rRol === "secretaria" || rRol === "encargado") {
             btn.innerText = "Cobrar";
             btn.onclick = () => abrirM('modal-cobro-kiosco');
         } else {
@@ -166,7 +196,7 @@ function ingresarAlSistema() {
 
     const btnEntregas = document.getElementById('btn-entregas');
     if (btnEntregas) {
-        if (rRol === 'admin' || rRol === 'secretaria') {
+        if (rRol === 'admin' || rRol === 'secretaria' || rRol === 'encargado') {
             btnEntregas.style.display = 'flex';
         } else {
             btnEntregas.style.display = 'none';
@@ -240,52 +270,38 @@ function recuperarPassword() {
     }, 2000);
 }
 
-// Configurar el submenu de Staff (Admin/Secretaria)
+// Configurar el submenu de Staff (Admin/Secretaria/Encargado)
 function configurarMenuStaff() {
     const staffBtn = document.getElementById('l-btn-staff');
     const alumnoBtn = document.getElementById('l-btn-alumno');
-    const subMenu = document.getElementById('staff-submenu');
 
     if (staffBtn) {
         staffBtn.addEventListener('click', (e) => {
             e.preventDefault();
-            if (subMenu) {
-                subMenu.classList.remove('hidden');
-                subMenu.classList.add('flex');
+            // Al volver a Staff desde Alumno, resetear la selección
+            if (window._loginSubrol === 'alumno' || !window._loginSubrol) {
+                window._loginSubrol = null;
+                window._loginSede   = null;
             }
-            if (loginRolSeleccionado !== 'admin' && loginRolSeleccionado !== 'secretaria') {
-                setLoginUIRol('admin', 'admin');
+            // Seleccionar admin por defecto si no hay subrol de staff elegido
+            if (!window._loginSubrol) {
+                if (typeof seleccionarSubrol === 'function') seleccionarSubrol('admin');
+                window._loginSubrol = 'admin';
             }
+            setLoginUIRol('admin', window._loginSubrol);
         });
     }
 
     if (alumnoBtn) {
         alumnoBtn.addEventListener('click', (e) => {
             e.preventDefault();
-            if (subMenu) {
-                subMenu.classList.remove('flex');
-                subMenu.classList.add('hidden');
-            }
+            window._loginSubrol = 'alumno';
+            window._loginSede   = null;
             setLoginUIRol('alumno');
         });
     }
-
-    // Botones del submenu de Staff
-    const btnAdmin = document.getElementById('l-btn-admin');
-    const btnSecretaria = document.getElementById('l-btn-secretaria');
-
-    if (btnAdmin) {
-        btnAdmin.addEventListener('click', () => {
-            setLoginUIRol('admin', 'admin');
-        });
-    }
-
-    if (btnSecretaria) {
-        btnSecretaria.addEventListener('click', () => {
-            setLoginUIRol('admin', 'secretaria');
-        });
-    }
 }
+
 
 // Actualizar función setLoginUIRol del app.js
 function setLoginUIRol(categoria, rol = null) {
@@ -303,7 +319,7 @@ function setLoginUIRol(categoria, rol = null) {
         formNormal.classList.remove('hidden');
     }
 
-    // Limpiar inputs al cambiar de rol por prolijidad
+    // Limpiar inputs al cambiar de rol
     const dniInput = document.querySelector('input[placeholder="DNI..."]');
     const passInput = document.querySelector('input[placeholder="PASSWORD"]');
     if (dniInput) dniInput.value = '';
@@ -312,49 +328,37 @@ function setLoginUIRol(categoria, rol = null) {
 
     const staff = document.getElementById("l-btn-staff");
     const alumno = document.getElementById("l-btn-alumno");
+    const subMenu = document.getElementById("staff-submenu");
+    const selectorSede = document.getElementById("selector-sede-login");
 
     staff.classList.remove("role-active");
     alumno.classList.remove("role-active");
-
     staff.classList.add("bg-[#0f172a]", "text-[#64748b]");
     alumno.classList.add("bg-[#0f172a]", "text-[#64748b]");
 
-    if (loginRolSeleccionado === 'admin' || loginRolSeleccionado === 'secretaria') {
+    if (loginRolSeleccionado !== 'alumno') {
+        // Mostrar submenu de staff
         staff.classList.add("role-active");
         staff.classList.remove("bg-[#0f172a]", "text-[#64748b]");
-
-        // Actualizar visual del submenu
-        const btnAdmin = document.getElementById('l-btn-admin');
-        const btnSecretaria = document.getElementById('l-btn-secretaria');
-
-        if (btnAdmin && btnSecretaria) {
-            if (loginRolSeleccionado === 'admin') {
-                btnAdmin.classList.replace('border-[#1e293b]', 'border-[#f97316]');
-                btnSecretaria.classList.replace('border-[#f97316]', 'border-[#1e293b]');
-                btnAdmin.querySelector('i').classList.replace('text-slate-500', 'text-[#f97316]');
-                btnSecretaria.querySelector('i').classList.replace('text-[#f97316]', 'text-slate-500');
-            } else {
-                btnSecretaria.classList.replace('border-[#1e293b]', 'border-[#f97316]');
-                btnAdmin.classList.replace('border-[#f97316]', 'border-[#1e293b]');
-                btnSecretaria.querySelector('i').classList.replace('text-slate-500', 'text-[#f97316]');
-                btnAdmin.querySelector('i').classList.replace('text-[#f97316]', 'text-slate-500');
-            }
-        }
+        if (subMenu) { subMenu.classList.remove('hidden'); subMenu.style.display = 'flex'; }
     } else {
+        // Ocultar submenu y selector de sede al ir a Alumno
         alumno.classList.add("role-active");
         alumno.classList.remove("bg-[#0f172a]", "text-[#64748b]");
+        if (subMenu) { subMenu.classList.add('hidden'); subMenu.style.display = 'none'; }
+        // Limpiar selección de subrol/sede
+        window._loginSubrol = 'alumno';
+        window._loginSede   = null;
     }
 }
+
 
 // Inicializar al cargar la página
 document.addEventListener('DOMContentLoaded', () => {
     limpiarErrorAlEscribir();
     configurarMenuStaff();
 
-    // Forzar la selección visual y lógica inicial de Administrador
-    setLoginUIRol('admin', 'admin');
-
-    // Si hay un input de Enter en DNI o Password, enviar login
+    // Tecla Enter en DNI o Password dispara el login
     const dniInput = document.querySelector('input[placeholder="DNI..."]');
     const passInput = document.querySelector('input[placeholder="PASSWORD"]');
 
@@ -369,6 +373,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
 
 // ══════════════════════════════════════════════
 // LECTURA DE DATOS PARA PERFIL SOCIO

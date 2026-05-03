@@ -32,6 +32,16 @@ function configMenu() {
                 <i class="fas fa-truck"></i> Proveedores
             </div>
             `;
+    } else if (rRol === 'encargado') {
+        side.innerHTML = `
+            <div onclick="navV('inicio')" class="nav-item active" id="li-inicio">
+                <i class="fas fa-home"></i> Inicio
+            </div>
+
+            <div onclick="navV('adm-membresia')" class="nav-item" id="li-adm-membresia">
+                <i class="fas fa-id-card"></i> Cobros Alumnos
+            </div>
+            `;
     } else {
         side.innerHTML = `
             <div onclick="navV('inicio')" class="nav-item active" id="li-inicio">
@@ -59,10 +69,17 @@ function configMenu() {
 }
 
 function navV(id) {
-    // Validar acceso a pantallas restringidas
+    // Pantallas exclusivas del admin
     if (id === 'adm-monitor' && rRol !== 'admin') return;
     if (id === 'adm-planes'  && rRol !== 'admin') return;
-    if (id !== 'adm-monitor' && id !== 'adm-planes' && id !== 'inicio' && rRol === 'admin') return;
+
+    // Pantallas de secretaria/encargado (solo ellos y no el admin)
+    const pantallasStaff = ['adm-membresia', 'adm-kiosco', 'adm-inventario'];
+    if (pantallasStaff.includes(id) && rRol === 'admin') return;
+
+    // Encargado solo puede ver inicio y adm-membresia
+    const pantallasEncargado = ['inicio', 'adm-membresia'];
+    if (rRol === 'encargado' && !pantallasEncargado.includes(id)) return;
 
     if (id === "adm-monitor") renderInformes();
     if(id === "adm-planes")     abrirModalPrecios();
