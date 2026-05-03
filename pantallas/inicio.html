@@ -1,81 +1,137 @@
 <div id="v-inicio" class="view-section active">
-      
-      <div class="mb-6 flex justify-between items-center italic uppercase">
-          <h3 id="txt-saludo" class="text-2xl font-black text-white tracking-tighter italic">¡Hola!</h3>
-          <div class="bg-green-500/10 px-5 py-2 rounded-full border border-green-500/50 flex items-center gap-3">
-              <div class="w-2 h-2 bg-green-500 rounded-full animate-ping"></div>
-              <span class="text-[10px] font-black text-green-500">Sede Activa</span>
-          </div>
-      </div>
 
-      <div class="glass-card mb-8 p-6 border-l-8 border-blue-600 relative italic uppercase overflow-hidden" style="background: linear-gradient(rgba(2,6,23,0.9), rgba(2,6,23,0.9)), url('https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&q=80&w=800'); background-size: cover; background-position: center;">
-          <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-              <h4 class="font-black text-white text-lg italic tracking-tighter">Horarios de Atención</h4>
-              <div class="flex flex-col gap-1 text-[11px] font-black italic">
-                  <p class="text-white"><span class="text-blue-500">LUN A VIE:</span> 08:00 a 13:00 y 15:00 a 23:00</p>
-                  <p class="text-white"><span class="text-blue-500">SÁBADOS:</span> 08:00 a 13:00</p>
-                  <p class="text-red-500">DOMINGOS Y FERIADOS: CERRADO</p>
-              </div>
-          </div>
-      </div>
+    <div class="mb-6 flex justify-between items-center italic uppercase">
+        <h3 id="txt-saludo" class="text-2xl font-black text-white tracking-tighter italic">¡Hola!</h3>
+        <div class="bg-green-500/10 px-5 py-2 rounded-full border border-green-500/50 flex items-center gap-3">
+            <div class="w-2 h-2 bg-green-500 rounded-full animate-ping"></div>
+            <span class="text-[10px] font-black text-green-500">Sede Activa</span>
+        </div>
+    </div>
 
-      <div id="hero-inicio" class="hero-home shadow-2xl border border-slate-800 mb-12 italic uppercase" style="height: 200px; background-size: cover; border-radius: 2rem; display: flex; align-items: center; padding: 0 4rem; position: relative; overflow: hidden;">
-          <div class="relative z-10 max-w-lg">
-              <span id="hero-tag" class="text-orange-500 font-black text-[9px] uppercase tracking-[0.5em] mb-2 block italic"></span>
-              <h2 id="hero-title" class="text-3xl font-black text-white leading-none italic mb-4"></h2>
-              <button onclick="navV('alu-pago')" id="btn-goto-profile" class="hidden btn-ui btn-naranja px-10 py-3.5 text-[10px] font-black italic uppercase shadow-xl">Ir a Mi Perfil</button>
-              <button onclick="quickAction()" id="btn-hero-action" class="hidden btn-ui btn-naranja px-10 py-3.5 text-[10px] font-black italic uppercase shadow-xl">Monitor Staff</button>
-          </div>
-      </div>
+    <div class="glass-card mb-8 p-6 border-l-8 border-blue-600 relative italic uppercase overflow-hidden"
+        style="background: linear-gradient(rgba(2,6,23,0.9), rgba(2,6,23,0.9)), url('https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&q=80&w=800'); background-size: cover; background-position: center;">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <h4 class="font-black text-white text-lg italic tracking-tighter">Horarios de Atención</h4>
+            <div class="flex flex-col gap-1 text-[11px] font-black italic">
+                <p class="text-white"><span class="text-blue-500">LUN A VIE:</span> 08:00 a 13:00 y 15:00 a 23:00</p>
+                <p class="text-white"><span class="text-blue-500">SÁBADOS:</span> 08:00 a 13:00</p>
+                <p class="text-red-500">DOMINGOS Y FERIADOS: CERRADO</p>
+            </div>
+        </div>
+    </div>
 
-      <div id="staff-home-dashboard" class="hidden space-y-8 italic uppercase">
-          <div class="grid grid-cols-1 md:grid-cols-4 gap-6 font-black">
-              <div class="glass-card p-6 border-l-4 border-green-500 italic"><p class="text-[8px] text-slate-500">SOCIOS ACTIVOS</p><p class="text-3xl text-white mt-1">248</p></div>
-              <div class="glass-card p-6 border-l-4 border-red-500 italic"><p class="text-[8px] text-slate-500">DEUDORES</p><p class="text-3xl text-white mt-1">14</p></div>
-              <div class="glass-card p-6 border-l-4 border-orange-500 italic"><p class="text-[8px] text-slate-500">DEUDA A PROVEEDORES</p><p id="kiosco-count-inicio" class="text-3xl text-white mt-1">2</p></div>
-              <div class="glass-card p-6 border-l-4 border-blue-500 italic"><p class="text-[8px] text-slate-500">CAJA CIERRE</p><p class="text-3xl text-white mt-1">$393.500</p></div>
-          </div>
+    <div id="hero-inicio" class="hero-home shadow-2xl border border-slate-800 mb-12 italic uppercase"
+        style="height: 200px; background-size: cover; border-radius: 2rem; display: flex; align-items: center; padding: 0 4rem; position: relative; overflow: hidden;">
+        <div class="relative z-10 max-w-lg">
+            <span id="hero-tag"
+                class="text-orange-500 font-black text-[9px] uppercase tracking-[0.5em] mb-2 block italic"></span>
+            <h2 id="hero-title" class="text-3xl font-black text-white leading-none italic mb-4"></h2>
+            <button onclick="navV('alu-pago')" id="btn-goto-profile"
+                class="hidden btn-ui btn-naranja px-10 py-3.5 text-[10px] font-black italic uppercase shadow-xl">Ir a Mi
+                Perfil</button>
+            <button onclick="quickAction()" id="btn-hero-action"
+                class="hidden btn-ui btn-naranja px-10 py-3.5 text-[10px] font-black italic uppercase shadow-xl">Monitor
+                Staff</button>
+        </div>
+    </div>
 
-          <!-- ALERTAS DE VENCIMIENTO Y DEUDA -->
-          <div class="space-y-3">
-              <p class="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em]">⚠ Alertas del Sistema</p>
-              <div id="panel-alertas-staff" class="space-y-2"></div>
-          </div>
-      </div>
+    <div id="staff-home-dashboard" class="hidden space-y-8 italic uppercase">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 font-black">
+            <div class="glass-card p-6 border-l-4 border-green-500 italic">
+                <p class="text-[8px] text-slate-500">SOCIOS ACTIVOS</p>
+                <p class="text-3xl text-white mt-1">248</p>
+            </div>
+            <div class="glass-card p-6 border-l-4 border-red-500 italic">
+                <p class="text-[8px] text-slate-500">DEUDORES</p>
+                <p class="text-3xl text-white mt-1">14</p>
+            </div>
+            <div class="glass-card p-6 border-l-4 border-orange-500 italic">
+                <p class="text-[8px] text-slate-500">DEUDA A PROVEEDORES</p>
+                <p id="kiosco-count-inicio" class="text-3xl text-white mt-1">2</p>
+            </div>
+            <div class="glass-card p-6 border-l-4 border-blue-500 italic">
+                <p class="text-[8px] text-slate-500">CAJA CIERRE</p>
+                <p class="text-3xl text-white mt-1">$393.500</p>
+            </div>
+        </div>
 
-      <div id="client-home-gallery" class="hidden space-y-12 italic uppercase">
-          <h3 class="text-xl font-black text-white italic mb-4">
-              Ranking <span class="text-orange-500">SquatPoints</span>
-          </h3>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div class="glass-card p-6 flex items-center gap-4 border-l-4 border-orange-500"><span class="text-3xl font-black text-orange-500">1.</span><div class="flex-1"><p class="text-xs font-black text-white italic">Melisa L.</p><p class="text-[8px] text-slate-500">1.890 SQUATPOINTS</p></div><span class="text-2xl">🏆</span></div>
-              <div class="glass-card p-6 flex items-center gap-4 border-l-4 border-blue-500"><span class="text-3xl font-black text-blue-500">2.</span><div class="flex-1"><p class="text-xs font-black text-white italic">Valentino P.</p><p class="text-[8px] text-slate-500">1.450 SQUATPOINTS</p></div><span class="text-2xl">🥈</span></div>
-          </div>
-          <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
-              <div class="g-card"><div class="g-img" style="background-image: url('https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5');"></div><div class="g-overlay"></div><div class="g-text">Musculación</div></div>
-              <div class="g-card"><div class="g-img" style="background-image: url('https://images.unsplash.com/photo-1599058917212-d750089bc07e');"></div><div class="g-overlay"></div><div class="g-text">Funcional</div></div>
-              <div class="g-card"><div class="g-img" style="background-image: url('https://images.unsplash.com/photo-1527933053326-89d1746b76b9');"></div><div class="g-overlay"></div><div class="g-text">Zumba</div></div>
-              <div class="g-card"><div class="g-img" style="background-image: url('https://images.unsplash.com/photo-1549719386-74dfcbf7dbed');"></div><div class="g-overlay"></div><div class="g-text">Boxeo</div></div>
-              <div class="g-card"><div class="g-img" style="background-image: url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48');"></div><div class="g-overlay"></div><div class="g-text">Spinning</div></div>
-          </div>
-      </div>
-      <div class="mt-10">
-          <div class="glass-card overflow-hidden border border-slate-800">
-              <div 
-              style="
+
+    </div>
+
+
+    <div id="client-home-gallery" class="hidden space-y-12 italic uppercase">
+        <h3 class="text-xl font-black text-white italic mb-4">
+            Ranking <span class="text-orange-500">SquatPoints</span>
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="glass-card p-6 flex items-center gap-4 border-l-4 border-orange-500"><span
+                    class="text-3xl font-black text-orange-500">1.</span>
+                <div class="flex-1">
+                    <p class="text-xs font-black text-white italic">Melisa L.</p>
+                    <p class="text-[8px] text-slate-500">1.890 SQUATPOINTS</p>
+                </div><span class="text-2xl">🏆</span>
+            </div>
+            <div class="glass-card p-6 flex items-center gap-4 border-l-4 border-blue-500"><span
+                    class="text-3xl font-black text-blue-500">2.</span>
+                <div class="flex-1">
+                    <p class="text-xs font-black text-white italic">Valentino P.</p>
+                    <p class="text-[8px] text-slate-500">1.450 SQUATPOINTS</p>
+                </div><span class="text-2xl">🥈</span>
+            </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
+            <div class="g-card">
+                <div class="g-img"
+                    style="background-image: url('https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5');">
+                </div>
+                <div class="g-overlay"></div>
+                <div class="g-text">Musculación</div>
+            </div>
+            <div class="g-card">
+                <div class="g-img"
+                    style="background-image: url('https://images.unsplash.com/photo-1599058917212-d750089bc07e');">
+                </div>
+                <div class="g-overlay"></div>
+                <div class="g-text">Funcional</div>
+            </div>
+            <div class="g-card">
+                <div class="g-img"
+                    style="background-image: url('https://images.unsplash.com/photo-1527933053326-89d1746b76b9');">
+                </div>
+                <div class="g-overlay"></div>
+                <div class="g-text">Zumba</div>
+            </div>
+            <div class="g-card">
+                <div class="g-img"
+                    style="background-image: url('https://images.unsplash.com/photo-1549719386-74dfcbf7dbed');"></div>
+                <div class="g-overlay"></div>
+                <div class="g-text">Boxeo</div>
+            </div>
+            <div class="g-card">
+                <div class="g-img"
+                    style="background-image: url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48');">
+                </div>
+                <div class="g-overlay"></div>
+                <div class="g-text">Spinning</div>
+            </div>
+        </div>
+    </div>
+    <div class="mt-10">
+        <div class="glass-card overflow-hidden border border-slate-800">
+            <div style="
                   height: 200px;
                   background-image: url('https://images.unsplash.com/photo-1571902943202-507ec2618e8f?auto=format&fit=crop&w=1200&q=80');
                   background-size: cover;
                   background-position: center;
               ">
-              </div>
+            </div>
 
-              <div class="p-4 text-center">
-                  <p class="text-[40px] text-slate-400 font-black italic">
-                      Nuestro espacio, tu evolución 💪
-                  </p>
-              </div>
+            <div class="p-4 text-center">
+                <p class="text-[40px] text-slate-400 font-black italic">
+                    Nuestro espacio, tu evolución 💪
+                </p>
+            </div>
 
-          </div>
-      </div>
-  </div>
+        </div>
+    </div>
+</div>

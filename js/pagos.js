@@ -1,3 +1,5 @@
+let descuentoCobroAplicado = false;
+
 function pagoCorrecto() {
 
     console.log("Contexto:", currentContext);
@@ -38,7 +40,10 @@ function confirmarCobro(){
     cerrarM();
 }
 
+let currentMetodoModal = null;
+
 function mostrarPago(tipo){
+      currentMetodoModal = tipo;
       const cont = document.getElementById("pago-contenido");
       const opciones = document.getElementById("pago-opciones");
 
@@ -124,8 +129,31 @@ function calcularVueltoModal(total){
           transacciones.push({ tipo: metodo, monto: monto, cliente: socioActual.nombre });
           socioActual = null;
       }
+      
+      // Reiniciar el estado del cupón
+      descuentoCobroAplicado = false;
+      const btn = document.getElementById('btn-aplicar-cupon');
+      if (btn) {
+          btn.innerText = 'Aplicar';
+          btn.classList.replace('bg-green-600', 'bg-orange-500');
+          btn.classList.replace('hover:bg-green-700', 'hover:bg-orange-600');
+          btn.disabled = false;
+      }
+      const inputCupon = document.getElementById('input-cupon-cobro');
+      if(inputCupon){
+          inputCupon.value = '';
+          inputCupon.disabled = false;
+          inputCupon.classList.remove('text-green-400', 'border-green-500', 'bg-green-500/10');
+      }
+      const cuponMsg = document.getElementById('msg-cupon-cobro');
+      if(cuponMsg) cuponMsg.classList.add('hidden');
+
       cerrarFlujoPago();
       closeModal();
+      
+      const clienteBox = document.getElementById('cliente-box');
+      if(clienteBox) clienteBox.classList.add('hidden');
+      
       filtrarSocios(); // refrescar tabla
   }
 
@@ -230,4 +258,85 @@ function simularEfectivo(total){
       }
   }
 
+// ══════════════════════════════════════════════
+// LÓGICA DE CUPONES Y DESCUENTOS
+// ══════════════════════════════════════════════
 
+function aplicarCuponCobro() {
+    const inputCupon = document.getElementById('input-cupon-cobro');
+    const btn = document.getElementById('btn-aplicar-cupon');
+    const codigo = inputCupon.value.trim().toUpperCase();
+
+    if (!codigo) {
+        alert("Por favor, ingresá un código válido.");
+        return;
+    }
+
+    if (!socioActual) {
+        alert("Las promociones solo aplican al pago de planes/cuotas, no a productos del kiosco.");
+        return;
+    }
+
+    if (descuentoCobroAplicado) {
+        alert("Ya se ha aplicado una promoción a este cobro.");
+        return;
+    }
+
+    // Buscar el plan del socio actual en planesDB (ej: "Zumba")
+    const plan = planesDB.find(p => p.nombre.toLowerCase() === socioActual.clase.toLowerCase());
+    
+    if (!plan) {
+        alert("El plan del socio no se encontró en la base de datos.");
+        return;
+    }
+
+    if (plan.tipoPromo === 'ninguna') {
+        alert(`El plan ${plan.nombre} no tiene promociones activas en este momento.`);
+        return;
+    }
+
+    // Validar si el código ingresado coincide con el configurado
+    if (plan.valorPromo.toUpperCase() !== codigo) {
+        alert("Código de promoción inválido o no corresponde a la promoción activa de este plan.");
+        return;
+    }
+
+    // Determinar descuento según el tipo
+    let porcentaje = 0;
+    if (plan.tipoPromo === 'cupon') porcentaje = 0.20; // 20%
+    else if (plan.tipoPromo === 'dia_especial') porcentaje = 0.15; // 15%
+    else if (plan.tipoPromo === 'amigos') porcentaje = 0.50; // 50%
+
+    // Aplicar el descuento sobre la deuda
+    const montoDescuento = socioActual.deuda * porcentaje;
+    socioActual.deuda -= montoDescuento;
+    descuentoCobroAplicado = true;
+
+    // Actualizar UI General
+    const totalCaja = document.getElementById('total-caja');
+    if(totalCaja) {
+        totalCaja.innerHTML = `$${socioActual.deuda.toLocaleString()} <br><span class="text-sm text-green-400">¡Descuento de $${montoDescuento.toLocaleString()} aplicado!</span>`;
+    }
+    
+    // Feedback visual en el input/botón
+    inputCupon.value = codigo;
+    inputCupon.disabled = true;
+    inputCupon.classList.add('text-green-400', 'border-green-500', 'bg-green-500/10');
+    
+    btn.innerHTML = `<i class="fas fa-check"></i>`;
+    btn.classList.replace('bg-orange-500', 'bg-green-600');
+    btn.classList.replace('hover:bg-orange-600', 'hover:bg-green-700');
+    btn.disabled = true;
+
+    const cuponMsg = document.getElementById('msg-cupon-cobro');
+    const valorMsg = document.getElementById('valor-cupon-aplicado');
+    if(cuponMsg && valorMsg){
+        valorMsg.innerText = porcentaje * 100;
+        cuponMsg.classList.remove('hidden');
+    }
+
+    // Refrescar el sub-panel de efectivo si está abierto para mostrar el nuevo total
+    if (typeof currentMetodoModal !== 'undefined' && currentMetodoModal && !document.getElementById('pago-opciones').classList.contains('hidden') === false) {
+        mostrarPago(currentMetodoModal);
+    }
+}

@@ -1,0 +1,65 @@
+<div id="v-adm-planes" class="view-section p-10 space-y-8 italic uppercase">
+
+  <!-- Header -->
+  <div>
+    <p class="text-[10px] text-slate-500 tracking-[0.3em] font-bold uppercase">Gestión / Planes</p>
+    <h1 class="text-4xl font-black text-white mt-1">Config. de <span class="text-orange-500">Planes y Promociones</span></h1>
+  </div>
+
+  <!-- Body: dos columnas -->
+  <div class="flex flex-col md:flex-row gap-8">
+
+    <!-- Izquierda: Lista de planes -->
+    <div class="w-full md:w-1/2 space-y-4" id="lista-planes-admin">
+      <!-- Inyectado por JS -->
+    </div>
+
+    <!-- Derecha: Formulario de edición -->
+    <div class="w-full md:w-1/2 bg-slate-900/30 border border-slate-800 rounded-2xl p-8 space-y-6">
+      <h3 class="text-sm font-black text-orange-500 uppercase tracking-widest">Editar Configuración</h3>
+      <div class="space-y-5">
+
+        <div>
+          <label class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Nombre del Plan</label>
+          <input type="text" id="edit-nombre-plan" disabled
+            class="w-full bg-slate-900 border border-slate-800 text-slate-400 p-3 rounded-xl font-black uppercase cursor-not-allowed">
+        </div>
+
+        <div>
+          <label class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Precio Base ($)</label>
+          <input type="number" id="edit-precio-base"
+            class="w-full bg-slate-900 border border-slate-700 text-white p-3 rounded-xl font-black uppercase focus:outline-none focus:border-orange-500 transition">
+        </div>
+
+        <div>
+          <label class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Tipo de Promoción</label>
+          <select id="edit-tipo-promo" onchange="cambiarTipoPromo()"
+            class="w-full bg-slate-900 border border-slate-700 text-white p-3 rounded-xl font-black uppercase focus:outline-none focus:border-orange-500 transition appearance-none">
+            <option value="ninguna">Ninguna</option>
+            <option value="dia_especial">Día Especial</option>
+            <option value="amigos">Por Amigos</option>
+            <option value="cupon">Cupón de Descuento</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Detalle de la Promoción</label>
+          <div id="contenedor-valor-promo">
+            <input type="text" id="edit-valor-promo" disabled
+              class="w-full bg-slate-900 border border-slate-800 text-slate-500 p-3 rounded-xl font-black uppercase cursor-not-allowed"
+              placeholder="Seleccione un tipo de promoción...">
+          </div>
+        </div>
+
+        <div class="pt-2">
+          <button onclick="guardarCambiosPlan()"
+            class="w-full bg-orange-500 hover:bg-orange-600 text-white p-4 rounded-xl font-black uppercase tracking-widest transition shadow-lg shadow-orange-500/20 flex justify-center items-center gap-2">
+            <i class="fas fa-save"></i> Guardar Configuración
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
