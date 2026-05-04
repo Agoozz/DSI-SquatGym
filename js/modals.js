@@ -47,6 +47,13 @@ function cerrarFlujoPago(){
 
 window.volverPago = function(){
 
+    if (window.reciboPendienteDeMostrar) {
+        window.reciboPendienteDeMostrar = false;
+        cerrarM();
+        setTimeout(() => abrirM('modal-recibo'), 150);
+        return;
+    }
+
     const cont = document.getElementById("pago-contenido");
     const opciones = document.getElementById("pago-opciones");
 

@@ -14,10 +14,7 @@ function pagoCorrecto() {
         abrirM('modal-retiro-cliente');
 
     } else {
-
-        alert("Pago de cuota registrado ✔");
-
-        cerrarFlujoPago();
+        // Se omite el alert y cerrarFlujoPago() para que el usuario presione la flecha de 'Volver' y se despliegue el recibo.
     }
 }
 
@@ -148,13 +145,73 @@ function calcularVueltoModal(total){
       const cuponMsg = document.getElementById('msg-cupon-cobro');
       if(cuponMsg) cuponMsg.classList.add('hidden');
 
-      cerrarFlujoPago();
-      closeModal();
+      // El flujo de pago se mantiene abierto para que el usuario presione Volver y vea el recibo.
       
       const clienteBox = document.getElementById('cliente-box');
       if(clienteBox) clienteBox.classList.add('hidden');
       
       filtrarSocios(); // refrescar tabla
+
+      // Si estamos en la vista de alumno, actualizar la interfaz
+      actualizarUIAlumnoPagoExitoso();
+  }
+
+  function actualizarUIAlumnoPagoExitoso() {
+      // 1. Update access indicator
+      const dot = document.getElementById('alu-estado-acceso-dot');
+      const text = document.getElementById('alu-estado-acceso-texto');
+      if (dot && text) {
+          dot.className = 'w-2 h-2 rounded-full bg-green-500';
+          text.innerText = 'HABILITADO';
+          text.className = 'text-[8px] text-green-400 font-bold tracking-widest';
+          document.getElementById('alu-estado-acceso-container').className = 'absolute top-4 right-4 flex items-center gap-1.5 bg-green-900/20 px-2 py-1 rounded-full border border-green-800/50';
+      }
+
+      // 2. Update next due date
+      const vencText = document.getElementById('alu-vencimiento-texto');
+      if (vencText) {
+          vencText.innerText = '10 / 06 / 2026';
+      }
+
+      // 3. Update debt details box to indicate quota is active
+      const totalAdeudado = document.getElementById('alu-total-adeudado');
+      const cuotaBadge = document.getElementById('alu-estado-cuota-badge');
+      if (totalAdeudado && cuotaBadge) {
+          totalAdeudado.innerText = '$0';
+          cuotaBadge.classList.add('hidden');
+      }
+
+      const detalleDeuda = document.getElementById('alu-detalle-deuda');
+      if (detalleDeuda) {
+          detalleDeuda.innerHTML = '';
+          detalleDeuda.classList.add('hidden');
+      }
+
+      const btnPagar = document.getElementById('alu-btn-pagar');
+      if (btnPagar) {
+          btnPagar.disabled = true;
+          btnPagar.className = 'w-full bg-slate-800 text-slate-500 text-[10px] font-black py-3 rounded-lg flex justify-center items-center gap-2 cursor-not-allowed';
+          btnPagar.innerText = 'CUOTA AL DÍA';
+      }
+
+      // 4. Update banners
+      const bannerAlerta = document.getElementById('banner-alerta-cliente');
+      if (bannerAlerta) {
+          bannerAlerta.innerHTML = '';
+      }
+
+      const bannerRestr = document.getElementById('banner-restriccion-cliente');
+      if (bannerRestr) {
+          bannerRestr.innerHTML = `
+              <div class="glass-card p-4 border-l-4 border-green-500 bg-green-500/5 flex items-center gap-4">
+                  <i class="fas fa-check-circle text-green-500 text-xl flex-shrink-0"></i>
+                  <div>
+                      <p class="text-xs font-black text-green-400 uppercase">Acceso Habilitado</p>
+                      <p class="text-[9px] text-slate-400">Podés acceder a la sucursal sin restricciones.</p>
+                  </div>
+              </div>
+          `;
+      }
   }
 
 function simularPagoQR(){

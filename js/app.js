@@ -191,8 +191,7 @@ function generarRecibo(socio, monto, metodo) {
           </div>
           <p class="text-[8px] text-slate-600 text-center uppercase tracking-widest">Este comprobante es válido como recibo de pago</p>
       `;
-    cerrarM();
-    setTimeout(() => abrirM('modal-recibo'), 150);
+    window.reciboPendienteDeMostrar = true;
 }
 
 function imprimirRecibo() {
@@ -325,8 +324,6 @@ function renderizarAlertaCliente() {
                   <p class="text-xs font-black text-yellow-300 uppercase">Cuota Mayo vence el 10/05/2025</p>
                   <p class="text-[9px] text-slate-400">Evitá restricciones abonando antes del vencimiento.</p>
               </div>
-              <button onclick="abrirM('modal-pago-selector','cuota')"
-                  class="btn-ui btn-naranja text-[9px] px-4 py-2 ml-auto flex-shrink-0">Pagar ahora</button>
           </div>`;
 
     // Restricción de ingreso por deuda vencida
@@ -410,6 +407,68 @@ registrarPagoExitoso = function (metodo) {
     const monto = socioActual ? socioActual.deuda : totalCobro;
     _registrarPagoExitosoOrig(metodo);
     generarRecibo(nombre, monto, metodo);
+
+    // Actualizar historial del alumno
+    const cuotaPendiente = historialPagosCliente.find(p => p.estado === 'Pendiente');
+    if (cuotaPendiente) {
+        cuotaPendiente.id = reciboActual.num || 'REC-' + Date.now().toString().slice(-6);
+        cuotaPendiente.fecha = new Date().toISOString().split('T')[0];
+        cuotaPendiente.metodo = metodo;
+        cuotaPendiente.estado = 'Pagado';
+        
+        // Actualizar KPIs del historial
+        const kpiTotal = document.getElementById('hist-kpi-total');
+        if (kpiTotal) {
+            const sum = historialPagosCliente.filter(p => p.estado === 'Pagado').reduce((acc, p) => acc + p.monto, 0);
+            kpiTotal.innerText = '$' + sum.toLocaleString();
+        }
+        const kpiPagas = document.getElementById('hist-kpi-pagas');
+        if (kpiPagas) {
+            kpiPagas.innerText = historialPagosCliente.filter(p => p.estado === 'Pagado').length;
+        }
+        const kpiPend = document.getElementById('hist-kpi-pendientes');
+        if (kpiPend) {
+            const pendientesCount = historialPagosCliente.filter(p => p.estado === 'Pendiente').length;
+            kpiPend.innerText = pendientesCount;
+            if (pendientesCount === 0) {
+                kpiPend.classList.remove('text-red-400');
+                kpiPend.classList.add('text-white');
+            }
+        }
+
+        if (typeof renderHistorial === 'function') {
+            renderHistorial();
+        }
+
+        // Actualizar Notificaciones del Alumno
+        if (typeof alertasCliente !== 'undefined') {
+            // Eliminar notificaciones de vencimiento y restricción
+            alertasCliente = alertasCliente.filter(a => a.tipo !== 'vencimiento');
+            
+            const fechaHoy = new Date().toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+            
+            // Agregar nueva notificación de pago
+            alertasCliente.unshift({
+                id: Date.now(), tipo: 'informacion', icono: 'fas fa-check-circle', color: '#4ade80',
+                borderColor: '#22c55e', bgColor: 'rgba(34,197,94,0.05)',
+                titulo: 'Pago de Mayo Acreditado',
+                desc: `Tu pago de $${monto.toLocaleString()} fue acreditado correctamente el ${fechaHoy} mediante ${metodo}.`,
+                fecha: 'Recién', leida: false,
+                accion: { label: 'Ver Recibo', fn: `verComprobanteHistorial('${cuotaPendiente.id}')` }
+            });
+
+            if (typeof renderNotificaciones === 'function') {
+                renderNotificaciones();
+                // Actualizar contador de notificaciones si existe en la UI
+                const countBadge = document.getElementById('noti-badge-count');
+                if (countBadge) {
+                    const noLeidas = alertasCliente.filter(a => !a.leida).length;
+                    countBadge.innerText = noLeidas;
+                    countBadge.style.display = noLeidas > 0 ? 'flex' : 'none';
+                }
+            }
+        }
+    }
 };
 
 
@@ -899,7 +958,7 @@ function exportarHistorial() {
 // ══════════════════════════════════════════════
 // NOTIFICACIONES CLIENTE (req. 3.1.26)
 // ══════════════════════════════════════════════
-const alertasCliente = [
+let alertasCliente = [
     {
         id: 1, tipo: 'vencimiento', icono: 'fas fa-exclamation-circle', color: '#f87171',
         borderColor: '#ef4444', bgColor: 'rgba(239,68,68,0.06)',
