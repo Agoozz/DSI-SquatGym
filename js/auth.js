@@ -176,11 +176,25 @@ function ingresarAlSistema() {
     // renderMarketCatalog(); // Esta función se llamará cuando se navegue al Kiosco
 
 
+    // Mostrar/Ocultar campanita según rol
+    const notifContainer = document.getElementById('notificaciones-header-container');
+    if (notifContainer) {
+        if (rRol === 'alumno') {
+            notifContainer.classList.remove('hidden');
+        } else {
+            notifContainer.classList.add('hidden');
+        }
+    }
+
     if (rRol === 'admin' || rRol === 'secretaria' || rRol === 'encargado') {
         setTimeout(renderizarAlertasStaff, 100);
     }
     if (rRol === 'alumno') {
-        setTimeout(actualizarUIPerfilAlumno, 100);
+        setTimeout(() => {
+            actualizarUIPerfilAlumno();
+            cargarNotificaciones();
+            mostrarModalEstadoCuenta(); // Mostrar popup de bienvenida con estado
+        }, 100);
     }
 }
 
@@ -486,8 +500,187 @@ document.addEventListener('DOMContentLoaded', () => {
             if (e.key === 'Enter') entrarApp();
         });
     }
+
+    // Vincular botón de notificaciones
+    const btnNotif = document.getElementById('btn-notificaciones');
+    if (btnNotif) {
+        btnNotif.onclick = toggleNotificaciones;
+    }
 });
 
+// ══════════════════════════════════════════════
+// SISTEMA DE NOTIFICACIONES DINÁMICAS
+// ══════════════════════════════════════════════
+
+function getNotificacionesData() {
+    const data = [];
+    
+    // Obtener socio actual desde la base de datos global (sociosDB de data.js)
+    const socio = (typeof sociosDB !== 'undefined')
+        ? sociosDB.find(s => s.dni === usuarioActual.dni)
+        : null;
+
+    if (!socio) return data;
+
+    // 1. Lógica de Deuda/Mora (Generalizada para todos los alumnos)
+    if (socio.deuda > 0) {
+        if (socio.dni === "9") {
+            // Caso de Mora Pesada (Ej: Lucía)
+            data.push({
+                id: 'notif-bloqueo',
+                tipo: 'vencimiento',
+                icono: 'fas fa-ban',
+                color: 'text-red-500',
+                borderColor: '#ef4444',
+                bgColor: 'rgba(239, 68, 68, 0.1)',
+                titulo: 'ACCESO RESTRINGIDO',
+                desc: 'Tu cuenta ha sido bloqueada por mora superior a 15 días. Dirígete a administración.',
+                fecha: 'Ayer • 08:15 PM',
+                accion: { label: 'Ver Estado', fn: "navV('alu-pago')" }
+            });
+        } else {
+            // Caso de Deuda Pendiente (Valentino y otros)
+            data.push({
+                id: 'notif-deuda',
+                tipo: 'vencimiento',
+                icono: 'fas fa-exclamation-triangle',
+                color: 'text-yellow-500',
+                borderColor: '#eab308',
+                bgColor: 'rgba(234, 179, 8, 0.1)',
+                titulo: 'Pago Pendiente',
+                desc: `Tienes una cuota pendiente de $12.500. Abona para evitar recargos.`,
+                fecha: 'Hoy • 10:30 AM',
+                accion: { label: 'Pagar Ahora', fn: "abrirM('modal-pago-selector','cuota')" }
+            });
+        }
+    }
+
+    // 2. Notificación SIEMPRE (Promo genérica)
+    data.push({
+        id: 'notif-promo',
+        tipo: 'promocion',
+        icono: 'fas fa-tag',
+        color: 'text-orange-500',
+        borderColor: '#f97316',
+        bgColor: 'rgba(249, 115, 22, 0.1)',
+        titulo: '¡Nueva Promo!',
+        desc: '2x1 en Powerade en el Kiosco.',
+        fecha: 'Hace 1 hora',
+        accion: { label: 'Ir al Kiosco', fn: "navV('alu-tienda')" }
+    });
+
+    return data;
+}
+
+function toggleNotificaciones() {
+    const dropdown = document.getElementById('dropdown-notificaciones');
+    if (!dropdown) return;
+
+    if (dropdown.classList.contains('hidden')) {
+        cargarNotificaciones();
+        dropdown.classList.remove('hidden');
+    } else {
+        dropdown.classList.add('hidden');
+    }
+}
+
+function cargarNotificaciones() {
+    const lista = document.getElementById('lista-notificaciones');
+    const badge = document.getElementById('badge-notificaciones');
+    if (!lista) return;
+
+    lista.innerHTML = '';
+    const notificaciones = getNotificacionesData();
+
+    notificaciones.forEach(notif => {
+        lista.innerHTML += `
+            <div class="p-4 border-b border-slate-800/50 hover:bg-slate-800/30 transition cursor-pointer flex gap-4">
+                <div class="w-10 h-10 rounded-full ${notif.bgColor.replace('rgba', 'bg').replace(', 0.1)', '/10')} flex items-center justify-center shrink-0">
+                    <i class="${notif.icono} ${notif.color} text-sm"></i>
+                </div>
+                <div class="space-y-1">
+                    <p class="text-[11px] font-black text-white leading-tight uppercase">${notif.titulo}</p>
+                    <p class="text-[10px] text-slate-400 leading-snug">${notif.desc}</p>
+                    <p class="text-[9px] font-bold text-slate-500 uppercase">${notif.fecha}</p>
+                </div>
+            </div>`;
+    });
+
+    // Actualizar badge
+    if (badge) {
+        badge.innerText = notificaciones.length;
+        badge.classList.toggle('hidden', notificaciones.length === 0);
+    }
+}
+
+// ══════════════════════════════════════════════
+// POPUP DE ESTADO DE CUENTA (INICIO ALUMNO)
+// ══════════════════════════════════════════════
+
+function mostrarModalEstadoCuenta() {
+    const socio = (typeof sociosDB !== 'undefined')
+        ? sociosDB.find(s => s.dni === usuarioActual.dni)
+        : null;
+
+    if (!socio) return;
+
+    const iconCont = document.getElementById('status-icon-container');
+    const icon = document.getElementById('status-icon');
+    const title = document.getElementById('status-title');
+    const desc = document.getElementById('status-desc');
+    const extraInfo = document.getElementById('status-extra-info');
+    const monto = document.getElementById('status-monto');
+    const btnSec = document.getElementById('status-btn-secondary');
+
+    // Reset
+    iconCont.className = 'w-20 h-20 rounded-full mx-auto mb-6 flex items-center justify-center text-4xl shadow-2xl';
+    extraInfo.classList.add('hidden');
+    btnSec.classList.add('hidden');
+
+    if (socio.deuda > 0) {
+        if (socio.dni === "9") {
+            // DEUDA / MORA PESADA
+            iconCont.classList.add('bg-red-500/20', 'text-red-500', 'border', 'border-red-500/30');
+            icon.className = 'fas fa-ban';
+            title.innerText = 'Acceso Restringido';
+            title.className = 'text-2xl font-black text-red-500 uppercase tracking-tighter mb-2 italic';
+            desc.innerText = 'Tu cuenta registra una mora superior a 15 días. El acceso a las instalaciones se encuentra suspendido.';
+            monto.innerText = `$12.500`; // Sincronizado con checkout
+            extraInfo.classList.remove('hidden');
+            btnSec.classList.remove('hidden');
+        } else {
+            // PENDIENTE
+            iconCont.classList.add('bg-yellow-500/20', 'text-yellow-500', 'border', 'border-yellow-500/30');
+            icon.className = 'fas fa-exclamation-triangle';
+            title.innerText = 'Pago Pendiente';
+            title.className = 'text-2xl font-black text-yellow-500 uppercase tracking-tighter mb-2 italic';
+            desc.innerText = 'Tienes una cuota pendiente por abonar. Recuerda regularizar para evitar recargos o bloqueos.';
+            monto.innerText = `$12.500`; // Valor de cuota referencia
+            extraInfo.classList.remove('hidden');
+            btnSec.classList.remove('hidden');
+        }
+    } else {
+        // AL DÍA
+        iconCont.classList.add('bg-green-500/20', 'text-green-400', 'border', 'border-green-500/30');
+        icon.className = 'fas fa-check-circle';
+        title.innerText = '¡Todo en orden!';
+        title.className = 'text-2xl font-black text-green-400 uppercase tracking-tighter mb-2 italic';
+        desc.innerText = 'Tu cuenta se encuentra al día. ¡Gracias por ser parte de SquatGym! Nos vemos en el entrenamiento.';
+    }
+
+    abrirM('modal-estado-cuenta-alumno');
+}
+
+// Cerrar el dropdown al hacer clic fuera
+document.addEventListener('click', (e) => {
+    const dropdown = document.getElementById('dropdown-notificaciones');
+    const btn = document.getElementById('btn-notificaciones');
+    if (!dropdown || !btn) return;
+
+    if (!dropdown.contains(e.target) && !btn.contains(e.target)) {
+        dropdown.classList.add('hidden');
+    }
+});
 
 // ══════════════════════════════════════════════
 // LECTURA DE DATOS PARA PERFIL SOCIO

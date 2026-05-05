@@ -958,79 +958,39 @@ function exportarHistorial() {
 // ══════════════════════════════════════════════
 // NOTIFICACIONES CLIENTE (req. 3.1.26)
 // ══════════════════════════════════════════════
-let alertasCliente = [
-    {
-        id: 1, tipo: 'vencimiento', icono: 'fas fa-exclamation-circle', color: '#f87171',
-        borderColor: '#ef4444', bgColor: 'rgba(239,68,68,0.06)',
-        titulo: 'Cuota Mayo 2026 — Vence el 10/05/2026',
-        desc: 'Tenés $12.500 pendientes de pago. Abonando antes del vencimiento evitás la restricción de acceso.',
-        fecha: 'Hace 2 días', leida: false,
-        accion: { label: 'Pagar Ahora', fn: "abrirM('modal-pago-selector','cuota')" }
-    },
-    {
-        id: 2, tipo: 'vencimiento', icono: 'fas fa-ban', color: '#f87171',
-        borderColor: '#dc2626', bgColor: 'rgba(239,68,68,0.08)',
-        titulo: 'Restricción de Acceso Activa',
-        desc: 'Tu deuda supera los 15 días. Tu acceso a las instalaciones está suspendido hasta regularizar tu situación.',
-        fecha: 'Hoy', leida: false,
-        accion: { label: 'Ver Estado', fn: "navV('alu-pago')" }
-    },
-    {
-        id: 3, tipo: 'promocion', icono: 'fas fa-star', color: '#fb923c',
-        borderColor: '#f97316', bgColor: 'rgba(249,115,22,0.06)',
-        titulo: '¡Canjeá tus SquatPoints!',
-        desc: 'Tenés 1.450 puntos acumulados. Podés usar 1.000 puntos para obtener $200 de descuento en tu próxima compra en el kiosco.',
-        fecha: 'Hace 3 días', leida: false,
-        accion: { label: 'Ir al Kiosco', fn: "navV('alu-tienda')" }
-    },
-    {
-        id: 4, tipo: 'promocion', icono: 'fas fa-tag', color: '#fb923c',
-        borderColor: '#f97316', bgColor: 'rgba(249,115,22,0.05)',
-        titulo: 'Promo Mayo: Cuota + Kiosco',
-        desc: 'Pagá tu cuota de Mayo antes del 5/5 y obtené $500 de crédito en el kiosco. Válido solo por tiempo limitado.',
-        fecha: 'Hace 5 días', leida: true,
-        accion: { label: 'Ver Promo', fn: "abrirM('modal-pago-selector','cuota')" }
-    },
-    {
-        id: 5, tipo: 'informacion', icono: 'fas fa-info-circle', color: '#60a5fa',
-        borderColor: '#3b82f6', bgColor: 'rgba(59,130,246,0.05)',
-        titulo: 'Actualización de Precios — Junio 2026',
-        desc: 'A partir del 1 de Junio la cuota mensual del plan Platinum pasará de $12.500 a $13.500. Tu débito automático se actualizará automáticamente.',
-        fecha: 'Hace 1 semana', leida: true,
-        accion: null
-    },
-    {
-        id: 6, tipo: 'informacion', icono: 'fas fa-check-circle', color: '#4ade80',
-        borderColor: '#22c55e', bgColor: 'rgba(34,197,94,0.05)',
-        titulo: 'Pago de Abril Acreditado',
-        desc: 'Tu pago de $12.500 por Cuota Abril 2026 fue acreditado correctamente el 04/04/2026 mediante QR.',
-        fecha: 'Hace 3 semanas', leida: true,
-        accion: { label: 'Ver Recibo', fn: "verComprobanteHistorial('REC-240010')" }
-    },
-];
-
 let filtroAlertaActivo = 'todas';
 
 function renderNotificaciones() {
     const panel = document.getElementById('panel-notificaciones');
     if (!panel) return;
 
-    const lista = filtroAlertaActivo === 'todas'
-        ? alertasCliente
-        : alertasCliente.filter(a => a.tipo === filtroAlertaActivo);
+    let notificaciones = getNotificacionesData();
 
-    panel.innerHTML = lista.map(a => `
+    // Aplicar filtro si no es 'todas'
+    if (filtroAlertaActivo !== 'todas') {
+        notificaciones = notificaciones.filter(a => a.tipo === filtroAlertaActivo);
+    }
+
+    if (notificaciones.length === 0) {
+        panel.innerHTML = `
+            <div class="glass-card p-10 text-center border-dashed border-2 border-slate-800">
+                <i class="fas fa-bell-slash text-slate-700 text-4xl mb-4"></i>
+                <p class="text-slate-500 font-black uppercase tracking-widest text-xs">No tienes notificaciones en esta categoría</p>
+            </div>`;
+        return;
+    }
+
+    panel.innerHTML = notificaciones.map(a => `
           <div class="glass-card p-5 border-l-4 transition-all"
               style="border-left-color:${a.borderColor};background:${a.bgColor};">
               <div class="flex items-start gap-4">
                   <div class="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center"
                       style="background:${a.bgColor};border:1px solid ${a.borderColor};">
-                      <i class="${a.icono}" style="color:${a.color};font-size:1rem;"></i>
+                      <i class="${a.icono}" style="color:${a.borderColor};font-size:1rem;"></i>
                   </div>
                   <div class="flex-1 min-w-0">
                       <div class="flex justify-between items-start gap-2">
                           <p class="text-xs font-black text-white leading-snug">
-                              ${a.leida ? '' : '<span style="display:inline-block;width:6px;height:6px;background:#f97316;border-radius:50%;margin-right:6px;vertical-align:middle;"></span>'}
                               ${a.titulo}
                           </p>
                           <span class="text-[9px] text-slate-500 font-black flex-shrink-0">${a.fecha}</span>
@@ -1045,26 +1005,18 @@ function renderNotificaciones() {
               </div>
           </div>
       `).join('');
-
-    // Actualizar badge con no leídas
-    const noLeidas = alertasCliente.filter(a => !a.leida).length;
-    const badge = document.getElementById('badge-notif');
-    if (badge) badge.innerText = noLeidas > 0 ? noLeidas : '';
-
-    // Marcar todas como leídas al abrir
-    setTimeout(() => {
-        alertasCliente.forEach(a => a.leida = true);
-        if (badge) badge.innerText = '';
-    }, 2000);
 }
 
 function filtrarAlertas(tipo) {
     filtroAlertaActivo = tipo;
     document.querySelectorAll('.btn-alerta-tab').forEach(b => {
-        b.style.background = '#334155';
-        b.style.color = '#94a3b8';
+        b.classList.remove('btn-naranja');
+        b.classList.add('bg-slate-700');
     });
     const activo = document.getElementById('btn-alerta-' + tipo);
-    if (activo) { activo.style.background = '#f97316'; activo.style.color = 'white'; }
+    if (activo) {
+        activo.classList.remove('bg-slate-700');
+        activo.classList.add('btn-naranja');
+    }
     renderNotificaciones();
 }

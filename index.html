@@ -150,6 +150,39 @@
 
       <div class="flex items-center gap-8">
         <span id="header-username" class="text-[10px] font-black text-orange-400 uppercase tracking-widest"></span>
+
+        <!-- Botón y Dropdown de Notificaciones -->
+        <div id="notificaciones-header-container" class="relative hidden">
+          <button id="btn-notificaciones" class="text-slate-500 hover:text-orange-500 transition relative">
+            <i class="fa-solid fa-bell text-xl"></i>
+            <!-- Badge de cantidad -->
+            <span id="badge-notificaciones"
+              class="absolute -top-1.5 -right-1.5 min-w-[16px] h-[16px] bg-red-500 rounded-full border-2 border-slate-950 flex items-center justify-center text-[8px] font-black text-white leading-none"></span>
+          </button>
+
+          <!-- Dropdown Notificaciones -->
+          <div id="dropdown-notificaciones"
+            class="hidden absolute right-0 mt-4 w-[320px] bg-[#0f172a] border border-slate-800 rounded-2xl shadow-2xl z-[100] overflow-hidden">
+            <!-- Header -->
+            <div class="p-4 border-b border-slate-800 flex justify-between items-center bg-slate-900/50">
+              <h3 class="text-[10px] font-black text-white uppercase tracking-widest">Notificaciones</h3>
+              <button class="text-[9px] font-bold text-orange-500 hover:text-orange-400 uppercase">Marcar como
+                leídas</button>
+            </div>
+
+            <!-- Cuerpo -->
+            <div id="lista-notificaciones" class="max-h-[350px] overflow-y-auto custom-scrollbar">
+              <!-- Inyectado por JS -->
+            </div>
+
+            <!-- Footer -->
+            <button id="btn-ver-todas-notificaciones" onclick="navV('alu-notificaciones'); renderNotificaciones();"
+              class="w-full p-3 bg-slate-900/80 hover:bg-slate-900 text-[10px] font-black text-slate-400 hover:text-white transition uppercase tracking-widest border-t border-slate-800">
+              Ver todas las notificaciones
+            </button>
+          </div>
+        </div>
+
         <button onclick="location.reload()" class="text-slate-500 hover:text-red-500 transition">
           <i class="fa-solid fa-power-off text-xl"></i>
         </button>
@@ -454,6 +487,48 @@
         Cancelar
       </button>
 
+    </div>
+  </div>
+
+  <!-- POP-UP DE ESTADO DE CUENTA ALUMNO (NOTIFICACIÓN SUPERIOR) -->
+  <div id="modal-estado-cuenta-alumno" class="modal-base !bg-transparent !backdrop-blur-none !items-start !pt-10 !z-[2000]">
+    <div class="bg-[#0f172a]/95 backdrop-blur-xl border border-slate-700/50 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] p-6 text-center relative overflow-hidden w-full max-w-md animate-in fade-in slide-in-from-top-10 duration-500 mx-auto">
+      <!-- Glow effect -->
+      <div class="absolute -top-10 -left-10 w-32 h-32 bg-orange-500/10 blur-3xl rounded-full"></div>
+      
+      <div class="flex items-center gap-5 text-left relative z-10">
+        <div id="status-icon-container"
+          class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shrink-0 shadow-lg">
+          <i id="status-icon" class="fas fa-check-circle"></i>
+        </div>
+
+        <div class="flex-1">
+          <h2 id="status-title" class="text-lg font-black text-white uppercase tracking-tighter italic">¡Todo en orden!</h2>
+          <p id="status-desc" class="text-slate-400 text-[10px] leading-tight normal-case font-medium">Tu cuenta se encuentra al día. ¡Sigue entrenando!</p>
+        </div>
+
+        <button onclick="cerrarM()" class="text-slate-500 hover:text-white transition p-2">
+            <i class="fas fa-times text-sm"></i>
+        </button>
+      </div>
+
+      <div id="status-extra-info" class="mt-4 bg-slate-900/50 rounded-xl p-3 border border-slate-800 hidden relative z-10">
+        <div class="flex justify-between items-center">
+          <span class="text-[9px] font-black text-slate-500 uppercase tracking-widest">Monto Pendiente</span>
+          <span id="status-monto" class="text-sm font-black text-white">$0</span>
+        </div>
+      </div>
+
+      <div class="flex gap-2 mt-4 relative z-10">
+        <button id="status-btn-primary" onclick="cerrarM()"
+          class="flex-1 py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 text-[9px] font-black uppercase italic rounded-xl transition-all border border-slate-700">
+          Entendido
+        </button>
+        <button id="status-btn-secondary" onclick="cerrarM(); navV('alu-pago');"
+          class="flex-1 py-3 bg-orange-500 hover:bg-orange-600 text-white text-[9px] font-black uppercase italic rounded-xl transition-all shadow-lg shadow-orange-500/20 hidden">
+          Ir a pagar
+        </button>
+      </div>
     </div>
   </div>
 
