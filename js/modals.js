@@ -47,10 +47,26 @@ function cerrarFlujoPago(){
 
 window.volverPago = function(){
 
+    const modalRecibo = document.getElementById('modal-recibo');
+    
+    // Si hay un mensaje de éxito visible en el checkout, el botón Volver debe cerrar todo y NO abrir el recibo.
+    const successMsg = document.querySelector('.text-green-400.text-sm');
+    if (successMsg) {
+        window.reciboPendienteDeMostrar = false;
+        cerrarM();
+        return;
+    }
+
+    if (modalRecibo && modalRecibo.classList.contains('active')) {
+        window.reciboPendienteDeMostrar = false;
+        cerrarM();
+        return;
+    }
+
     if (window.reciboPendienteDeMostrar) {
         window.reciboPendienteDeMostrar = false;
         cerrarM();
-        setTimeout(() => abrirM('modal-recibo'), 150);
+        abrirM('modal-recibo');
         return;
     }
 

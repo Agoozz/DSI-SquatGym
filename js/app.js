@@ -415,7 +415,7 @@ registrarPagoExitoso = function (metodo) {
         cuotaPendiente.fecha = new Date().toISOString().split('T')[0];
         cuotaPendiente.metodo = metodo;
         cuotaPendiente.estado = 'Pagado';
-        
+
         // Actualizar KPIs del historial
         const kpiTotal = document.getElementById('hist-kpi-total');
         if (kpiTotal) {
@@ -444,9 +444,9 @@ registrarPagoExitoso = function (metodo) {
         if (typeof alertasCliente !== 'undefined') {
             // Eliminar notificaciones de vencimiento y restricción
             alertasCliente = alertasCliente.filter(a => a.tipo !== 'vencimiento');
-            
+
             const fechaHoy = new Date().toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit', year: 'numeric' });
-            
+
             // Agregar nueva notificación de pago
             alertasCliente.unshift({
                 id: Date.now(), tipo: 'informacion', icono: 'fas fa-check-circle', color: '#4ade80',

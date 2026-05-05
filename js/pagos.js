@@ -117,102 +117,57 @@ function calcularVueltoModal(total){
       document.getElementById("vuelto-texto").innerText = "Vuelto: $" + Math.max(0, rec - total).toLocaleString();
   }
 
- function registrarPagoExitoso(metodo) {
-      // Actualizar sociosDB si hay un socio activo
-      if (socioActual) {
-          socioActual.deuda   = 0;
-          socioActual.estado  = 'Al día';
-          const monto = socioActual.deuda || totalCobro;
-          transacciones.push({ tipo: metodo, monto: monto, cliente: socioActual.nombre });
-          socioActual = null;
-      }
-      
-      // Reiniciar el estado del cupón
-      descuentoCobroAplicado = false;
-      const btn = document.getElementById('btn-aplicar-cupon');
-      if (btn) {
-          btn.innerText = 'Aplicar';
-          btn.classList.replace('bg-green-600', 'bg-orange-500');
-          btn.classList.replace('hover:bg-green-700', 'hover:bg-orange-600');
-          btn.disabled = false;
-      }
-      const inputCupon = document.getElementById('input-cupon-cobro');
-      if(inputCupon){
-          inputCupon.value = '';
-          inputCupon.disabled = false;
-          inputCupon.classList.remove('text-green-400', 'border-green-500', 'bg-green-500/10');
-      }
-      const cuponMsg = document.getElementById('msg-cupon-cobro');
-      if(cuponMsg) cuponMsg.classList.add('hidden');
+function registrarPagoExitoso(metodo) {
+    // 1. Actualizar base de datos (Buscar socio en sociosDB por DNI)
+    const dni = usuarioActual.dni;
+    const socio = sociosDB.find(s => s.dni === dni);
+    
+    if (socio) {
+        const montoPagado = socio.deuda;
+        socio.deuda = 0;
+        socio.estado = 'Al día';
 
-      // El flujo de pago se mantiene abierto para que el usuario presione Volver y vea el recibo.
-      
-      const clienteBox = document.getElementById('cliente-box');
-      if(clienteBox) clienteBox.classList.add('hidden');
-      
-      filtrarSocios(); // refrescar tabla
+        // 2. Agregar Transacción
+        const nuevaTrans = {
+            tipo: metodo,
+            monto: montoPagado,
+            cliente: socio.nombre,
+            fecha: new Date().toISOString().split('T')[0],
+            concepto: "Cuota",
+            sede: socio.sede || "Sede Centro"
+        };
+        transacciones.push(nuevaTrans);
+    }
+    
+    socioActual = null;
+    
+    // Reiniciar el estado del cupón
+    descuentoCobroAplicado = false;
+    const btn = document.getElementById('btn-aplicar-cupon');
+    if (btn) {
+        btn.innerText = 'Aplicar';
+        btn.classList.replace('bg-green-600', 'bg-orange-500');
+        btn.classList.replace('hover:bg-green-700', 'hover:bg-orange-600');
+        btn.disabled = false;
+    }
+    const inputCupon = document.getElementById('input-cupon-cobro');
+    if(inputCupon){
+        inputCupon.value = '';
+        inputCupon.disabled = false;
+        inputCupon.classList.remove('text-green-400', 'border-green-500', 'bg-green-500/10');
+    }
+    const cuponMsg = document.getElementById('msg-cupon-cobro');
+    if(cuponMsg) cuponMsg.classList.add('hidden');
 
-      // Si estamos en la vista de alumno, actualizar la interfaz
-      actualizarUIAlumnoPagoExitoso();
-  }
-
-  function actualizarUIAlumnoPagoExitoso() {
-      // 1. Update access indicator
-      const dot = document.getElementById('alu-estado-acceso-dot');
-      const text = document.getElementById('alu-estado-acceso-texto');
-      if (dot && text) {
-          dot.className = 'w-2 h-2 rounded-full bg-green-500';
-          text.innerText = 'HABILITADO';
-          text.className = 'text-[8px] text-green-400 font-bold tracking-widest';
-          document.getElementById('alu-estado-acceso-container').className = 'absolute top-4 right-4 flex items-center gap-1.5 bg-green-900/20 px-2 py-1 rounded-full border border-green-800/50';
-      }
-
-      // 2. Update next due date
-      const vencText = document.getElementById('alu-vencimiento-texto');
-      if (vencText) {
-          vencText.innerText = '10 / 06 / 2026';
-      }
-
-      // 3. Update debt details box to indicate quota is active
-      const totalAdeudado = document.getElementById('alu-total-adeudado');
-      const cuotaBadge = document.getElementById('alu-estado-cuota-badge');
-      if (totalAdeudado && cuotaBadge) {
-          totalAdeudado.innerText = '$0';
-          cuotaBadge.classList.add('hidden');
-      }
-
-      const detalleDeuda = document.getElementById('alu-detalle-deuda');
-      if (detalleDeuda) {
-          detalleDeuda.innerHTML = '';
-          detalleDeuda.classList.add('hidden');
-      }
-
-      const btnPagar = document.getElementById('alu-btn-pagar');
-      if (btnPagar) {
-          btnPagar.disabled = true;
-          btnPagar.className = 'w-full bg-slate-800 text-slate-500 text-[10px] font-black py-3 rounded-lg flex justify-center items-center gap-2 cursor-not-allowed';
-          btnPagar.innerText = 'CUOTA AL DÍA';
-      }
-
-      // 4. Update banners
-      const bannerAlerta = document.getElementById('banner-alerta-cliente');
-      if (bannerAlerta) {
-          bannerAlerta.innerHTML = '';
-      }
-
-      const bannerRestr = document.getElementById('banner-restriccion-cliente');
-      if (bannerRestr) {
-          bannerRestr.innerHTML = `
-              <div class="glass-card p-4 border-l-4 border-green-500 bg-green-500/5 flex items-center gap-4">
-                  <i class="fas fa-check-circle text-green-500 text-xl flex-shrink-0"></i>
-                  <div>
-                      <p class="text-xs font-black text-green-400 uppercase">Acceso Habilitado</p>
-                      <p class="text-[9px] text-slate-400">Podés acceder a la sucursal sin restricciones.</p>
-                  </div>
-              </div>
-          `;
-      }
-  }
+    // El flujo de pago se mantiene abierto para que el usuario presione Volver y vea el recibo.
+    const clienteBox = document.getElementById('cliente-box');
+    if(clienteBox) clienteBox.classList.add('hidden');
+    
+    filtrarSocios(); 
+    if (typeof actualizarUIPerfilAlumno === 'function') {
+        actualizarUIPerfilAlumno();
+    }
+}
 
 function simularPagoQR(){
       const el = document.getElementById("qr-estado");
@@ -221,6 +176,13 @@ function simularPagoQR(){
           const ok = Math.random() > 0.3;
           if(ok){
               el.innerHTML = `<span class="text-green-400 text-sm">✔ Pago Exitoso</span>`;
+              // Agregar botón Ver Comprobante
+              el.innerHTML += `
+                  <button onclick="verComprobanteDesdeModal('QR')" 
+                      class="btn-ui btn-naranja w-full mt-3 text-xs">
+                      <i class="fas fa-receipt mr-2"></i>Ver Comprobante
+                  </button>
+              `;
               setTimeout(() => registrarPagoExitoso('QR'), 900);
           } else {
               el.innerHTML = `<span class="text-red-400 text-sm">✘ Error de Conexión. Reintentá.</span>`;
@@ -238,6 +200,13 @@ function simularPagoQR(){
           const ok = Math.random() > 0.2;
           if(ok){
               el.innerHTML = `<span class="text-green-400 text-sm">✔ Transferencia Verificada</span>`;
+              // Agregar botón Ver Comprobante
+              el.innerHTML += `
+                  <button onclick="verComprobanteDesdeModal('Transferencia')" 
+                      class="btn-ui btn-naranja w-full mt-3 text-xs">
+                      <i class="fas fa-receipt mr-2"></i>Ver Comprobante
+                  </button>
+              `;
               setTimeout(() => registrarPagoExitoso('Transferencia'), 900);
           } else {
               el.innerHTML = `<span class="text-red-400 text-sm">✘ Comprobante inválido. Verificá los datos.</span>`;
@@ -257,6 +226,13 @@ function simularPosnet(){
           const ok = Math.random() > 0.25;
           if(ok){
               el.innerHTML = `<span class="text-green-400 text-sm">✔ Tarjeta Aprobada</span>`;
+              // Agregar botón Ver Comprobante
+              el.innerHTML += `
+                  <button onclick="verComprobanteDesdeModal('Tarjeta')" 
+                      class="btn-ui btn-naranja w-full mt-3 text-xs">
+                      <i class="fas fa-receipt mr-2"></i>Ver Comprobante
+                  </button>
+              `;
               setTimeout(() => registrarPagoExitoso('Tarjeta'), 900);
           } else {
               el.innerHTML = `<span class="text-red-400 text-sm">✘ Tarjeta Rechazada. Intentá con otro medio.</span>`;
@@ -406,4 +382,58 @@ function enviarNotificacionesDeuda() {
     // Aquí podrías filtrar a los socios con deuda si quisieras una lógica real,
     // pero por ahora cumplimos con la acción del botón.
     alert("🔔 Notificaciones enviadas correctamente a los alumnos con deuda.");
+}
+
+function verComprobanteDesdeModal(metodo) {
+    const nombre = socioActual?.nombre || document.getElementById('display-nombre')?.innerText || "Socio";
+    const monto = socioActual?.deuda || (typeof totalCobro !== 'undefined' ? totalCobro : 0);
+    
+    if (typeof generarRecibo === 'function') {
+        generarRecibo(nombre, monto, metodo);
+        window.reciboPendienteDeMostrar = false; // Reset flag to avoid "Volver" loop
+        closeModal();
+        abrirM('modal-recibo');
+    } else {
+        const num = 'REC-' + Date.now().toString().slice(-6);
+        const fecha = new Date().toLocaleString('es-AR');
+        
+        const reciboContenido = document.getElementById('recibo-contenido');
+        if (reciboContenido) {
+            reciboContenido.innerHTML = `
+                <div class="flex justify-between text-[9px] text-slate-500 uppercase tracking-widest border-b border-slate-700 pb-3 mb-1">
+                    <span>SquatGym SA</span>
+                    <span>${fecha}</span>
+                </div>
+                <div class="space-y-3">
+                    <div class="flex justify-between text-xs font-black">
+                        <span class="text-slate-400">N° Comprobante</span>
+                        <span class="text-orange-400">${num}</span>
+                    </div>
+                    <div class="flex justify-between text-xs font-black">
+                        <span class="text-slate-400">Socio</span>
+                        <span class="text-white">${nombre}</span>
+                    </div>
+                    <div class="flex justify-between text-xs font-black">
+                        <span class="text-slate-400">Concepto</span>
+                        <span class="text-white">Cuota Mensual</span>
+                    </div>
+                    <div class="flex justify-between text-xs font-black">
+                        <span class="text-slate-400">Método de Pago</span>
+                        <span class="text-white">${metodo}</span>
+                    </div>
+                    <div class="border-t border-slate-700 pt-3 flex justify-between font-black">
+                        <span class="text-slate-300">Total Abonado</span>
+                        <span class="text-2xl text-green-400">$${monto.toLocaleString()}</span>
+                    </div>
+                </div>
+                <div class="mt-2 p-3 bg-green-500/10 border border-green-500/30 rounded-xl text-center">
+                    <p class="text-[9px] font-black text-green-400 uppercase tracking-widest">✔ Pago Acreditado</p>
+                </div>
+                <p class="text-[8px] text-slate-600 text-center uppercase tracking-widest">Este comprobante es válido como recibo de pago</p>
+            `;
+        }
+        window.reciboPendienteDeMostrar = false; // Reset flag to avoid "Volver" loop
+        closeModal();
+        abrirM('modal-recibo');
+    }
 }

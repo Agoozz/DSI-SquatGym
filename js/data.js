@@ -23,18 +23,18 @@ let itemsCAlu = []; let tAluK = 0; let itemsCStaff = []; let tStaffK = 0;
         
         const clientes = {
             "123": { nombre: "Valentino P.", id: "#4922", dni: "12345678", Estado: "Deudor", Clase: "Zumba", deudas: [{ mes: "Enero", monto: 10000 },{ mes: "Febrero", monto: 10000 },{ mes: "Marzo", monto: 11500 }] },
-            "456": { nombre: "Melisa L.", id: "#1882", dni: "87654321", Estado: "Al día", Clase: "Funcional", deudas: [] }
+            "456": { nombre: "Lucía Fernández", id: "#1882", dni: "9", Estado: "Deudor", Clase: "Zumba", deudas: [{ mes: "Abril", monto: 15750 }] }
         };
 
         const sociosDB = [
-            { nombre: "Valentino Perez",   dni: "12345678", clase: "Zumba",        estado: "Deudor",  deuda: 31500, sede: "Sede Centro" },
-            { nombre: "Melisa Lopez",      dni: "87654321", clase: "Musculación",   estado: "Al día",  deuda: 0,     sede: "Sede Centro" },
+            { nombre: "Valentino Perez",   dni: "8", clase: "Zumba",        estado: "Deudor",  deuda: 31500, sede: "Sede Centro", foto: "https://randomuser.me/api/portraits/men/32.jpg" },
+            { nombre: "Lucía Fernández",   dni: "9", clase: "Zumba",        estado: "Deudor",  deuda: 15750, sede: "Sede Norte", foto: "https://randomuser.me/api/portraits/women/44.jpg" },
             { nombre: "Juan Romero",       dni: "33221100", clase: "Crossfit",      estado: "Deudor",  deuda: 12500, sede: "Sede Norte" },
             { nombre: "Camila Torres",     dni: "44556677", clase: "Musculación",   estado: "Al día",  deuda: 0,     sede: "Sede Norte" },
             { nombre: "Rodrigo Sosa",      dni: "55443322", clase: "Zumba",         estado: "Deudor",  deuda: 23000, sede: "Sede Sur" },
             { nombre: "Florencia Medina",  dni: "66778899", clase: "Crossfit",      estado: "Deudor",  deuda: 27000, sede: "Sede Sur" },
             { nombre: "Matías Alvarez",    dni: "77889900", clase: "Musculación",   estado: "Deudor",  deuda: 10000, sede: "Sede Norte" },
-            { nombre: "Lucía Fernández",   dni: "11223344", clase: "Zumba",         estado: "Deudor",  deuda: 18500, sede: "Sede Sur" },
+            { nombre: "Marta Gómez",       dni: "11223344", clase: "Zumba",         estado: "Deudor",  deuda: 18500, sede: "Sede Sur" },
         ];
 
         const inventarioDB = [

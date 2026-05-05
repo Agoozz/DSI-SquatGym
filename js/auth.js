@@ -1,18 +1,18 @@
 // Base de datos simulada de usuarios
 const usuariosDB = [
     // Admin
-    { dni: "1", password: "admin",      rol: "admin",      nombre: "Admin General", sede: null          },
+    { dni: "1", password: "admin", rol: "admin", nombre: "Admin General", sede: null },
     // Secretarias
-    { dni: "2", password: "secretaria", rol: "secretaria", nombre: "S. Centro",     sede: "Sede Centro" },
-    { dni: "3", password: "secretaria", rol: "secretaria", nombre: "S. Norte",      sede: "Sede Norte"  },
-    { dni: "4", password: "secretaria", rol: "secretaria", nombre: "S. Sur",        sede: "Sede Sur"    },
+    { dni: "2", password: "secretaria", rol: "secretaria", nombre: "S. Centro", sede: "Sede Centro" },
+    { dni: "3", password: "secretaria", rol: "secretaria", nombre: "S. Norte", sede: "Sede Norte" },
+    { dni: "4", password: "secretaria", rol: "secretaria", nombre: "S. Sur", sede: "Sede Sur" },
     // Encargados
-    { dni: "5", password: "encargado",  rol: "encargado",  nombre: "E. Centro",     sede: "Sede Centro" },
-    { dni: "6", password: "encargado",  rol: "encargado",  nombre: "E. Norte",      sede: "Sede Norte"  },
-    { dni: "7", password: "encargado",  rol: "encargado",  nombre: "E. Sur",        sede: "Sede Sur"    },
+    { dni: "5", password: "encargado", rol: "encargado", nombre: "E. Centro", sede: "Sede Centro" },
+    { dni: "6", password: "encargado", rol: "encargado", nombre: "E. Norte", sede: "Sede Norte" },
+    { dni: "7", password: "encargado", rol: "encargado", nombre: "E. Sur", sede: "Sede Sur" },
     // Alumnos (Pruebas)
-    { dni: "8", password: "alumno",     rol: "alumno",     nombre: "Valentino P.",  sede: "Sede Centro" },
-    { dni: "9", password: "alumno",     rol: "alumno",     nombre: "Melisa L.",     sede: "Sede Norte"  },
+    { dni: "8", password: "alumno", rol: "alumno", nombre: "Valentino P.", sede: "Sede Centro" },
+    { dni: "9", password: "alumno", rol: "alumno", nombre: "Lucía Fernández", sede: "Sede Norte" },
 ];
 
 // Variables globales para el estado del login
@@ -48,7 +48,7 @@ function entrarApp() {
     const dniInput = document.querySelector('input[placeholder="DNI..."]');
     const passInput = document.querySelector('input[placeholder="PASSWORD"]');
 
-    const dni      = dniInput.value.trim();
+    const dni = dniInput.value.trim();
     const password = passInput.value.trim();
 
     // Leer el subrol seleccionado en la nueva UI (window._loginSubrol)
@@ -88,15 +88,15 @@ function entrarApp() {
     }
 
     // ── Todo correcto: asignar datos de sesión directamente desde la DB ──
-    rRol       = usuario.rol;
-    rNombre    = usuario.nombre;
+    rRol = usuario.rol;
+    rNombre = usuario.nombre;
     sedeActual = usuario.sede; // se asigna automáticamente, sin selector HTML
 
     usuarioActual = {
-        dni:    dni,
+        dni: dni,
         nombre: usuario.nombre,
-        rol:    usuario.rol,
-        sede:   usuario.sede
+        rol: usuario.rol,
+        sede: usuario.sede
     };
 
     ingresarAlSistema();
@@ -180,26 +180,140 @@ function ingresarAlSistema() {
         setTimeout(renderizarAlertasStaff, 100);
     }
     if (rRol === 'alumno') {
-        setTimeout(renderizarAlertaCliente, 100);
+        setTimeout(actualizarUIPerfilAlumno, 100);
+    }
+}
+
+function actualizarUIPerfilAlumno() {
+    const dni = usuarioActual.dni;
+    const socio = sociosDB.find(s => s.dni === dni);
+    if (!socio) return;
+
+    // Simular días de mora para la demo
+    let diasMora = 0;
+    if (dni === "8") diasMora = 10; // Valentino: < 15 días
+    if (dni === "9") diasMora = 20; // Lucía: >= 15 días
+
+    const deuda = socio.deuda;
+    const bannerAlerta = document.getElementById('banner-alerta-cliente');
+    const bannerRestr = document.getElementById('banner-restriccion-cliente');
+    const badgeEstado = document.getElementById('alu-estado-cuota-badge');
+    const dotAcceso = document.getElementById('alu-estado-acceso-dot');
+    const txtAcceso = document.getElementById('alu-estado-acceso-texto');
+    const containerAcceso = document.getElementById('alu-estado-acceso-container');
+    const checkoutTotal = document.getElementById('al-checkout-total');
+    const resumenDeuda = document.getElementById('al-resumen-deuda');
+    const perfilNombre = document.getElementById('al-perfil-nombre');
+    const perfilImg = document.getElementById('al-perfil-img');
+    const detalleMonto = document.getElementById('al-detalle-monto');
+    const detalleBlock = document.getElementById('alu-detalle-deuda-block');
+
+    // Reset banners
+    if (bannerAlerta) bannerAlerta.innerHTML = '';
+    if (bannerRestr) bannerRestr.innerHTML = '';
+
+    // Inyección sincronizada de deuda
+    // El usuario prefiere mantener el valor de la cuota individual ($12.500) como referencia en el checkout
+    const valorCuotaReferencia = 12500;
+    const montoAMostrar = (deuda > 0) ? valorCuotaReferencia : 0;
+
+    if (checkoutTotal) checkoutTotal.innerText = `$${montoAMostrar.toLocaleString()}`;
+    if (resumenDeuda) resumenDeuda.innerText = `$${deuda.toLocaleString()}`; // Mantenemos deuda real en el resumen superior
+    if (detalleMonto) detalleMonto.innerText = `$${montoAMostrar.toLocaleString()}`;
+
+    if (perfilNombre) perfilNombre.innerHTML = socio.nombre.replace(' ', ' <br> <span class="text-slate-300">') + '</span>';
+
+    // Lógica de Foto (Priorizar socio.foto)
+    if (perfilImg) {
+        perfilImg.src = socio.foto || `https://ui-avatars.com/api/?name=${socio.nombre}&background=f97316&color=fff&bold=true`;
     }
 
-    const btn = document.getElementById("btn-kiosco-accion");
-    if (btn) {
-        if (rRol === "admin" || rRol === "secretaria" || rRol === "encargado") {
-            btn.innerText = "Cobrar";
-            btn.onclick = () => abrirM('modal-cobro-kiosco');
+    if (deuda > 0) {
+        if (diasMora < 15) {
+            // CASO PAGO PENDIENTE (Amarillo)
+            if (bannerAlerta) {
+                bannerAlerta.innerHTML = `
+                    <div class="glass-card p-4 border-l-4 border-yellow-500 bg-yellow-500/5 flex items-center gap-4 animate-pulse">
+                        <i class="fas fa-exclamation-triangle text-yellow-500 text-xl flex-shrink-0"></i>
+                        <div>
+                            <p class="text-xs font-black text-yellow-500 uppercase">AVISO: Pago Pendiente</p>
+                            <p class="text-[9px] text-slate-300">Tienes una deuda activa. Evita restricciones abonando a la brevedad.</p>
+                        </div>
+                    </div>`;
+            }
+            if (badgeEstado) {
+                badgeEstado.innerText = "PENDIENTE";
+                badgeEstado.className = "bg-yellow-500/10 text-yellow-500 text-[8px] font-black px-2 py-1 rounded border border-yellow-500/20";
+                badgeEstado.classList.remove('hidden');
+            }
+            if (dotAcceso && txtAcceso && containerAcceso) {
+                dotAcceso.className = 'w-2 h-2 rounded-full bg-yellow-500';
+                txtAcceso.innerText = 'ADVERTENCIA';
+                txtAcceso.className = 'text-[8px] text-yellow-500 font-black tracking-widest';
+                containerAcceso.className = 'absolute top-4 right-4 flex items-center gap-1.5 bg-yellow-900/20 px-2 py-1 rounded-full border border-yellow-800/50';
+            }
         } else {
-            btn.innerText = "Pagar";
-            btn.onclick = () => abrirM('modal-pago-selector', 'kiosco');
+            // CASO DEUDA Y ACCESO DENEGADO (Rojo)
+            if (bannerRestr) {
+                bannerRestr.innerHTML = `
+                    <div class="glass-card p-4 border-l-4 border-red-600 bg-red-600/10 flex items-center gap-4 border-2 border-red-500/30">
+                        <i class="fas fa-ban text-red-500 text-xl flex-shrink-0"></i>
+                        <div>
+                            <p class="text-xs font-black text-red-500 uppercase">ACCESO DENEGADO</p>
+                            <p class="text-[9px] text-slate-300">Tu cuenta presenta una mora superior a 15 días. Acércate a recepción.</p>
+                        </div>
+                    </div>`;
+            }
+            if (badgeEstado) {
+                badgeEstado.innerText = "EN MORA";
+                badgeEstado.className = "bg-red-500/10 text-red-500 text-[8px] font-black px-2 py-1 rounded border border-red-500/20";
+                badgeEstado.classList.remove('hidden');
+            }
+            if (dotAcceso && txtAcceso && containerAcceso) {
+                dotAcceso.className = 'w-2 h-2 rounded-full bg-red-600';
+                txtAcceso.innerText = 'BLOQUEADO';
+                txtAcceso.className = 'text-[8px] text-red-500 font-black tracking-widest';
+                containerAcceso.className = 'absolute top-4 right-4 flex items-center gap-1.5 bg-red-900/20 px-2 py-1 rounded-full border border-red-800/50';
+            }
         }
-    }
+        if (detalleBlock) detalleBlock.classList.remove('hidden');
+    } else {
+        // CASO AL DÍA (Verde)
+        if (badgeEstado) {
+            badgeEstado.innerText = "AL DÍA";
+            badgeEstado.className = "bg-green-500/10 text-green-500 text-[8px] font-black px-2 py-1 rounded border border-green-500/20";
+            badgeEstado.classList.remove('hidden');
+        }
 
-    const btnEntregas = document.getElementById('btn-entregas');
-    if (btnEntregas) {
-        if (rRol === 'admin' || rRol === 'secretaria' || rRol === 'encargado') {
-            btnEntregas.style.display = 'flex';
-        } else {
-            btnEntregas.style.display = 'none';
+        // Ocultar detalles de deuda
+        if (detalleBlock) detalleBlock.classList.add('hidden');
+
+        // Mostrar banner de Acceso Habilitado
+        if (bannerAlerta) bannerAlerta.innerHTML = '';
+        if (bannerRestr) {
+            bannerRestr.innerHTML = `
+                <div class="glass-card p-4 border-l-4 border-green-500 bg-green-500/10 flex items-center gap-4">
+                    <i class="fas fa-check-circle text-green-500 text-xl flex-shrink-0"></i>
+                    <div>
+                        <p class="text-xs font-black text-green-400 uppercase">Acceso Habilitado</p>
+                        <p class="text-[9px] text-slate-300">Tu cuenta está al día. ¡Disfrutá de tu entrenamiento!</p>
+                    </div>
+                </div>`;
+        }
+
+        if (dotAcceso && txtAcceso && containerAcceso) {
+            dotAcceso.className = 'w-2 h-2 rounded-full bg-green-500';
+            txtAcceso.innerText = 'HABILITADO';
+            txtAcceso.className = 'text-[8px] text-green-400 font-black tracking-widest';
+            containerAcceso.className = 'absolute top-4 right-4 flex items-center gap-1.5 bg-green-900/20 px-2 py-1 rounded-full border border-green-800/50';
+        }
+
+        // Deshabilitar botón de pagar si está al día
+        const btnPagar = document.getElementById('alu-btn-pagar');
+        if (btnPagar) {
+            btnPagar.disabled = true;
+            btnPagar.innerText = "CUOTA AL DÍA";
+            btnPagar.className = "w-full bg-slate-800 text-slate-500 text-[10px] font-black py-3 rounded-lg flex justify-center items-center gap-2 cursor-not-allowed";
         }
     }
 }
@@ -281,7 +395,7 @@ function configurarMenuStaff() {
             // Al volver a Staff desde Alumno, resetear la selección
             if (window._loginSubrol === 'alumno' || !window._loginSubrol) {
                 window._loginSubrol = null;
-                window._loginSede   = null;
+                window._loginSede = null;
             }
             // Seleccionar admin por defecto si no hay subrol de staff elegido
             if (!window._loginSubrol) {
@@ -296,7 +410,7 @@ function configurarMenuStaff() {
         alumnoBtn.addEventListener('click', (e) => {
             e.preventDefault();
             window._loginSubrol = 'alumno';
-            window._loginSede   = null;
+            window._loginSede = null;
             setLoginUIRol('alumno');
         });
     }
@@ -348,7 +462,7 @@ function setLoginUIRol(categoria, rol = null) {
         if (subMenu) { subMenu.classList.add('hidden'); subMenu.style.display = 'none'; }
         // Limpiar selección de subrol/sede
         window._loginSubrol = 'alumno';
-        window._loginSede   = null;
+        window._loginSede = null;
     }
 }
 
