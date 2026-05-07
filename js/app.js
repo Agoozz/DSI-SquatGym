@@ -829,19 +829,21 @@ function actualizarKPIsKiosco() {
 // ══════════════════════════════════════════════
 // HISTORIAL DE PAGOS DEL CLIENTE (req. 3.1.24)
 // ══════════════════════════════════════════════
-const historialPagosCliente = [
-    { id: 'REC-240001', fecha: '2025-10-05', concepto: 'Cuota Octubre 2025', metodo: 'QR', monto: 11000, estado: 'Pagado' },
-    { id: 'REC-240002', fecha: '2025-10-18', concepto: 'Kiosco', metodo: 'Efectivo', monto: 3200, estado: 'Pagado' },
-    { id: 'REC-240003', fecha: '2025-11-03', concepto: 'Cuota Noviembre 2025', metodo: 'Transferencia', monto: 11000, estado: 'Pagado' },
-    { id: 'REC-240004', fecha: '2025-11-22', concepto: 'Kiosco', metodo: 'QR', monto: 1400, estado: 'Pagado' },
-    { id: 'REC-240005', fecha: '2025-12-04', concepto: 'Cuota Diciembre 2025', metodo: 'QR', monto: 11500, estado: 'Pagado' },
-    { id: 'REC-240006', fecha: '2026-01-07', concepto: 'Cuota Enero 2026', metodo: 'Tarjeta', monto: 12000, estado: 'Pagado' },
-    { id: 'REC-240007', fecha: '2026-01-15', concepto: 'Kiosco', metodo: 'Efectivo', monto: 4800, estado: 'Pagado' },
-    { id: 'REC-240008', fecha: '2026-02-05', concepto: 'Cuota Febrero 2026', metodo: 'QR', monto: 12000, estado: 'Pagado' },
-    { id: 'REC-240009', fecha: '2026-03-06', concepto: 'Cuota Marzo 2026', metodo: 'Transferencia', monto: 12500, estado: 'Pagado' },
-    { id: 'REC-240010', fecha: '2026-04-04', concepto: 'Cuota Abril 2026', metodo: 'QR', monto: 12500, estado: 'Pagado' },
-    { id: 'REC-240011', fecha: '2026-04-14', concepto: 'Kiosco', metodo: 'Efectivo', monto: 1200, estado: 'Pagado' },
-    { id: 'REC-PEND-1', fecha: '2026-05-01', concepto: 'Cuota Mayo 2026', metodo: '—', monto: 12500, estado: 'Pendiente' },
+let historialPagosCliente = [
+    // Historial Valentino Perez (DNI 8)
+    { dni: '8', id: 'REC-240001', fecha: '2025-10-05', concepto: 'Cuota Octubre 2025', metodo: 'QR', monto: 11000, estado: 'Pagado' },
+    { dni: '8', id: 'REC-240003', fecha: '2025-11-03', concepto: 'Cuota Noviembre 2025', metodo: 'Transferencia', monto: 11000, estado: 'Pagado' },
+    { dni: '8', id: 'REC-240005', fecha: '2025-12-04', concepto: 'Cuota Diciembre 2025', metodo: 'QR', monto: 11500, estado: 'Pagado' },
+    { dni: '8', id: 'REC-240006', fecha: '2026-01-07', concepto: 'Cuota Enero 2026', metodo: 'Tarjeta', monto: 12000, estado: 'Pagado' },
+    { dni: '8', id: 'REC-240008', fecha: '2026-02-05', concepto: 'Cuota Febrero 2026', metodo: 'QR', monto: 12000, estado: 'Pagado' },
+    { dni: '8', id: 'REC-240009', fecha: '2026-03-06', concepto: 'Cuota Marzo 2026', metodo: 'Transferencia', monto: 12500, estado: 'Pagado' },
+    { dni: '8', id: 'REC-240010', fecha: '2026-04-04', concepto: 'Cuota Abril 2026', metodo: 'QR', monto: 12500, estado: 'Pagado' },
+    { dni: '8', id: 'REC-PEND-1', fecha: '2026-05-01', concepto: 'Cuota Mayo 2026', metodo: '—', monto: 12500, estado: 'Pendiente' },
+
+    // Historial Lucía Fernández (DNI 9)
+    { dni: '9', id: 'REC-940001', fecha: '2026-03-10', concepto: 'Inscripción + Cuota', metodo: 'Transferencia', monto: 18000, estado: 'Pagado' },
+    { dni: '9', id: 'REC-940002', fecha: '2026-04-08', concepto: 'Cuota Abril 2026', metodo: 'QR', monto: 12000, estado: 'Pagado' },
+    { dni: '9', id: 'REC-PEND-9', fecha: '2026-05-01', concepto: 'Cuota Mayo 2026', metodo: '—', monto: 12000, estado: 'Pendiente' }
 ];
 
 const metodoBadge = {
@@ -853,15 +855,29 @@ const metodoBadge = {
 };
 
 function renderHistorial() {
-    const tipo = document.getElementById('hist-filter-tipo')?.value || 'todos';
+    const dniActual = (typeof usuarioActual !== 'undefined') ? usuarioActual?.dni : '8';
     const metodo = document.getElementById('hist-filter-metodo')?.value || 'todos';
     const orden = document.getElementById('hist-filter-orden')?.value || 'fecha-desc';
 
+    // KPIs Filtrados por DNI
+    const historialPropio = historialPagosCliente.filter(x => x.dni === dniActual);
+    const pagadosPropio = historialPropio.filter(x => x.estado === 'Pagado');
+    const totalAbonado = pagadosPropio.reduce((acc, curr) => acc + curr.monto, 0);
+    const cuotasPagas = pagadosPropio.length;
+    const cuotasPendientes = historialPropio.filter(x => x.estado === 'Pendiente').length;
+
+    const kpiTotal = document.getElementById('hist-kpi-total');
+    const kpiPagas = document.getElementById('hist-kpi-pagas');
+    const kpiPendientes = document.getElementById('hist-kpi-pendientes');
+
+    if (kpiTotal) kpiTotal.innerText = `$${totalAbonado.toLocaleString()}`;
+    if (kpiPagas) kpiPagas.innerText = cuotasPagas;
+    if (kpiPendientes) kpiPendientes.innerText = cuotasPendientes;
+
     let lista = historialPagosCliente.filter(p => {
-        const matchTipo = tipo === 'todos' || p.concepto.startsWith(tipo);
+        const matchDni = p.dni === dniActual;
         const matchMetodo = metodo === 'todos' || p.metodo === metodo;
-        const noEsKiosco = p.concepto !== 'Kiosco';
-        return matchTipo && matchMetodo && noEsKiosco;
+        return matchDni && matchMetodo;
     });
 
     if (orden === 'fecha-desc') lista.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
