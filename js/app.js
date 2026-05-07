@@ -8,7 +8,6 @@ async function cargarPantallas() {
         "alu-historial",
         "alu-notificaciones",
         "adm-inventario",
-        "alu-tienda",
         "adm-kiosco"
     ];
 
@@ -861,7 +860,8 @@ function renderHistorial() {
     let lista = historialPagosCliente.filter(p => {
         const matchTipo = tipo === 'todos' || p.concepto.startsWith(tipo);
         const matchMetodo = metodo === 'todos' || p.metodo === metodo;
-        return matchTipo && matchMetodo;
+        const noEsKiosco = p.concepto !== 'Kiosco';
+        return matchTipo && matchMetodo && noEsKiosco;
     });
 
     if (orden === 'fecha-desc') lista.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));

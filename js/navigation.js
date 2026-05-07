@@ -55,10 +55,6 @@ function configMenu() {
             <div onclick="navV('alu-historial'); renderHistorial();" class="nav-item" id="li-alu-historial">
                 <i class="fas fa-history"></i> Mis Pagos
             </div>
-
-            <div onclick="navV('alu-tienda')" class="nav-item" id="li-alu-tienda">
-                <i class="fas fa-shopping-basket"></i> Kiosco
-            </div>
             `;
     }
 }
@@ -69,7 +65,7 @@ function navV(id) {
     if (id === 'adm-planes'  && rRol !== 'admin') return;
 
     // Pantallas de secretaria/encargado (solo ellos y no el admin)
-    const pantallasStaff = ['adm-membresia', 'adm-kiosco', 'adm-inventario'];
+    const pantallasStaff = ['adm-membresia', 'adm-inventario'];
     if (pantallasStaff.includes(id) && rRol === 'admin') return;
 
     // Encargado solo puede ver inicio y adm-membresia
