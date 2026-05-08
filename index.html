@@ -193,32 +193,116 @@
 
   </div>
 
-  <div id="modal-pago-selector" class="modal-base italic uppercase">
-    <div class="glass-card p-6 w-full max-w-md text-center space-y-4">
-      <button onclick="window.volverPago()" class="text-xs text-slate-400 mb-3 block">← Volver</button>
-      <h3 class="text-lg font-black mb-2">Medio de Pago</h3>
+  <div id="modal-pago-selector" class="modal-base !items-center !justify-center">
+    <div class="bg-[#020617] w-full max-w-md rounded-[2.5rem] border border-slate-800 shadow-[0_30px_100px_rgba(0,0,0,0.8)] overflow-hidden relative">
+      
+      <!-- Glow superior -->
+      <div class="absolute -top-24 -left-24 w-64 h-64 bg-orange-500/10 blur-[80px] rounded-full"></div>
 
-      <!-- Cupones -->
-      <div id="cupon-container"
-        class="flex gap-2 mb-4 bg-slate-900/50 p-2 rounded-lg border border-slate-800 transition-all duration-300">
-        <input type="text" id="input-cupon-cobro" placeholder="Ingresar código de cupón"
-          class="flex-1 p-2 rounded bg-slate-950 text-white text-[10px] font-black uppercase tracking-widest border border-slate-700 focus:outline-none focus:border-orange-500 transition">
-        <button id="btn-aplicar-cupon" onclick="aplicarCuponCobro()"
-          class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded text-[10px] font-black uppercase tracking-widest transition shadow-lg">Aplicar</button>
+      <div class="p-8 relative z-10">
+        <!-- Header con botón volver -->
+        <div class="flex justify-between items-center mb-8">
+          <button onclick="window.volverPago()" class="w-10 h-10 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-400 hover:text-white transition-all">
+            <i class="fas fa-arrow-left text-xs"></i>
+          </button>
+          <div class="text-right">
+            <p class="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em]">Checkout</p>
+            <h3 class="text-xs font-black text-white uppercase italic">Pasarela de Pago</h3>
+          </div>
+        </div>
+
+        <!-- Resumen del Pago (Mini Card) -->
+        <div class="bg-slate-950/80 border border-slate-800 rounded-3xl p-5 mb-8 shadow-inner">
+            <div class="flex justify-between items-center mb-4 border-b border-slate-800/50 pb-4">
+                <div>
+                    <p class="text-[8px] font-black text-orange-500 uppercase tracking-widest mb-1">Concepto</p>
+                    <p class="text-xs font-black text-white uppercase italic">Cuota Mensual</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-1">Socio</p>
+                    <p id="pago-display-nombre" class="text-xs font-black text-slate-300 uppercase italic">Valentino P.</p>
+                </div>
+            </div>
+            <div class="flex justify-between items-end">
+                <div>
+                    <p class="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-1">Total a Abonar</p>
+                    <p id="pago-total-display" class="text-4xl font-black text-white tracking-tighter italic">$12.500</p>
+                </div>
+                <div class="bg-green-500/10 px-3 py-1.5 rounded-lg border border-green-500/20">
+                    <p class="text-[8px] font-black text-green-400 uppercase tracking-widest leading-none">✔ Final</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cupones (Rediseñado) -->
+        <div id="cupon-container" class="relative mb-8">
+            <input type="text" id="input-cupon-cobro" placeholder="Tengo un cupón de descuento"
+              class="w-full pl-4 pr-24 py-4 rounded-2xl bg-slate-950 border border-slate-800 text-white text-[10px] font-bold uppercase tracking-widest focus:outline-none focus:border-orange-500/50 transition-all placeholder:text-slate-600">
+            <button id="btn-aplicar-cupon" onclick="aplicarCuponCobro()"
+              class="absolute right-2 top-2 bottom-2 bg-slate-800 hover:bg-orange-500 text-white px-5 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all">Aplicar</button>
+            <p id="msg-cupon-cobro" class="hidden absolute -bottom-5 left-1 text-[8px] font-black text-green-400 uppercase tracking-widest animate-fade-in">
+              <i class="fas fa-check-circle mr-1"></i>Cupón aplicado (-<span id="valor-cupon-aplicado">0</span>%)
+            </p>
+        </div>
+
+        <!-- Opciones de Pago -->
+        <div id="pago-opciones" class="space-y-3 pt-2">
+            <p class="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em] mb-4 ml-1">Seleccioná un método</p>
+            
+            <!-- Botón Mercado Pago -->
+            <button onclick="mostrarPago('qr')" class="group w-full flex items-center gap-4 p-4 rounded-2xl bg-slate-950 border border-slate-800 hover:border-[#009EE3]/50 hover:bg-[#009EE3]/5 transition-all duration-300">
+                <div class="w-12 h-12 rounded-xl bg-[#009EE3]/10 flex items-center justify-center text-[#009EE3] group-hover:scale-110 transition-transform">
+                    <i class="fa-solid fa-qrcode text-xl"></i>
+                </div>
+                <div class="text-left flex-1">
+                    <p class="text-[10px] font-black text-white uppercase">Mercado Pago</p>
+                    <p class="text-[8px] font-bold text-slate-500 uppercase tracking-tighter">Escaneá el código QR</p>
+                </div>
+                <i class="fas fa-chevron-right text-slate-700 text-[10px] group-hover:text-[#009EE3] transition-colors"></i>
+            </button>
+
+            <!-- Botón Transferencia -->
+            <button onclick="mostrarPago('transferencia')" class="group w-full flex items-center gap-4 p-4 rounded-2xl bg-slate-950 border border-slate-800 hover:border-blue-500/50 hover:bg-blue-500/5 transition-all duration-300">
+                <div class="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-500 group-hover:scale-110 transition-transform">
+                    <i class="fas fa-university text-xl"></i>
+                </div>
+                <div class="text-left flex-1">
+                    <p class="text-[10px] font-black text-white uppercase">Transferencia CBU</p>
+                    <p class="text-[8px] font-bold text-slate-500 uppercase tracking-tighter">Banca Online / Alias</p>
+                </div>
+                <i class="fas fa-chevron-right text-slate-700 text-[10px] group-hover:text-blue-500 transition-colors"></i>
+            </button>
+
+            <!-- Botón Tarjeta -->
+            <button onclick="mostrarPago('tarjeta')" class="group w-full flex items-center gap-4 p-4 rounded-2xl bg-slate-950 border border-slate-800 hover:border-purple-500/50 hover:bg-purple-500/5 transition-all duration-300">
+                <div class="w-12 h-12 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-500 group-hover:scale-110 transition-transform">
+                    <i class="fas fa-credit-card text-xl"></i>
+                </div>
+                <div class="text-left flex-1">
+                    <p class="text-[10px] font-black text-white uppercase">Tarjeta Débito/Crédito</p>
+                    <p class="text-[8px] font-bold text-slate-500 uppercase tracking-tighter">Visa, Mastercard, AMEX</p>
+                </div>
+                <i class="fas fa-chevron-right text-slate-700 text-[10px] group-hover:text-purple-500 transition-colors"></i>
+            </button>
+
+            <!-- Botón Efectivo -->
+            <button onclick="mostrarPago('efectivo')" id="btn-efectivo" class="group w-full flex items-center gap-4 p-4 rounded-2xl bg-slate-950 border border-slate-800 hover:border-green-500/50 hover:bg-green-500/5 transition-all duration-300">
+                <div class="w-12 h-12 rounded-xl bg-green-500/10 flex items-center justify-center text-green-500 group-hover:scale-110 transition-transform">
+                    <i class="fas fa-money-bill-wave text-xl"></i>
+                </div>
+                <div class="text-left flex-1">
+                    <p class="text-[10px] font-black text-white uppercase">Efectivo en Caja</p>
+                    <p class="text-[8px] font-bold text-slate-500 uppercase tracking-tighter">Pago presencial en sede</p>
+                </div>
+                <i class="fas fa-chevron-right text-slate-700 text-[10px] group-hover:text-green-500 transition-colors"></i>
+            </button>
+        </div>
+
+        <!-- Contenedor dinámico (Formularios de cada método) -->
+        <div id="pago-contenido" class="hidden mt-6 animate-in fade-in slide-in-from-bottom-5 duration-300"></div>
+
+        <p class="text-[7px] text-slate-600 text-center mt-10 uppercase tracking-[0.2em]">Pagos protegidos por SquatGym Secure Layer™</p>
       </div>
-      <p id="msg-cupon-cobro"
-        class="hidden text-[10px] font-black text-green-400 uppercase tracking-widest mb-4 mt-[-8px] text-left ml-1 animate-fade-in">
-        <i class="fas fa-check-circle mr-1"></i>Cupón aplicado exitosamente (-<span id="valor-cupon-aplicado">0</span>%)
-      </p>
-
-      <div id="pago-opciones" class="space-y-3">
-        <button onclick="mostrarPago('qr')" class="btn-ui bg-[#009EE3] w-full">Mercado Pago (QR)</button>
-        <button onclick="mostrarPago('transferencia')" class="btn-ui bg-blue-700 w-full">Transferencia</button>
-        <button onclick="mostrarPago('tarjeta')" class="btn-ui bg-blue-700 w-full">Tarjeta</button>
-        <button onclick="mostrarPago('efectivo')" id="btn-efectivo" class="btn-ui bg-green-600 w-full">Efectivo</button>
-      </div>
-
-      <div id="pago-contenido" class="hidden mt-4"></div>
     </div>
   </div>
 

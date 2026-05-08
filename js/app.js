@@ -402,6 +402,17 @@ function iniciarPagoAlumno() {
     if (socio && socio.deuda > 0) {
         window.totalCobro = socio.deuda;
         window.socioActual = socio; // Sincronizar para el recibo
+
+        // Poblar campos del nuevo diseño de pasarela
+        const displayNombre = document.getElementById('pago-display-nombre');
+        const displayTotal = document.getElementById('pago-total-display');
+        
+        if (displayNombre) {
+            const partes = socio.nombre.split(' ');
+            displayNombre.innerText = `${partes[0]} ${partes[1] ? partes[1][0] + '.' : ''}`;
+        }
+        if (displayTotal) displayTotal.innerText = `$${socio.deuda.toLocaleString()}`;
+
         abrirM('modal-pago-selector', 'cuota');
     } else {
         alert("No tienes cuotas pendientes por abonar.");
