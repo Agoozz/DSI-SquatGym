@@ -385,9 +385,20 @@ function enviarNotificacionesDeuda() {
 }
 
 function verComprobanteDesdeModal(metodo) {
-    const nombre = socioActual?.nombre || document.getElementById('display-nombre')?.innerText || "Socio";
-    const monto = socioActual?.deuda || (typeof totalCobro !== 'undefined' ? totalCobro : 0);
+    const s = socioActual || (typeof sociosDB !== 'undefined' ? sociosDB.find(x => x.dni === usuarioActual.dni) : null);
+    const nombre = s ? s.nombre : (usuarioActual.nombre || "Socio");
     
+    // Si la deuda ya es 0 (porque el proceso de registro ya ocurrió), 
+    // intentamos usar totalCobro o buscar el último pago en el historial.
+    let monto = (s && s.deuda > 0) ? s.deuda : (typeof totalCobro !== 'undefined' && totalCobro > 0 ? totalCobro : 0);
+    
+    if (monto === 0 && typeof historialPagosCliente !== 'undefined') {
+        const historialPropio = historialPagosCliente.filter(p => p.dni === (s ? s.dni : usuarioActual.dni));
+        if (historialPropio.length > 0) {
+            monto = historialPropio[historialPropio.length - 1].monto;
+        }
+    }
+
     if (typeof generarRecibo === 'function') {
         generarRecibo(nombre, monto, metodo);
         window.reciboPendienteDeMostrar = false; // Reset flag to avoid "Volver" loop

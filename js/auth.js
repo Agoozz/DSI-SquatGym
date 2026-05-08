@@ -226,13 +226,11 @@ function actualizarUIPerfilAlumno() {
     if (bannerAlerta) bannerAlerta.innerHTML = '';
     if (bannerRestr) bannerRestr.innerHTML = '';
 
-    // Inyección sincronizada de deuda
-    // El usuario prefiere mantener el valor de la cuota individual ($12.500) como referencia en el checkout
-    const valorCuotaReferencia = 12500;
-    const montoAMostrar = (deuda > 0) ? valorCuotaReferencia : 0;
+    // Inyección sincronizada de deuda - AHORA BASADA EN LA DB GLOBAL
+    const montoAMostrar = deuda; 
 
     if (checkoutTotal) checkoutTotal.innerText = `$${montoAMostrar.toLocaleString()}`;
-    if (resumenDeuda) resumenDeuda.innerText = `$${deuda.toLocaleString()}`; // Mantenemos deuda real en el resumen superior
+    if (resumenDeuda) resumenDeuda.innerText = `$${deuda.toLocaleString()}`; 
     if (detalleMonto) detalleMonto.innerText = `$${montoAMostrar.toLocaleString()}`;
 
     if (perfilNombre) perfilNombre.innerHTML = socio.nombre.replace(' ', ' <br> <span class="text-slate-300">') + '</span>';
@@ -524,6 +522,11 @@ function getNotificacionesData() {
 
     // 1. Lógica de Deuda/Mora (Generalizada para todos los alumnos)
     if (socio.deuda > 0) {
+        const cuotaPendiente = (typeof historialPagosCliente !== 'undefined') 
+            ? historialPagosCliente.find(p => p.dni === socio.dni && p.estado === 'Pendiente')
+            : null;
+        const montoStr = cuotaPendiente ? `$${cuotaPendiente.monto.toLocaleString()}` : `$${socio.deuda.toLocaleString()}`;
+
         if (socio.dni === "9") {
             // Caso de Mora Pesada (Ej: Lucía)
             data.push({
@@ -534,7 +537,7 @@ function getNotificacionesData() {
                 borderColor: '#ef4444',
                 bgColor: 'rgba(239, 68, 68, 0.1)',
                 titulo: 'ACCESO RESTRINGIDO',
-                desc: 'Tu cuenta ha sido bloqueada por mora superior a 15 días. Dirígete a administración.',
+                desc: `Tu cuenta presenta una mora de $${socio.deuda.toLocaleString()}. Dirígete a administración.`,
                 fecha: 'Ayer • 08:15 PM',
                 accion: { label: 'Ver Estado', fn: "navV('alu-pago')" }
             });
@@ -548,25 +551,25 @@ function getNotificacionesData() {
                 borderColor: '#eab308',
                 bgColor: 'rgba(234, 179, 8, 0.1)',
                 titulo: 'Pago Pendiente',
-                desc: `Tienes una cuota pendiente de $12.500. Abona para evitar recargos.`,
+                desc: `Tienes una cuota pendiente de $${socio.deuda.toLocaleString()}. Abona para evitar recargos.`,
                 fecha: 'Hoy • 10:30 AM',
                 accion: { label: 'Pagar Ahora', fn: "abrirM('modal-pago-selector','cuota')" }
             });
         }
     }
 
-    // 2. Notificación SIEMPRE (Promo genérica)
+    // 2. Notificación SIEMPRE (Promo genérica del Gym)
     data.push({
         id: 'notif-promo',
         tipo: 'promocion',
-        icono: 'fas fa-tag',
+        icono: 'fas fa-gift',
         color: 'text-orange-500',
         borderColor: '#f97316',
         bgColor: 'rgba(249, 115, 22, 0.1)',
-        titulo: '¡Nueva Promo!',
-        desc: '2x1 en Powerade en el Kiosco.',
+        titulo: '¡Sorteo Mensual!',
+        desc: 'Participa por una suscripción anual gratis en nuestro Instagram.',
         fecha: 'Hace 1 hora',
-        accion: { label: 'Ir al Kiosco', fn: "navV('alu-tienda')" }
+        accion: { label: 'Ir a Instagram', fn: "window.open('https://instagram.com/squatgym','_blank')" }
     });
 
     return data;
@@ -645,7 +648,7 @@ function mostrarModalEstadoCuenta() {
             title.innerText = 'Acceso Restringido';
             title.className = 'text-2xl font-black text-red-500 uppercase tracking-tighter mb-2 italic';
             desc.innerText = 'Tu cuenta registra una mora superior a 15 días. El acceso a las instalaciones se encuentra suspendido.';
-            monto.innerText = `$12.500`; // Sincronizado con checkout
+            monto.innerText = `$${socio.deuda.toLocaleString()}`; 
             extraInfo.classList.remove('hidden');
             btnSec.classList.remove('hidden');
         } else {
@@ -655,7 +658,7 @@ function mostrarModalEstadoCuenta() {
             title.innerText = 'Pago Pendiente';
             title.className = 'text-2xl font-black text-yellow-500 uppercase tracking-tighter mb-2 italic';
             desc.innerText = 'Tienes una cuota pendiente por abonar. Recuerda regularizar para evitar recargos o bloqueos.';
-            monto.innerText = `$12.500`; // Valor de cuota referencia
+            monto.innerText = `$${socio.deuda.toLocaleString()}`; 
             extraInfo.classList.remove('hidden');
             btnSec.classList.remove('hidden');
         }

@@ -397,78 +397,61 @@ function cobrarConProrrateo() {
     abrirM('modal-pago-selector', 'cuota');
 }
 
+function iniciarPagoAlumno() {
+    const socio = (typeof sociosDB !== 'undefined') ? sociosDB.find(s => s.dni === usuarioActual.dni) : null;
+    if (socio && socio.deuda > 0) {
+        window.totalCobro = socio.deuda;
+        window.socioActual = socio; // Sincronizar para el recibo
+        abrirM('modal-pago-selector', 'cuota');
+    } else {
+        alert("No tienes cuotas pendientes por abonar.");
+    }
+}
+
 // ══════════════════════════════════════════════
 // HOOK: registrarPagoExitoso → genera recibo
 // ══════════════════════════════════════════════
 const _registrarPagoExitosoOrig = registrarPagoExitoso;
 registrarPagoExitoso = function (metodo) {
-    const nombre = socioActual ? socioActual.nombre : 'Socio';
-    const monto = socioActual ? socioActual.deuda : totalCobro;
+    const s = socioActual || (typeof sociosDB !== 'undefined' ? sociosDB.find(x => x.dni === usuarioActual.dni) : null);
+    
+    // CRÍTICO: Capturar los valores antes de llamar a la función original que los resetea
+    const montoAPagar = (s && s.deuda > 0) ? s.deuda : (window.totalCobro || 12000);
+    const nombreSocio = s ? s.nombre : (usuarioActual.nombre || 'Socio');
+
     _registrarPagoExitosoOrig(metodo);
-    generarRecibo(nombre, monto, metodo);
 
-    // Actualizar historial del alumno
-    const cuotaPendiente = historialPagosCliente.find(p => p.estado === 'Pendiente');
-    if (cuotaPendiente) {
-        cuotaPendiente.id = reciboActual.num || 'REC-' + Date.now().toString().slice(-6);
-        cuotaPendiente.fecha = new Date().toISOString().split('T')[0];
-        cuotaPendiente.metodo = metodo;
-        cuotaPendiente.estado = 'Pagado';
+    // 1. Agregar nueva entrada al Historial con el monto capturado
+    const nuevoPago = {
+        dni: s ? s.dni : usuarioActual.dni,
+        id: 'REC-' + Date.now().toString().slice(-6),
+        fecha: new Date().toISOString().split('T')[0],
+        concepto: 'Cuota Mensual',
+        metodo: metodo,
+        monto: montoAPagar,
+        estado: 'Pagado'
+    };
+    historialPagosCliente.push(nuevoPago);
 
-        // Actualizar KPIs del historial
-        const kpiTotal = document.getElementById('hist-kpi-total');
-        if (kpiTotal) {
-            const sum = historialPagosCliente.filter(p => p.estado === 'Pagado').reduce((acc, p) => acc + p.monto, 0);
-            kpiTotal.innerText = '$' + sum.toLocaleString();
-        }
-        const kpiPagas = document.getElementById('hist-kpi-pagas');
-        if (kpiPagas) {
-            kpiPagas.innerText = historialPagosCliente.filter(p => p.estado === 'Pagado').length;
-        }
-        const kpiPend = document.getElementById('hist-kpi-pendientes');
-        if (kpiPend) {
-            const pendientesCount = historialPagosCliente.filter(p => p.estado === 'Pendiente').length;
-            kpiPend.innerText = pendientesCount;
-            if (pendientesCount === 0) {
-                kpiPend.classList.remove('text-red-400');
-                kpiPend.classList.add('text-white');
-            }
-        }
-
-        if (typeof renderHistorial === 'function') {
-            renderHistorial();
-        }
-
-        // Actualizar Notificaciones del Alumno
-        if (typeof alertasCliente !== 'undefined') {
-            // Eliminar notificaciones de vencimiento y restricción
-            alertasCliente = alertasCliente.filter(a => a.tipo !== 'vencimiento');
-
-            const fechaHoy = new Date().toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit', year: 'numeric' });
-
-            // Agregar nueva notificación de pago
-            alertasCliente.unshift({
-                id: Date.now(), tipo: 'informacion', icono: 'fas fa-check-circle', color: '#4ade80',
-                borderColor: '#22c55e', bgColor: 'rgba(34,197,94,0.05)',
-                titulo: 'Pago de Mayo Acreditado',
-                desc: `Tu pago de $${monto.toLocaleString()} fue acreditado correctamente el ${fechaHoy} mediante ${metodo}.`,
-                fecha: 'Recién', leida: false,
-                accion: { label: 'Ver Recibo', fn: `verComprobanteHistorial('${cuotaPendiente.id}')` }
-            });
-
-            if (typeof renderNotificaciones === 'function') {
-                renderNotificaciones();
-                // Actualizar contador de notificaciones si existe en la UI
-                const countBadge = document.getElementById('noti-badge-count');
-                if (countBadge) {
-                    const noLeidas = alertasCliente.filter(a => !a.leida).length;
-                    countBadge.innerText = noLeidas;
-                    countBadge.style.display = noLeidas > 0 ? 'flex' : 'none';
-                }
-            }
-        }
+    // 2. Asegurar limpieza en la DB si no lo hizo la original
+    if (s) {
+        s.deuda = 0;
+        s.estado = 'Al día';
     }
-};
+
+    // 3. Generar Recibo con los valores capturados (no con los reseteados)
+    generarRecibo(nombreSocio, montoAPagar, metodo);
+
+    // 4. Refrescar UI
+    if (typeof actualizarUIPerfilAlumno === 'function') actualizarUIPerfilAlumno();
+    if (typeof renderHistorial === 'function') renderHistorial();
+
+    // 5. Actualizar Notificaciones
+    if (typeof getNotificacionesData === 'function') {
+        renderNotificaciones();
+    }
+}
+
 
 
 // ══════════════════════════════════════════════
@@ -830,20 +813,18 @@ function actualizarKPIsKiosco() {
 // HISTORIAL DE PAGOS DEL CLIENTE (req. 3.1.24)
 // ══════════════════════════════════════════════
 let historialPagosCliente = [
-    // Historial Valentino Perez (DNI 8)
-    { dni: '8', id: 'REC-240001', fecha: '2025-10-05', concepto: 'Cuota Octubre 2025', metodo: 'QR', monto: 11000, estado: 'Pagado' },
-    { dni: '8', id: 'REC-240003', fecha: '2025-11-03', concepto: 'Cuota Noviembre 2025', metodo: 'Transferencia', monto: 11000, estado: 'Pagado' },
-    { dni: '8', id: 'REC-240005', fecha: '2025-12-04', concepto: 'Cuota Diciembre 2025', metodo: 'QR', monto: 11500, estado: 'Pagado' },
+    // Historial Valentino Perez (DNI 8) - Plan Zumba ($12.000)
+    { dni: '8', id: 'REC-240001', fecha: '2025-10-05', concepto: 'Cuota Octubre 2025', metodo: 'QR', monto: 12000, estado: 'Pagado' },
+    { dni: '8', id: 'REC-240003', fecha: '2025-11-03', concepto: 'Cuota Noviembre 2025', metodo: 'Transferencia', monto: 12000, estado: 'Pagado' },
+    { dni: '8', id: 'REC-240005', fecha: '2025-12-04', concepto: 'Cuota Diciembre 2025', metodo: 'QR', monto: 12000, estado: 'Pagado' },
     { dni: '8', id: 'REC-240006', fecha: '2026-01-07', concepto: 'Cuota Enero 2026', metodo: 'Tarjeta', monto: 12000, estado: 'Pagado' },
     { dni: '8', id: 'REC-240008', fecha: '2026-02-05', concepto: 'Cuota Febrero 2026', metodo: 'QR', monto: 12000, estado: 'Pagado' },
-    { dni: '8', id: 'REC-240009', fecha: '2026-03-06', concepto: 'Cuota Marzo 2026', metodo: 'Transferencia', monto: 12500, estado: 'Pagado' },
-    { dni: '8', id: 'REC-240010', fecha: '2026-04-04', concepto: 'Cuota Abril 2026', metodo: 'QR', monto: 12500, estado: 'Pagado' },
-    { dni: '8', id: 'REC-PEND-1', fecha: '2026-05-01', concepto: 'Cuota Mayo 2026', metodo: '—', monto: 12500, estado: 'Pendiente' },
+    { dni: '8', id: 'REC-240009', fecha: '2026-03-06', concepto: 'Cuota Marzo 2026', metodo: 'Transferencia', monto: 12000, estado: 'Pagado' },
+    { dni: '8', id: 'REC-240010', fecha: '2026-04-04', concepto: 'Cuota Abril 2026', metodo: 'QR', monto: 12000, estado: 'Pagado' },
 
-    // Historial Lucía Fernández (DNI 9)
-    { dni: '9', id: 'REC-940001', fecha: '2026-03-10', concepto: 'Inscripción + Cuota', metodo: 'Transferencia', monto: 18000, estado: 'Pagado' },
-    { dni: '9', id: 'REC-940002', fecha: '2026-04-08', concepto: 'Cuota Abril 2026', metodo: 'QR', monto: 12000, estado: 'Pagado' },
-    { dni: '9', id: 'REC-PEND-9', fecha: '2026-05-01', concepto: 'Cuota Mayo 2026', metodo: '—', monto: 12000, estado: 'Pendiente' }
+    // Historial Lucía Fernández (DNI 9) - Plan Zumba ($12.000)
+    { dni: '9', id: 'REC-940001', fecha: '2026-03-10', concepto: 'Inscripción + Cuota', metodo: 'Transferencia', monto: 12000, estado: 'Pagado' },
+    { dni: '9', id: 'REC-940002', fecha: '2026-04-08', concepto: 'Cuota Abril 2026', metodo: 'QR', monto: 12000, estado: 'Pagado' }
 ];
 
 const metodoBadge = {
@@ -859,12 +840,13 @@ function renderHistorial() {
     const metodo = document.getElementById('hist-filter-metodo')?.value || 'todos';
     const orden = document.getElementById('hist-filter-orden')?.value || 'fecha-desc';
 
-    // KPIs Filtrados por DNI
+    // KPIs Filtrados por DNI y DB (Sincronizados)
+    const socio = (typeof sociosDB !== 'undefined') ? sociosDB.find(s => s.dni === dniActual) : null;
     const historialPropio = historialPagosCliente.filter(x => x.dni === dniActual);
     const pagadosPropio = historialPropio.filter(x => x.estado === 'Pagado');
     const totalAbonado = pagadosPropio.reduce((acc, curr) => acc + curr.monto, 0);
     const cuotasPagas = pagadosPropio.length;
-    const cuotasPendientes = historialPropio.filter(x => x.estado === 'Pendiente').length;
+    const cuotasPendientes = (socio && socio.deuda > 0) ? 1 : 0; // History is now only for paid items
 
     const kpiTotal = document.getElementById('hist-kpi-total');
     const kpiPagas = document.getElementById('hist-kpi-pagas');
@@ -945,7 +927,7 @@ function verComprobanteHistorial(id) {
               </div>
               <div class="flex justify-between text-xs font-black">
                   <span class="text-slate-400">Socio</span>
-                  <span class="text-white">Valentino P. — #4922</span>
+                  <span class="text-white">${usuarioActual.nombre.toUpperCase()} — #4922</span>
               </div>
               <div class="flex justify-between text-xs font-black">
                   <span class="text-slate-400">Concepto</span>

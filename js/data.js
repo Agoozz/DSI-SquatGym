@@ -27,8 +27,8 @@ let itemsCAlu = []; let tAluK = 0; let itemsCStaff = []; let tStaffK = 0;
         };
 
         const sociosDB = [
-            { nombre: "Valentino Perez",   dni: "8", clase: "Zumba",        estado: "Deudor",  deuda: 31500, sede: "Sede Centro", foto: "https://randomuser.me/api/portraits/men/32.jpg" },
-            { nombre: "Lucía Fernández",   dni: "9", clase: "Zumba",        estado: "Deudor",  deuda: 15750, sede: "Sede Norte", foto: "https://randomuser.me/api/portraits/women/44.jpg" },
+            { nombre: "Valentino Perez",   dni: "8", clase: "Zumba",        estado: "Deudor",  deuda: 12000, sede: "Sede Centro", foto: "https://randomuser.me/api/portraits/men/32.jpg" },
+            { nombre: "Lucía Fernández",   dni: "9", clase: "Zumba",        estado: "Deudor",  deuda: 12000, sede: "Sede Norte", foto: "https://randomuser.me/api/portraits/women/44.jpg" },
             { nombre: "Juan Romero",       dni: "33221100", clase: "Crossfit",      estado: "Deudor",  deuda: 12500, sede: "Sede Norte" },
             { nombre: "Camila Torres",     dni: "44556677", clase: "Musculación",   estado: "Al día",  deuda: 0,     sede: "Sede Norte" },
             { nombre: "Rodrigo Sosa",      dni: "55443322", clase: "Zumba",         estado: "Deudor",  deuda: 23000, sede: "Sede Sur" },
