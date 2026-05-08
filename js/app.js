@@ -452,6 +452,117 @@ registrarPagoExitoso = function (metodo) {
     }
 }
 
+// ══════════════════════════════════════════════
+// EXPORTAR HISTORIAL PDF (jsPDF + autoTable)
+// ══════════════════════════════════════════════
+function exportarHistorialPDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    const dniActual = (typeof usuarioActual !== 'undefined') ? usuarioActual?.dni : '8';
+    const s = (typeof sociosDB !== 'undefined') ? sociosDB.find(x => x.dni === dniActual) : null;
+    const nombre = s ? s.nombre : (usuarioActual.nombre || 'Socio');
+
+    // Estilo de Cabecera
+    doc.setFillColor(15, 23, 42); // Navy / Slate 900
+    doc.rect(0, 0, 210, 45, 'F');
+    
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(24);
+    doc.setFont("helvetica", "bold");
+    doc.text("SQUATGYM", 15, 22);
+    doc.setFontSize(8);
+    doc.setTextColor(148, 163, 184); // Slate 400
+    doc.text("PLATINUM MANAGEMENT SYSTEM OS", 15, 28);
+    
+    doc.setFontSize(10);
+    doc.setTextColor(249, 115, 22); // Orange 500
+    doc.text("INFORME OFICIAL DE PAGOS Y TRANSACCIONES", 15, 38);
+    
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(9);
+    doc.text(`Fecha de Emisión: ${new Date().toLocaleString('es-AR')}`, 145, 38);
+
+    // Información del Alumno
+    doc.setTextColor(15, 23, 42);
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "bold");
+    doc.text("DATOS DEL SOCIO", 15, 60);
+    
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "normal");
+    doc.text(`NOMBRE: ${nombre.toUpperCase()}`, 15, 68);
+    doc.text(`DNI: ${dniActual}`, 15, 74);
+    doc.text(`PLAN: ${s ? s.clase.toUpperCase() : 'MUSCULACIÓN'}`, 15, 80);
+    doc.text(`ESTADO DE CUENTA: ${s ? s.estado.toUpperCase() : 'AL DÍA'}`, 15, 86);
+    
+    // Línea divisoria
+    doc.setDrawColor(226, 232, 240); // Slate 200
+    doc.setLineWidth(0.5);
+    doc.line(15, 92, 195, 92);
+
+    // Generar datos para la tabla
+    const lista = historialPagosCliente.filter(p => p.dni === dniActual && p.estado === 'Pagado');
+    const tableData = lista.map(p => [
+        p.id,
+        new Date(p.fecha + 'T12:00:00').toLocaleDateString('es-AR'),
+        p.concepto.toUpperCase(),
+        p.metodo.toUpperCase(),
+        `$${p.monto.toLocaleString()}`,
+        'PAGADO'
+    ]);
+
+    // Tabla de Pagos
+    doc.autoTable({
+        startY: 100,
+        head: [['N° RECIBO', 'FECHA', 'CONCEPTO', 'MÉTODO', 'MONTO', 'ESTADO']],
+        body: tableData,
+        theme: 'striped',
+        headStyles: { 
+            fillColor: [249, 115, 22], 
+            textColor: [255, 255, 255],
+            fontSize: 9,
+            fontStyle: 'bold',
+            halign: 'center'
+        },
+        bodyStyles: { 
+            fontSize: 8,
+            textColor: [51, 65, 85]
+        },
+        columnStyles: {
+            4: { halign: 'right', fontStyle: 'bold' },
+            5: { halign: 'center', textColor: [34, 197, 94], fontStyle: 'bold' }
+        },
+        margin: { horizontal: 15 }
+    });
+
+    // Resumen Final
+    const totalAbonado = lista.reduce((acc, curr) => acc + curr.monto, 0);
+    const finalY = doc.lastAutoTable.finalY + 15;
+
+    doc.setFillColor(248, 250, 252); // Slate 50
+    doc.rect(15, finalY - 5, 180, 20, 'F');
+    doc.setDrawColor(249, 115, 22);
+    doc.setLineWidth(1);
+    doc.line(15, finalY - 5, 15, finalY + 15);
+
+    doc.setFontSize(14);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(15, 23, 42);
+    doc.text(`TOTAL HISTÓRICO ABONADO:`, 25, finalY + 8);
+    
+    doc.setTextColor(34, 197, 94); // Green 500
+    doc.text(`$${totalAbonado.toLocaleString()}`, 150, finalY + 8);
+
+    // Pie de página
+    doc.setFontSize(8);
+    doc.setTextColor(148, 163, 184);
+    doc.text("Este documento es un comprobante oficial de transacciones emitido por SquatGym Platinum OS.", 105, 285, { align: 'center' });
+
+    // Descarga
+    doc.save(`Historial_Pagos_${nombre.split(' ')[0]}_${dniActual}.pdf`);
+}
+
 
 
 // ══════════════════════════════════════════════
@@ -813,25 +924,70 @@ function actualizarKPIsKiosco() {
 // HISTORIAL DE PAGOS DEL CLIENTE (req. 3.1.24)
 // ══════════════════════════════════════════════
 let historialPagosCliente = [
-    // Historial Valentino Perez (DNI 8) - Plan Zumba ($12.000)
-    { dni: '8', id: 'REC-240001', fecha: '2025-10-05', concepto: 'Cuota Octubre 2025', metodo: 'QR', monto: 12000, estado: 'Pagado' },
-    { dni: '8', id: 'REC-240003', fecha: '2025-11-03', concepto: 'Cuota Noviembre 2025', metodo: 'Transferencia', monto: 12000, estado: 'Pagado' },
-    { dni: '8', id: 'REC-240005', fecha: '2025-12-04', concepto: 'Cuota Diciembre 2025', metodo: 'QR', monto: 12000, estado: 'Pagado' },
-    { dni: '8', id: 'REC-240006', fecha: '2026-01-07', concepto: 'Cuota Enero 2026', metodo: 'Tarjeta', monto: 12000, estado: 'Pagado' },
-    { dni: '8', id: 'REC-240008', fecha: '2026-02-05', concepto: 'Cuota Febrero 2026', metodo: 'QR', monto: 12000, estado: 'Pagado' },
-    { dni: '8', id: 'REC-240009', fecha: '2026-03-06', concepto: 'Cuota Marzo 2026', metodo: 'Transferencia', monto: 12000, estado: 'Pagado' },
-    { dni: '8', id: 'REC-240010', fecha: '2026-04-04', concepto: 'Cuota Abril 2026', metodo: 'QR', monto: 12000, estado: 'Pagado' },
+    // ══════════════════════════════════════════
+    // HISTORIAL VALENTINO PEREZ (DNI 8) - ALTA: 12/03/2024
+    // ══════════════════════════════════════════
+    { dni: '8', id: 'REC-240000', fecha: '2024-03-12', concepto: 'PRORRATEO MARZO 2024', metodo: 'EFECTIVO', monto: 6452, estado: 'Pagado' },
+    { dni: '8', id: 'REC-240001', fecha: '2024-04-05', concepto: 'CUOTA ABRIL 2024', metodo: 'QR', monto: 10000, estado: 'Pagado' },
+    { dni: '8', id: 'REC-240002', fecha: '2024-05-04', concepto: 'CUOTA MAYO 2024', metodo: 'QR', monto: 10000, estado: 'Pagado' },
+    { dni: '8', id: 'REC-240003', fecha: '2024-06-03', concepto: 'CUOTA JUNIO 2024', metodo: 'TRANSFERENCIA', monto: 10000, estado: 'Pagado' },
+    { dni: '8', id: 'REC-240004', fecha: '2024-07-06', concepto: 'CUOTA JULIO 2024', metodo: 'TARJETA', monto: 10000, estado: 'Pagado' },
+    { dni: '8', id: 'REC-240005', fecha: '2024-08-04', concepto: 'CUOTA AGOSTO 2024', metodo: 'QR', monto: 10000, estado: 'Pagado' },
+    { dni: '8', id: 'REC-240006', fecha: '2024-09-07', concepto: 'CUOTA SEPTIEMBRE 2024', metodo: 'TARJETA', monto: 10000, estado: 'Pagado' },
+    { dni: '8', id: 'REC-240007', fecha: '2024-10-05', concepto: 'CUOTA OCTUBRE 2024', metodo: 'QR', monto: 10000, estado: 'Pagado' },
+    { dni: '8', id: 'REC-240008', fecha: '2024-11-03', concepto: 'CUOTA NOVIEMBRE 2024', metodo: 'TRANSFERENCIA', monto: 10000, estado: 'Pagado' },
+    { dni: '8', id: 'REC-240009', fecha: '2024-12-04', concepto: 'CUOTA DICIEMBRE 2024', metodo: 'QR', monto: 10000, estado: 'Pagado' },
+    { dni: '8', id: 'REC-240101', fecha: '2025-01-05', concepto: 'CUOTA ENERO 2025', metodo: 'QR', monto: 12000, estado: 'Pagado' },
+    { dni: '8', id: 'REC-240102', fecha: '2025-02-04', concepto: 'CUOTA FEBRERO 2025', metodo: 'TRANSFERENCIA', monto: 12000, estado: 'Pagado' },
+    { dni: '8', id: 'REC-240103', fecha: '2025-03-06', concepto: 'CUOTA MARZO 2025', metodo: 'TARJETA', monto: 12000, estado: 'Pagado' },
+    { dni: '8', id: 'REC-240104', fecha: '2025-04-05', concepto: 'CUOTA ABRIL 2025', metodo: 'QR', monto: 12000, estado: 'Pagado' },
+    { dni: '8', id: 'REC-240105', fecha: '2025-05-04', concepto: 'CUOTA MAYO 2025', metodo: 'TRANSFERENCIA', monto: 12000, estado: 'Pagado' },
+    { dni: '8', id: 'REC-240106', fecha: '2025-06-03', concepto: 'CUOTA JUNIO 2025', metodo: 'QR', monto: 12000, estado: 'Pagado' },
+    { dni: '8', id: 'REC-240107', fecha: '2025-07-06', concepto: 'CUOTA JULIO 2025', metodo: 'TARJETA', monto: 12000, estado: 'Pagado' },
+    { dni: '8', id: 'REC-240108', fecha: '2025-08-04', concepto: 'CUOTA AGOSTO 2025', metodo: 'QR', monto: 12000, estado: 'Pagado' },
+    { dni: '8', id: 'REC-240109', fecha: '2025-09-07', concepto: 'CUOTA SEPTIEMBRE 2025', metodo: 'TRANSFERENCIA', monto: 12000, estado: 'Pagado' },
+    { dni: '8', id: 'REC-240110', fecha: '2025-10-05', concepto: 'CUOTA OCTUBRE 2025', metodo: 'QR', monto: 12000, estado: 'Pagado' },
+    { dni: '8', id: 'REC-240111', fecha: '2025-11-03', concepto: 'CUOTA NOVIEMBRE 2025', metodo: 'TRANSFERENCIA', monto: 12000, estado: 'Pagado' },
+    { dni: '8', id: 'REC-240112', fecha: '2025-12-04', concepto: 'CUOTA DICIEMBRE 2025', metodo: 'QR', monto: 12000, estado: 'Pagado' },
+    { dni: '8', id: 'REC-240201', fecha: '2026-01-07', concepto: 'CUOTA ENERO 2026', metodo: 'TARJETA', monto: 12000, estado: 'Pagado' },
+    { dni: '8', id: 'REC-240202', fecha: '2026-02-05', concepto: 'CUOTA FEBRERO 2026', metodo: 'QR', monto: 12000, estado: 'Pagado' },
+    { dni: '8', id: 'REC-240203', fecha: '2026-03-06', concepto: 'CUOTA MARZO 2026', metodo: 'TRANSFERENCIA', monto: 12000, estado: 'Pagado' },
+    { dni: '8', id: 'REC-240204', fecha: '2026-04-04', concepto: 'CUOTA ABRIL 2026', metodo: 'QR', monto: 12000, estado: 'Pagado' },
 
-    // Historial Lucía Fernández (DNI 9) - Plan Zumba ($12.000)
-    { dni: '9', id: 'REC-940001', fecha: '2026-03-10', concepto: 'Inscripción + Cuota', metodo: 'Transferencia', monto: 12000, estado: 'Pagado' },
-    { dni: '9', id: 'REC-940002', fecha: '2026-04-08', concepto: 'Cuota Abril 2026', metodo: 'QR', monto: 12000, estado: 'Pagado' }
+    // ══════════════════════════════════════════
+    // HISTORIAL LUCÍA FERNÁNDEZ (DNI 9) - ALTA: 15/05/2024
+    // ══════════════════════════════════════════
+    { dni: '9', id: 'REC-940000', fecha: '2024-05-15', concepto: 'PRORRATEO MAYO 2024', metodo: 'EFECTIVO', monto: 4661, estado: 'Pagado' },
+    { dni: '9', id: 'REC-940001', fecha: '2024-06-10', concepto: 'CUOTA JUNIO 2024', metodo: 'TRANSFERENCIA', monto: 8500, estado: 'Pagado' },
+    { dni: '9', id: 'REC-940002', fecha: '2024-07-08', concepto: 'CUOTA JULIO 2024', metodo: 'QR', monto: 8500, estado: 'Pagado' },
+    { dni: '9', id: 'REC-940003', fecha: '2024-08-05', concepto: 'CUOTA AGOSTO 2024', metodo: 'TARJETA', monto: 8500, estado: 'Pagado' },
+    { dni: '9', id: 'REC-940004', fecha: '2024-09-12', concepto: 'CUOTA SEPTIEMBRE 2024', metodo: 'QR', monto: 8500, estado: 'Pagado' },
+    { dni: '9', id: 'REC-940005', fecha: '2024-10-10', concepto: 'CUOTA OCTUBRE 2024', metodo: 'TRANSFERENCIA', monto: 8500, estado: 'Pagado' },
+    { dni: '9', id: 'REC-940006', fecha: '2024-11-05', concepto: 'CUOTA NOVIEMBRE 2024', metodo: 'EFECTIVO', monto: 8500, estado: 'Pagado' },
+    { dni: '9', id: 'REC-940007', fecha: '2024-12-08', concepto: 'CUOTA DICIEMBRE 2024', metodo: 'QR', monto: 8500, estado: 'Pagado' },
+    { dni: '9', id: 'REC-940101', fecha: '2025-01-05', concepto: 'CUOTA ENERO 2025', metodo: 'TARJETA', monto: 12000, estado: 'Pagado' },
+    { dni: '9', id: 'REC-940102', fecha: '2025-02-12', concepto: 'CUOTA FEBRERO 2025', metodo: 'QR', monto: 12000, estado: 'Pagado' },
+    { dni: '9', id: 'REC-940103', fecha: '2025-03-08', concepto: 'CUOTA MARZO 2025', metodo: 'TRANSFERENCIA', monto: 12000, estado: 'Pagado' },
+    { dni: '9', id: 'REC-940104', fecha: '2025-04-10', concepto: 'CUOTA ABRIL 2025', metodo: 'EFECTIVO', monto: 12000, estado: 'Pagado' },
+    { dni: '9', id: 'REC-940105', fecha: '2025-05-15', concepto: 'CUOTA MAYO 2025', metodo: 'QR', monto: 12000, estado: 'Pagado' },
+    { dni: '9', id: 'REC-940106', fecha: '2025-06-08', concepto: 'CUOTA JUNIO 2025', metodo: 'TARJETA', monto: 12000, estado: 'Pagado' },
+    { dni: '9', id: 'REC-940107', fecha: '2025-07-11', concepto: 'CUOTA JULIO 2025', metodo: 'QR', monto: 12000, estado: 'Pagado' },
+    { dni: '9', id: 'REC-940108', fecha: '2025-08-05', concepto: 'CUOTA AGOSTO 2025', metodo: 'TRANSFERENCIA', monto: 12000, estado: 'Pagado' },
+    { dni: '9', id: 'REC-940109', fecha: '2025-09-12', concepto: 'CUOTA SEPTIEMBRE 2025', metodo: 'EFECTIVO', monto: 12000, estado: 'Pagado' },
+    { dni: '9', id: 'REC-940110', fecha: '2025-10-08', concepto: 'CUOTA OCTUBRE 2025', metodo: 'QR', monto: 12000, estado: 'Pagado' },
+    { dni: '9', id: 'REC-940111', fecha: '2025-11-10', concepto: 'CUOTA NOVIEMBRE 2025', metodo: 'TARJETA', monto: 12000, estado: 'Pagado' },
+    { dni: '9', id: 'REC-940112', fecha: '2025-12-05', concepto: 'CUOTA DICIEMBRE 2025', metodo: 'QR', monto: 12000, estado: 'Pagado' },
+    { dni: '9', id: 'REC-940201', fecha: '2026-01-12', concepto: 'CUOTA ENERO 2026', metodo: 'TRANSFERENCIA', monto: 12000, estado: 'Pagado' },
+    { dni: '9', id: 'REC-940202', fecha: '2026-02-10', concepto: 'CUOTA FEBRERO 2026', metodo: 'EFECTIVO', monto: 12000, estado: 'Pagado' },
+    { dni: '9', id: 'REC-940203', fecha: '2026-03-08', concepto: 'CUOTA MARZO 2026', metodo: 'QR', monto: 12000, estado: 'Pagado' },
+    { dni: '9', id: 'REC-940204', fecha: '2026-04-10', concepto: 'CUOTA ABRIL 2026', metodo: 'TARJETA', monto: 12000, estado: 'Pagado' }
 ];
 
 const metodoBadge = {
     'QR': { bg: 'rgba(59,130,246,0.12)', color: '#60a5fa', border: 'rgba(59,130,246,0.3)' },
-    'Transferencia': { bg: 'rgba(168,85,247,0.12)', color: '#c084fc', border: 'rgba(168,85,247,0.3)' },
-    'Tarjeta': { bg: 'rgba(249,115,22,0.12)', color: '#fb923c', border: 'rgba(249,115,22,0.3)' },
-    'Efectivo': { bg: 'rgba(34,197,94,0.12)', color: '#4ade80', border: 'rgba(34,197,94,0.3)' },
+    'TRANSFERENCIA': { bg: 'rgba(168,85,247,0.12)', color: '#c084fc', border: 'rgba(168,85,247,0.3)' },
+    'TARJETA': { bg: 'rgba(249,115,22,0.12)', color: '#fb923c', border: 'rgba(249,115,22,0.3)' },
+    'EFECTIVO': { bg: 'rgba(34,197,94,0.12)', color: '#4ade80', border: 'rgba(34,197,94,0.3)' },
     '—': { bg: 'rgba(100,116,139,0.12)', color: '#94a3b8', border: 'rgba(100,116,139,0.3)' },
 };
 
@@ -858,7 +1014,7 @@ function renderHistorial() {
 
     let lista = historialPagosCliente.filter(p => {
         const matchDni = p.dni === dniActual;
-        const matchMetodo = metodo === 'todos' || p.metodo === metodo;
+        const matchMetodo = metodo === 'todos' || p.metodo.toUpperCase() === metodo.toUpperCase();
         return matchDni && matchMetodo;
     });
 

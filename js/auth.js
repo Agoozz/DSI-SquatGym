@@ -235,6 +235,18 @@ function actualizarUIPerfilAlumno() {
 
     if (perfilNombre) perfilNombre.innerHTML = socio.nombre.replace(' ', ' <br> <span class="text-slate-300">') + '</span>';
 
+    // Sincronizar datos de perfil (Alta, Plan, Sede)
+    const planEl = document.getElementById('alu-perfil-plan');
+    const sedeEl = document.getElementById('alu-perfil-sede');
+    const altaEl = document.getElementById('alu-perfil-alta');
+    
+    if (planEl) planEl.innerText = socio.clase.toUpperCase();
+    if (sedeEl) sedeEl.innerText = socio.sede.toUpperCase();
+    if (altaEl) {
+        const fecha = new Date(socio.fechaAlta + 'T12:00:00');
+        altaEl.innerText = fecha.toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    }
+
     // Lógica de Foto (Priorizar socio.foto)
     if (perfilImg) {
         perfilImg.src = socio.foto || `https://ui-avatars.com/api/?name=${socio.nombre}&background=f97316&color=fff&bold=true`;
@@ -734,13 +746,23 @@ function verPerfilSocio(nombre) {
     document.getElementById('perfil-nombre').innerText = nombre;
 
     const badgeEstado = document.getElementById('perfil-estado-badge');
+        const planEl = document.getElementById('alu-perfil-plan');
+        const sedeEl = document.getElementById('alu-perfil-sede');
+        const altaEl = document.getElementById('alu-perfil-alta');
+        
+        if (planEl) planEl.innerText = socio.clase.toUpperCase();
+        if (sedeEl) sedeEl.innerText = socio.sede.toUpperCase();
+        if (altaEl) {
+            const fecha = new Date(socio.fechaAlta + 'T12:00:00');
+            altaEl.innerText = fecha.toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        }
+let textoCuenta = socio.estado;
+
     const montoEl = document.getElementById('perfil-monto');
     const tituloMonto = document.getElementById('perfil-titulo-monto');
 
     montoEl.innerText = `$${deuda.toLocaleString()}`;
     montoEl.classList.remove('text-green-400', 'text-white', 'text-red-500', 'text-yellow-500');
-
-    let textoCuenta = socio.estado;
 
     if (deuda > 0 && esMora) {
         // Mora real
