@@ -118,9 +118,19 @@ function selectRol(rol) {
     // activar seleccionado
     if (rol === "admin") {
         staff.classList.add("bg-orange-500", "text-white");
+        sedeActual = null; // Admin ve todas
+    } else if (rol === 'secretaria' || rol === 'encargado') {
+        client.classList.add("bg-orange-500", "text-white");
+        sedeActual = 'Sede Norte'; // Sede por defecto para staff
     } else {
         client.classList.add("bg-orange-500", "text-white");
+        sedeActual = null;
     }
+    
+    // Forzar actualización si estamos en una pantalla que depende de la sede
+    const activeView = document.querySelector('.view-section.active')?.id;
+    if (activeView === 'v-adm-membresia') setTimeout(filtrarSocios, 50);
+    if (activeView === 'v-adm-monitor') setTimeout(renderInformes, 50);
 }
 
 function confirmarTransferencia() {
