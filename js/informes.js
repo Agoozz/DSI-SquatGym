@@ -1,8 +1,35 @@
-let informeActual = null;
+let ordenActual = 'fecha';
+let ordenAsc    = false;
+
+function cambiarOrden(criterio) {
+    if (ordenActual === criterio) {
+        ordenAsc = !ordenAsc;
+    } else {
+        ordenActual = criterio;
+        ordenAsc = false;
+    }
+    renderInformes();
+}
+
+function getEstadoTransaccion(t) {
+    // FECHA DE CORTE: Todo lo anterior a Abril 2026 está PAGADO
+    if (t.fecha < "2026-04-01") return 'ACREDITADO';
+
+    const alertas = (typeof alertasVencimiento !== 'undefined') ? alertasVencimiento : [];
+    const socio = sociosDB.find(s => s.nombre.toLowerCase().trim() === t.cliente.toLowerCase().trim());
+    const deuda = socio ? socio.deuda : 0;
+    
+    if (deuda === 0) return 'ACREDITADO';
+    
+    const alerta = alertas.find(a => a.nombre === t.cliente);
+    const dias = alerta ? alerta.dias : 0;
+    return (dias <= -15) ? 'EN MORA' : 'PENDIENTE';
+}
 
 function renderInformes() {
-    const mesSel     = document.getElementById('inf-mes-sel')?.value     || '2026-04';
-    const tipoSel    = document.getElementById('inf-tipo-sel')?.value    || 'todos';
+    const anioSel    = document.getElementById('inf-anio-sel')?.value    || '2026';
+    const mesSel     = document.getElementById('inf-mes-sel')?.value     || '04';
+    
     const sedeSel    = (typeof rRol !== 'undefined' && rRol === 'admin')
         ? (document.getElementById('inf-sede-sel')?.value || 'todas')
         : sedeActual;
@@ -10,43 +37,76 @@ function renderInformes() {
     const dniBus     = (document.getElementById('inf-dni-sel')?.value     || '').trim();
 
     const filtradas = transacciones.filter(t => {
-        const matchMes     = t.fecha && t.fecha.startsWith(mesSel);
-        const matchTipo    = tipoSel === 'todos' || t.concepto === tipoSel;
+        let matchFecha = true;
+        if (anioSel !== 'todos' && mesSel !== 'todos') {
+            matchFecha = t.fecha && t.fecha.startsWith(`${anioSel}-${mesSel}`);
+        } else if (anioSel !== 'todos' && mesSel === 'todos') {
+            matchFecha = t.fecha && t.fecha.startsWith(anioSel);
+        } else if (anioSel === 'todos' && mesSel !== 'todos') {
+            matchFecha = t.fecha && t.fecha.split('-')[1] === mesSel;
+        }
+
         const matchSede    = !sedeSel || sedeSel === 'todas' || t.sede === sedeSel;
-        const matchCliente = !clienteBus || t.cliente.toLowerCase().includes(clienteBus);
-        const socio        = sociosDB.find(s => s.nombre === t.cliente);
-        const matchDni     = !dniBus || (socio && socio.dni.includes(dniBus));
-        return matchMes && matchTipo && matchSede && matchCliente && matchDni;
+        
+        // Búsqueda más robusta:
+        const matchCliente = !clienteBus || (t.cliente && t.cliente.toLowerCase().includes(clienteBus));
+        
+        const socio = sociosDB.find(s => s.nombre.toLowerCase().trim() === t.cliente.toLowerCase().trim());
+        const matchDni = !dniBus || (socio && socio.dni.startsWith(dniBus));
+
+        return matchFecha && matchSede && matchCliente && matchDni;
     });
 
-    const totales = { QR: 0, Transferencia: 0, Efectivo: 0, Tarjeta: 0 };
-    filtradas.forEach(t => { if (totales[t.tipo] !== undefined) totales[t.tipo] += t.monto; });
+    // APLICAR ORDENAMIENTO
+    filtradas.sort((a, b) => {
+        let valA, valB;
+        if (ordenActual === 'fecha') {
+            valA = new Date(a.fecha); valB = new Date(b.fecha);
+        } else if (ordenActual === 'cliente') {
+            valA = a.cliente; valB = b.cliente;
+        } else if (ordenActual === 'monto') {
+            valA = a.monto; valB = b.monto;
+        } else if (ordenActual === 'estado') {
+            const peso = { 'EN MORA': 2, 'PENDIENTE': 1, 'ACREDITADO': 0 };
+            valA = peso[getEstadoTransaccion(a)]; valB = peso[getEstadoTransaccion(b)];
+        }
+        
+        if (valA < valB) return ordenAsc ? -1 : 1;
+        if (valA > valB) return ordenAsc ? 1 : -1;
+        return 0;
+    });
 
-    const alertas = (typeof alertasVencimiento !== 'undefined') ? alertasVencimiento : [];
+    const totales = { QR: 0, TRANSFERENCIA: 0, EFECTIVO: 0, TARJETA: 0 };
+    filtradas.forEach(t => { 
+        const estado = getEstadoTransaccion(t);
+        if (estado === 'ACREDITADO') {
+            const tipoKey = t.tipo.toUpperCase();
+            if (totales[tipoKey] !== undefined) totales[tipoKey] += t.monto; 
+        }
+    });
+
     let totalRecaudado = 0;
     let totalPendiente = 0;
     let totalMora = 0;
 
     filtradas.forEach(t => {
-        const socio = sociosDB.find(s => s.nombre === t.cliente);
-        const deuda = socio ? socio.deuda : 0;
-        if (deuda === 0) {
+        const estado = getEstadoTransaccion(t);
+        if (estado === 'ACREDITADO') {
             totalRecaudado += t.monto;
+        } else if (estado === 'EN MORA') {
+            totalMora += t.monto;
         } else {
-            const alerta = alertas.find(a => a.nombre === t.cliente);
-            const dias   = alerta ? alerta.dias : 0;
-            if (dias <= -15) totalMora += t.monto;
-            else totalPendiente += t.monto;
+            totalPendiente += t.monto;
         }
     });
 
     const totalGeneral = totalRecaudado + totalPendiente + totalMora;
     const efectividad = totalGeneral > 0 ? Math.round((totalRecaudado / totalGeneral) * 100) : 100;
 
-    const qrEl  = document.getElementById('inf-qr');         if (qrEl)  qrEl.innerText  = '$' + totales.QR.toLocaleString();
-    const trEl  = document.getElementById('inf-transfer');   if (trEl)  trEl.innerText  = '$' + totales.Transferencia.toLocaleString();
-    const efEl  = document.getElementById('inf-efectivo');   if (efEl)  efEl.innerText  = '$' + totales.Efectivo.toLocaleString();
-    const taEl  = document.getElementById('inf-tarjeta');    if (taEl)  taEl.innerText  = '$' + totales.Tarjeta.toLocaleString();
+    const qrEl  = document.getElementById('inf-qr');         if (qrEl)  qrEl.innerText  = '$' + (totales.QR || 0).toLocaleString();
+    const trEl  = document.getElementById('inf-transfer');   if (trEl)  trEl.innerText  = '$' + (totales.TRANSFERENCIA || 0).toLocaleString();
+    const efEl  = document.getElementById('inf-efectivo');   if (efEl)  efEl.innerText  = '$' + (totales.EFECTIVO || 0).toLocaleString();
+    const taEl  = document.getElementById('inf-tarjeta');    if (taEl)  taEl.innerText  = '$' + (totales.TARJETA || 0).toLocaleString();
     
     const totEl = document.getElementById('inf-total-mes');       if (totEl) totEl.innerText = '$' + totalRecaudado.toLocaleString();
     const penEl = document.getElementById('inf-total-pendiente'); if (penEl) penEl.innerText = '$' + totalPendiente.toLocaleString();
@@ -68,22 +128,22 @@ function renderInformes() {
         const socio     = sociosDB.find(s => s.nombre === t.cliente);
         const dni       = socio ? socio.dni : '—';
         const sede      = t.sede || socio?.sede || '—';
-        const mColor    = metodoColor[t.tipo] || '#ffffff';
         const cColor    = conceptoColor[t.concepto] || 'text-slate-400';
 
-        const deuda = socio ? socio.deuda : 0;
+        const estado    = getEstadoTransaccion(t);
+        const esPagoRealizado = (estado === 'ACREDITADO');
+
         let estadoHTML;
-        if (deuda === 0) {
+        if (estado === 'ACREDITADO') {
             estadoHTML = `<span style="padding:2px 10px;border-radius:9999px;font-size:9px;font-weight:900;background:rgba(34,197,94,0.12);color:#4ade80;border:1px solid rgba(34,197,94,0.3)">ACREDITADO</span>`;
+        } else if (estado === 'EN MORA') {
+            estadoHTML = `<span style="padding:2px 10px;border-radius:9999px;font-size:9px;font-weight:900;background:rgba(239,68,68,0.15);color:#f87171;border:1px solid rgba(239,68,68,0.4)">EN MORA</span>`;
         } else {
-            const alerta = alertas.find(a => a.nombre === t.cliente);
-            const dias   = alerta ? alerta.dias : 0;
-            if (dias <= -15) {
-                estadoHTML = `<span style="padding:2px 10px;border-radius:9999px;font-size:9px;font-weight:900;background:rgba(239,68,68,0.15);color:#f87171;border:1px solid rgba(239,68,68,0.4)">EN MORA</span>`;
-            } else {
-                estadoHTML = `<span style="padding:2px 10px;border-radius:9999px;font-size:9px;font-weight:900;background:rgba(249,115,22,0.12);color:#fb923c;border:1px solid rgba(249,115,22,0.3)">PENDIENTE</span>`;
-            }
+            estadoHTML = `<span style="padding:2px 10px;border-radius:9999px;font-size:9px;font-weight:900;background:rgba(249,115,22,0.12);color:#fb923c;border:1px solid rgba(249,115,22,0.3)">PENDIENTE</span>`;
         }
+
+        const metodoTexto = esPagoRealizado ? t.tipo : '—';
+        const mColor      = esPagoRealizado ? (metodoColor[t.tipo] || '#ffffff') : '#475569';
 
         return `
           <tr class="hover:bg-orange-500/5 transition text-xs">
@@ -93,7 +153,7 @@ function renderInformes() {
               <td class="p-3 text-slate-500 text-[10px]">${dni}</td>
               <td class="p-3 text-slate-400 text-[10px]">${sede}</td>
               <td class="p-3"><span class="font-black text-[10px] ${cColor}">${t.concepto}</span></td>
-              <td class="p-3 font-black" style="color:${mColor}">${t.tipo}</td>
+              <td class="p-3"><span class="font-black text-[10px]" style="color:${mColor}">${metodoTexto}</span></td>
               <td class="p-3 text-right font-black text-white">$${t.monto.toLocaleString()}</td>
               <td class="p-3">${estadoHTML}</td>
           </tr>`;
@@ -102,38 +162,47 @@ function renderInformes() {
 
 function generarReporteCobranzas() {
     informeActual = 'cobranzas';
-    const mesSel  = document.getElementById('inf-mes-sel')?.value || '2026-04';
+    const anioSel    = document.getElementById('inf-anio-sel')?.value    || '2026';
+    const mesSel     = document.getElementById('inf-mes-sel')?.value     || '04';
+    
     const sedeSel = (typeof rRol !== 'undefined' && rRol === 'admin')
         ? (document.getElementById('inf-sede-sel')?.value || 'todas')
         : sedeActual;
-    const [anio, mes] = mesSel.split('-');
-    const nombreMes = new Date(parseInt(anio), parseInt(mes) - 1, 1)
-        .toLocaleDateString('es-AR', { month: 'long', year: 'numeric' });
     const sedeLabel = (!sedeSel || sedeSel === 'todas') ? 'Todas las Sedes' : sedeSel;
 
-    const alertas = (typeof alertasVencimiento !== 'undefined') ? alertasVencimiento : [];
+    let nombreMes = 'Período';
+    if (anioSel !== 'todos' && mesSel !== 'todos') {
+        nombreMes = new Date(parseInt(anioSel), parseInt(mesSel) - 1, 1).toLocaleDateString('es-AR', { month: 'long', year: 'numeric' });
+    } else if (anioSel !== 'todos' && mesSel === 'todos') {
+        nombreMes = `Año ${anioSel}`;
+    } else if (anioSel === 'todos' && mesSel !== 'todos') {
+        nombreMes = `Todos los años - ${mesSel}`;
+    } else {
+        nombreMes = "Histórico Completo";
+    }
+
     const recibidos = [];
     const pendientes = [];
     const morosos = [];
 
     const filtradas = transacciones.filter(t => {
-        const matchMes  = t.fecha && t.fecha.startsWith(mesSel);
+        let matchFecha = true;
+        if (anioSel !== 'todos' && mesSel !== 'todos') {
+            matchFecha = t.fecha && t.fecha.startsWith(`${anioSel}-${mesSel}`);
+        } else if (anioSel !== 'todos' && mesSel === 'todos') {
+            matchFecha = t.fecha && t.fecha.startsWith(anioSel);
+        } else if (anioSel === 'todos' && mesSel !== 'todos') {
+            matchFecha = t.fecha && t.fecha.split('-')[1] === mesSel;
+        }
         const matchSede = !sedeSel || sedeSel === 'todas' || t.sede === sedeSel;
-        const esCuota   = t.concepto === 'Cuota';
-        return matchMes && matchSede && esCuota;
+        return matchFecha && matchSede;
     });
 
     filtradas.forEach(t => {
-        const socio = sociosDB.find(s => s.nombre === t.cliente);
-        const deuda = socio ? socio.deuda : 0;
-        if (deuda === 0) {
-            recibidos.push(t);
-        } else {
-            const alerta = alertas.find(a => a.nombre === t.cliente);
-            const dias   = alerta ? alerta.dias : 0;
-            if (dias <= -15) morosos.push(t);
-            else pendientes.push(t);
-        }
+        const estado = getEstadoTransaccion(t);
+        if (estado === 'ACREDITADO') recibidos.push(t);
+        else if (estado === 'EN MORA') morosos.push(t);
+        else pendientes.push(t);
     });
 
     const totalRecibido  = recibidos.reduce((s, t) => s + t.monto, 0);
@@ -174,7 +243,7 @@ function generarReporteCobranzas() {
 
     const filasPendientes = pendientes.length
         ? pendientes.map((t, i) => {
-            const socio = sociosDB.find(s => s.nombre === t.cliente);
+            const socio = sociosDB.find(s => s.nombre.toLowerCase().trim() === t.cliente.toLowerCase().trim());
             return `<tr class="border-b border-slate-800 hover:bg-orange-500/5 text-xs">
                 <td class="p-2 text-slate-500">${i+1}</td>
                 <td class="p-2 text-white font-black">${t.cliente}</td>
@@ -204,6 +273,7 @@ function generarReporteCobranzas() {
         </table>
     </div>`;
 
+    const alertas = (typeof alertasVencimiento !== 'undefined') ? alertasVencimiento : [];
     const filasMorosos = morosos.length
         ? morosos.map((t, i) => {
             const alerta = alertas.find(a => a.nombre === t.cliente);
@@ -302,37 +372,47 @@ function exportarPDF(tipoInforme) {
     const admin = window.rNombre || 'Administrador';
 
     // ── Lógica de Datos (Espejo de generarReporteCobranzas) ──
-    const mesSel  = document.getElementById('inf-mes-sel')?.value || '2026-04';
+    const anioSel    = document.getElementById('inf-anio-sel')?.value    || '2026';
+    const mesSel     = document.getElementById('inf-mes-sel')?.value     || '04';
+    
     const sedeSel = (typeof rRol !== 'undefined' && rRol === 'admin')
         ? (document.getElementById('inf-sede-sel')?.value || 'todas')
         : (typeof sedeActual !== 'undefined' ? sedeActual : null);
     const sedeLabel = (!sedeSel || sedeSel === 'todas') ? 'Todas las Sedes' : sedeSel;
-    const [anio, mes] = mesSel.split('-');
-    const nombreMes = new Date(parseInt(anio), parseInt(mes) - 1, 1).toLocaleDateString('es-AR', { month: 'long', year: 'numeric' });
 
-    const alertas = (typeof alertasVencimiento !== 'undefined') ? alertasVencimiento : [];
+    let nombreMes = 'Período';
+    if (anioSel !== 'todos' && mesSel !== 'todos') {
+        nombreMes = new Date(parseInt(anioSel), parseInt(mesSel) - 1, 1).toLocaleDateString('es-AR', { month: 'long', year: 'numeric' });
+    } else if (anioSel !== 'todos' && mesSel === 'todos') {
+        nombreMes = `Año ${anioSel}`;
+    } else if (anioSel === 'todos' && mesSel !== 'todos') {
+        nombreMes = `Todos los años - ${mesSel}`;
+    } else {
+        nombreMes = "Histórico Completo";
+    }
+
     const recibidos = [];
     const pendientes = [];
     const morosos = [];
 
     const filtradas = transacciones.filter(t => {
-        const matchMes  = t.fecha && t.fecha.startsWith(mesSel);
+        let matchFecha = true;
+        if (anioSel !== 'todos' && mesSel !== 'todos') {
+            matchFecha = t.fecha && t.fecha.startsWith(`${anioSel}-${mesSel}`);
+        } else if (anioSel !== 'todos' && mesSel === 'todos') {
+            matchFecha = t.fecha && t.fecha.startsWith(anioSel);
+        } else if (anioSel === 'todos' && mesSel !== 'todos') {
+            matchFecha = t.fecha && t.fecha.split('-')[1] === mesSel;
+        }
         const matchSede = !sedeSel || sedeSel === 'todas' || t.sede === sedeSel;
-        const esCuota   = t.concepto === 'Cuota';
-        return matchMes && matchSede && esCuota;
+        return matchFecha && matchSede;
     });
 
     filtradas.forEach(t => {
-        const socio = sociosDB.find(s => s.nombre === t.cliente);
-        const deuda = socio ? socio.deuda : 0;
-        if (deuda === 0) {
-            recibidos.push(t);
-        } else {
-            const alerta = alertas.find(a => a.nombre === t.cliente);
-            const dias   = alerta ? alerta.dias : 0;
-            if (dias <= -15) morosos.push(t);
-            else pendientes.push(t);
-        }
+        const estado = getEstadoTransaccion(t);
+        if (estado === 'ACREDITADO') recibidos.push(t);
+        else if (estado === 'EN MORA') morosos.push(t);
+        else pendientes.push(t);
     });
 
     const totalRecibido  = recibidos.reduce((s, t) => s + t.monto, 0);
@@ -427,6 +507,7 @@ function exportarPDF(tipoInforme) {
     doc.setFontSize(11); doc.setFont("helvetica", "bold"); doc.setTextColor(220, 38, 38);
     doc.text("3. Deudas con Restricción (Acceso Bloqueado)", 14, currentY);
 
+    const alertas = (typeof alertasVencimiento !== 'undefined') ? alertasVencimiento : [];
     const bodyMorosos = morosos.map((t, i) => {
         const alerta = alertas.find(a => a.nombre === t.cliente);
         return [(i + 1), t.cliente, `${Math.abs(alerta?.dias || 0)} días`, `$${t.monto.toLocaleString()}`];

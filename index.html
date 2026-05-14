@@ -39,18 +39,15 @@
 
       <!-- Submenu de Staff: Administrador / Secretaria / Encargado -->
       <div id="staff-submenu" class="hidden flex-col gap-2 mb-4 pb-4 border-b border-slate-800">
-        <button id="l-btn-admin"
-          onclick="seleccionarSubrol('admin')"
+        <button id="l-btn-admin" onclick="seleccionarSubrol('admin')"
           class="w-full py-3 rounded-lg font-black text-[10px] transition-all bg-[#0f172a] text-slate-300 border-2 border-[#1e293b] uppercase font-['Outfit'] hover:border-orange-500/50">
           <i class="fas fa-crown text-slate-500 mr-2"></i>Administrador
         </button>
-        <button id="l-btn-secretaria"
-          onclick="seleccionarSubrol('secretaria')"
+        <button id="l-btn-secretaria" onclick="seleccionarSubrol('secretaria')"
           class="w-full py-3 rounded-lg font-black text-[10px] transition-all bg-[#0f172a] text-slate-300 border-2 border-[#1e293b] uppercase font-['Outfit'] hover:border-orange-500/50">
           <i class="fas fa-id-badge text-slate-500 mr-2"></i>Secretaria
         </button>
-        <button id="l-btn-encargado"
-          onclick="seleccionarSubrol('encargado')"
+        <button id="l-btn-encargado" onclick="seleccionarSubrol('encargado')"
           class="w-full py-3 rounded-lg font-black text-[10px] transition-all bg-[#0f172a] text-slate-300 border-2 border-[#1e293b] uppercase font-['Outfit'] hover:border-orange-500/50">
           <i class="fas fa-user-tie text-slate-500 mr-2"></i>Encargado
         </button>
@@ -83,7 +80,8 @@
 
       <div id="form-normal">
         <div class="space-y-4">
-          <input type="text" inputmode="numeric" pattern="[0-9]*" oninput="this.value = this.value.replace(/[^0-9]/g, '')" placeholder="DNI..."
+          <input type="text" inputmode="numeric" pattern="[0-9]*"
+            oninput="this.value = this.value.replace(/[^0-9]/g, '')" placeholder="DNI..."
             class="w-full p-4 rounded-full bg-slate-950 border-2 border-slate-800 font-bold focus:border-[#f97316] outline-none text-white text-xs text-center uppercase">
           <input type="password" placeholder="PASSWORD"
             class="w-full p-4 rounded-full bg-slate-950 border-2 border-slate-800 font-bold focus:border-[#f97316] outline-none text-white text-xs text-center">
@@ -97,7 +95,9 @@
 
         <!-- Link Olvidé contraseña -->
         <div class="mt-6 text-center">
-          <button onclick="toggleRecuperacionPassword()" class="text-[10px] text-[#64748b] hover:text-slate-400 transition font-bold uppercase">¿Olvidaste tu contraseña?</button>
+          <button onclick="toggleRecuperacionPassword()"
+            class="text-[10px] text-[#64748b] hover:text-slate-400 transition font-bold uppercase">¿Olvidaste tu
+            contraseña?</button>
         </div>
       </div>
 
@@ -106,7 +106,8 @@
         class="hidden mt-2 p-5 bg-[#0f172a] border-2 border-[#1e293b] rounded-xl font-['Outfit'] shadow-xl">
         <p class="text-[10px] text-slate-300 mb-4 font-bold uppercase text-center tracking-widest">Recuperar contraseña
         </p>
-        <input type="text" id="dni-recuperacion" inputmode="numeric" pattern="[0-9]*" oninput="this.value = this.value.replace(/[^0-9]/g, '')" placeholder="Ingresá tu DNI"
+        <input type="text" id="dni-recuperacion" inputmode="numeric" pattern="[0-9]*"
+          oninput="this.value = this.value.replace(/[^0-9]/g, '')" placeholder="Ingresá tu DNI"
           class="w-full p-3.5 rounded-lg bg-slate-950 border-2 border-slate-800 font-bold focus:border-[#f97316] outline-none text-white text-xs text-center uppercase mb-4 transition-colors">
         <button onclick="typeof recuperarPassword === 'function' && recuperarPassword()"
           class="w-full bg-[#f97316] hover:bg-orange-500 text-white py-3 rounded-lg text-[10px] font-black uppercase mb-3 transition-colors shadow-lg shadow-orange-500/20">Recuperar</button>
@@ -149,6 +150,39 @@
 
       <div class="flex items-center gap-8">
         <span id="header-username" class="text-[10px] font-black text-orange-400 uppercase tracking-widest"></span>
+
+        <!-- Botón y Dropdown de Notificaciones -->
+        <div id="notificaciones-header-container" class="relative hidden">
+          <button id="btn-notificaciones" class="text-slate-500 hover:text-orange-500 transition relative">
+            <i class="fa-solid fa-bell text-xl"></i>
+            <!-- Badge de cantidad -->
+            <span id="badge-notificaciones"
+              class="absolute -top-1.5 -right-1.5 min-w-[16px] h-[16px] bg-red-500 rounded-full border-2 border-slate-950 flex items-center justify-center text-[8px] font-black text-white leading-none"></span>
+          </button>
+
+          <!-- Dropdown Notificaciones -->
+          <div id="dropdown-notificaciones"
+            class="hidden absolute right-0 mt-4 w-[320px] bg-[#0f172a] border border-slate-800 rounded-2xl shadow-2xl z-[100] overflow-hidden">
+            <!-- Header -->
+            <div class="p-4 border-b border-slate-800 flex justify-between items-center bg-slate-900/50">
+              <h3 class="text-[10px] font-black text-white uppercase tracking-widest">Notificaciones</h3>
+              <button class="text-[9px] font-bold text-orange-500 hover:text-orange-400 uppercase">Marcar como
+                leídas</button>
+            </div>
+
+            <!-- Cuerpo -->
+            <div id="lista-notificaciones" class="max-h-[350px] overflow-y-auto custom-scrollbar">
+              <!-- Inyectado por JS -->
+            </div>
+
+            <!-- Footer -->
+            <button id="btn-ver-todas-notificaciones" onclick="navV('alu-notificaciones'); renderNotificaciones();"
+              class="w-full p-3 bg-slate-900/80 hover:bg-slate-900 text-[10px] font-black text-slate-400 hover:text-white transition uppercase tracking-widest border-t border-slate-800">
+              Ver todas las notificaciones
+            </button>
+          </div>
+        </div>
+
         <button onclick="location.reload()" class="text-slate-500 hover:text-red-500 transition">
           <i class="fa-solid fa-power-off text-xl"></i>
         </button>
@@ -159,26 +193,116 @@
 
   </div>
 
-  <div id="modal-pago-selector" class="modal-base italic uppercase">
-    <div class="glass-card p-6 w-full max-w-md text-center space-y-4">
-      <button onclick="window.volverPago()" class="text-xs text-slate-400 mb-3 block">← Volver</button>
-      <h3 class="text-lg font-black mb-2">Medio de Pago</h3>
+  <div id="modal-pago-selector" class="modal-base !items-center !justify-center">
+    <div class="bg-[#020617] w-full max-w-md rounded-[2.5rem] border border-slate-800 shadow-[0_30px_100px_rgba(0,0,0,0.8)] overflow-hidden relative">
+      
+      <!-- Glow superior -->
+      <div class="absolute -top-24 -left-24 w-64 h-64 bg-orange-500/10 blur-[80px] rounded-full"></div>
 
-      <!-- Cupones -->
-      <div id="cupon-container" class="flex gap-2 mb-4 bg-slate-900/50 p-2 rounded-lg border border-slate-800 transition-all duration-300">
-        <input type="text" id="input-cupon-cobro" placeholder="Ingresar código de cupón" class="flex-1 p-2 rounded bg-slate-950 text-white text-[10px] font-black uppercase tracking-widest border border-slate-700 focus:outline-none focus:border-orange-500 transition">
-        <button id="btn-aplicar-cupon" onclick="aplicarCuponCobro()" class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded text-[10px] font-black uppercase tracking-widest transition shadow-lg">Aplicar</button>
+      <div class="p-8 relative z-10">
+        <!-- Header con botón volver -->
+        <div class="flex justify-between items-center mb-8">
+          <button onclick="window.volverPago()" class="w-10 h-10 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-400 hover:text-white transition-all">
+            <i class="fas fa-arrow-left text-xs"></i>
+          </button>
+          <div class="text-right">
+            <p class="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em]">Checkout</p>
+            <h3 class="text-xs font-black text-white uppercase italic">Pasarela de Pago</h3>
+          </div>
+        </div>
+
+        <!-- Resumen del Pago (Mini Card) -->
+        <div class="bg-slate-950/80 border border-slate-800 rounded-3xl p-5 mb-8 shadow-inner">
+            <div class="flex justify-between items-center mb-4 border-b border-slate-800/50 pb-4">
+                <div>
+                    <p class="text-[8px] font-black text-orange-500 uppercase tracking-widest mb-1">Concepto</p>
+                    <p class="text-xs font-black text-white uppercase italic">Cuota Mensual</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-1">Socio</p>
+                    <p id="pago-display-nombre" class="text-xs font-black text-slate-300 uppercase italic">Valentino P.</p>
+                </div>
+            </div>
+            <div class="flex justify-between items-end">
+                <div>
+                    <p class="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-1">Total a Abonar</p>
+                    <p id="pago-total-display" class="text-4xl font-black text-white tracking-tighter italic">$12.500</p>
+                </div>
+                <div class="bg-green-500/10 px-3 py-1.5 rounded-lg border border-green-500/20">
+                    <p class="text-[8px] font-black text-green-400 uppercase tracking-widest leading-none">✔ Final</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cupones (Rediseñado) -->
+        <div id="cupon-container" class="relative mb-8">
+            <input type="text" id="input-cupon-cobro" placeholder="Tengo un cupón de descuento"
+              class="w-full pl-4 pr-24 py-4 rounded-2xl bg-slate-950 border border-slate-800 text-white text-[10px] font-bold uppercase tracking-widest focus:outline-none focus:border-orange-500/50 transition-all placeholder:text-slate-600">
+            <button id="btn-aplicar-cupon" onclick="aplicarCuponCobro()"
+              class="absolute right-2 top-2 bottom-2 bg-slate-800 hover:bg-orange-500 text-white px-5 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all">Aplicar</button>
+            <p id="msg-cupon-cobro" class="hidden absolute -bottom-5 left-1 text-[8px] font-black text-green-400 uppercase tracking-widest animate-fade-in">
+              <i class="fas fa-check-circle mr-1"></i>Cupón aplicado (-<span id="valor-cupon-aplicado">0</span>%)
+            </p>
+        </div>
+
+        <!-- Opciones de Pago -->
+        <div id="pago-opciones" class="space-y-3 pt-2">
+            <p class="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em] mb-4 ml-1">Seleccioná un método</p>
+            
+            <!-- Botón Mercado Pago -->
+            <button onclick="mostrarPago('qr')" class="group w-full flex items-center gap-4 p-4 rounded-2xl bg-slate-950 border border-slate-800 hover:border-[#009EE3]/50 hover:bg-[#009EE3]/5 transition-all duration-300">
+                <div class="w-12 h-12 rounded-xl bg-[#009EE3]/10 flex items-center justify-center text-[#009EE3] group-hover:scale-110 transition-transform">
+                    <i class="fa-solid fa-qrcode text-xl"></i>
+                </div>
+                <div class="text-left flex-1">
+                    <p class="text-[10px] font-black text-white uppercase">Mercado Pago</p>
+                    <p class="text-[8px] font-bold text-slate-500 uppercase tracking-tighter">Escaneá el código QR</p>
+                </div>
+                <i class="fas fa-chevron-right text-slate-700 text-[10px] group-hover:text-[#009EE3] transition-colors"></i>
+            </button>
+
+            <!-- Botón Transferencia -->
+            <button onclick="mostrarPago('transferencia')" class="group w-full flex items-center gap-4 p-4 rounded-2xl bg-slate-950 border border-slate-800 hover:border-blue-500/50 hover:bg-blue-500/5 transition-all duration-300">
+                <div class="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-500 group-hover:scale-110 transition-transform">
+                    <i class="fas fa-university text-xl"></i>
+                </div>
+                <div class="text-left flex-1">
+                    <p class="text-[10px] font-black text-white uppercase">Transferencia CBU</p>
+                    <p class="text-[8px] font-bold text-slate-500 uppercase tracking-tighter">Banca Online / Alias</p>
+                </div>
+                <i class="fas fa-chevron-right text-slate-700 text-[10px] group-hover:text-blue-500 transition-colors"></i>
+            </button>
+
+            <!-- Botón Tarjeta -->
+            <button onclick="mostrarPago('tarjeta')" class="group w-full flex items-center gap-4 p-4 rounded-2xl bg-slate-950 border border-slate-800 hover:border-purple-500/50 hover:bg-purple-500/5 transition-all duration-300">
+                <div class="w-12 h-12 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-500 group-hover:scale-110 transition-transform">
+                    <i class="fas fa-credit-card text-xl"></i>
+                </div>
+                <div class="text-left flex-1">
+                    <p class="text-[10px] font-black text-white uppercase">Tarjeta Débito/Crédito</p>
+                    <p class="text-[8px] font-bold text-slate-500 uppercase tracking-tighter">Visa, Mastercard, AMEX</p>
+                </div>
+                <i class="fas fa-chevron-right text-slate-700 text-[10px] group-hover:text-purple-500 transition-colors"></i>
+            </button>
+
+            <!-- Botón Efectivo -->
+            <button onclick="mostrarPago('efectivo')" id="btn-efectivo" class="group w-full flex items-center gap-4 p-4 rounded-2xl bg-slate-950 border border-slate-800 hover:border-green-500/50 hover:bg-green-500/5 transition-all duration-300">
+                <div class="w-12 h-12 rounded-xl bg-green-500/10 flex items-center justify-center text-green-500 group-hover:scale-110 transition-transform">
+                    <i class="fas fa-money-bill-wave text-xl"></i>
+                </div>
+                <div class="text-left flex-1">
+                    <p class="text-[10px] font-black text-white uppercase">Efectivo en Caja</p>
+                    <p class="text-[8px] font-bold text-slate-500 uppercase tracking-tighter">Pago presencial en sede</p>
+                </div>
+                <i class="fas fa-chevron-right text-slate-700 text-[10px] group-hover:text-green-500 transition-colors"></i>
+            </button>
+        </div>
+
+        <!-- Contenedor dinámico (Formularios de cada método) -->
+        <div id="pago-contenido" class="hidden mt-6 animate-in fade-in slide-in-from-bottom-5 duration-300"></div>
+
+        <p class="text-[7px] text-slate-600 text-center mt-10 uppercase tracking-[0.2em]">Pagos protegidos por SquatGym Secure Layer™</p>
       </div>
-      <p id="msg-cupon-cobro" class="hidden text-[10px] font-black text-green-400 uppercase tracking-widest mb-4 mt-[-8px] text-left ml-1 animate-fade-in"><i class="fas fa-check-circle mr-1"></i>Cupón aplicado exitosamente (-<span id="valor-cupon-aplicado">0</span>%)</p>
-
-      <div id="pago-opciones" class="space-y-3">
-        <button onclick="mostrarPago('qr')" class="btn-ui bg-[#009EE3] w-full">Mercado Pago (QR)</button>
-        <button onclick="mostrarPago('transferencia')" class="btn-ui bg-blue-700 w-full">Transferencia</button>
-        <button onclick="mostrarPago('tarjeta')" class="btn-ui bg-blue-700 w-full">Tarjeta</button>
-        <button onclick="mostrarPago('efectivo')" id="btn-efectivo" class="btn-ui bg-green-600 w-full">Efectivo</button>
-      </div>
-
-      <div id="pago-contenido" class="hidden mt-4"></div>
     </div>
   </div>
 
@@ -450,10 +574,53 @@
     </div>
   </div>
 
+  <!-- POP-UP DE ESTADO DE CUENTA ALUMNO (NOTIFICACIÓN SUPERIOR) -->
+  <div id="modal-estado-cuenta-alumno" class="modal-base !bg-transparent !backdrop-blur-none !items-start !pt-10 !z-[2000]">
+    <div class="bg-[#0f172a]/95 backdrop-blur-xl border border-slate-700/50 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] p-6 text-center relative overflow-hidden w-full max-w-md animate-in fade-in slide-in-from-top-10 duration-500 mx-auto">
+      <!-- Glow effect -->
+      <div class="absolute -top-10 -left-10 w-32 h-32 bg-orange-500/10 blur-3xl rounded-full"></div>
+      
+      <div class="flex items-center gap-5 text-left relative z-10">
+        <div id="status-icon-container"
+          class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shrink-0 shadow-lg">
+          <i id="status-icon" class="fas fa-check-circle"></i>
+        </div>
+
+        <div class="flex-1">
+          <h2 id="status-title" class="text-lg font-black text-white uppercase tracking-tighter italic">¡Todo en orden!</h2>
+          <p id="status-desc" class="text-slate-400 text-[10px] leading-tight normal-case font-medium">Tu cuenta se encuentra al día. ¡Sigue entrenando!</p>
+        </div>
+
+        <button onclick="cerrarM()" class="text-slate-500 hover:text-white transition p-2">
+            <i class="fas fa-times text-sm"></i>
+        </button>
+      </div>
+
+      <div id="status-extra-info" class="mt-4 bg-slate-900/50 rounded-xl p-3 border border-slate-800 hidden relative z-10">
+        <div class="flex justify-between items-center">
+          <span class="text-[9px] font-black text-slate-500 uppercase tracking-widest">Monto Pendiente</span>
+          <span id="status-monto" class="text-sm font-black text-white">$0</span>
+        </div>
+      </div>
+
+      <div class="flex gap-2 mt-4 relative z-10">
+        <button id="status-btn-primary" onclick="cerrarM()"
+          class="flex-1 py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 text-[9px] font-black uppercase italic rounded-xl transition-all border border-slate-700">
+          Entendido
+        </button>
+        <button id="status-btn-secondary" onclick="cerrarM(); navV('alu-pago');"
+          class="flex-1 py-3 bg-orange-500 hover:bg-orange-600 text-white text-[9px] font-black uppercase italic rounded-xl transition-all shadow-lg shadow-orange-500/20 hidden">
+          Ir a pagar
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- MODAL PERFIL SOCIO (LECTURA STAFF) -->
   <div id="modal-perfil-socio" class="modal-base">
-    <div class="bg-[#020617] border-t-4 border-t-orange-500 border border-slate-800 rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl relative flex flex-col max-h-[90vh]">
-      
+    <div
+      class="bg-[#020617] border-t-4 border-t-orange-500 border border-slate-800 rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl relative flex flex-col max-h-[90vh]">
+
       <!-- Botón Cerrar -->
       <button onclick="cerrarM()" class="absolute top-4 right-4 text-slate-500 hover:text-white transition">
         <i class="fas fa-times text-xl"></i>
@@ -462,12 +629,15 @@
       <div class="p-6 overflow-y-auto custom-scrollbar">
         <!-- HEADER -->
         <div class="flex items-center gap-4 mb-6">
-          <div class="w-16 h-16 rounded-full bg-orange-500 flex items-center justify-center text-white text-2xl font-black shadow-lg">
+          <div
+            class="w-16 h-16 rounded-full bg-orange-500 flex items-center justify-center text-white text-2xl font-black shadow-lg">
             <span id="perfil-iniciales">--</span>
           </div>
           <div>
-            <h3 id="perfil-nombre" class="text-2xl font-black text-white tracking-tight uppercase italic">Cargando...</h3>
-            <div id="perfil-estado-badge" class="mt-1 inline-block px-3 py-1 bg-slate-800 text-slate-300 text-[10px] font-black rounded-full uppercase tracking-widest border border-slate-700">
+            <h3 id="perfil-nombre" class="text-2xl font-black text-white tracking-tight uppercase italic">Cargando...
+            </h3>
+            <div id="perfil-estado-badge"
+              class="mt-1 inline-block px-3 py-1 bg-slate-800 text-slate-300 text-[10px] font-black rounded-full uppercase tracking-widest border border-slate-700">
               Cargando
             </div>
           </div>
@@ -494,15 +664,18 @@
         </div>
 
         <!-- SECCIÓN 2: FINANZAS -->
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-orange-500/5 p-4 rounded-xl border border-orange-500/20 mb-6 gap-4">
+        <div
+          class="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-orange-500/5 p-4 rounded-xl border border-orange-500/20 mb-6 gap-4">
           <div>
-            <p id="perfil-titulo-monto" class="text-[10px] font-black text-orange-500 uppercase tracking-widest mb-1">Adeudado Actual</p>
+            <p id="perfil-titulo-monto" class="text-[10px] font-black text-orange-500 uppercase tracking-widest mb-1">
+              Adeudado Actual</p>
             <div class="flex items-baseline gap-2">
               <p id="perfil-monto" class="text-3xl font-black text-white">$0</p>
               <p id="perfil-mora" class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Al día</p>
             </div>
           </div>
-          <div id="perfil-restriccion-badge" class="px-4 py-2 bg-green-500/20 text-green-400 text-[10px] font-black rounded-lg uppercase tracking-widest border border-green-500/30 text-center w-full sm:w-auto">
+          <div id="perfil-restriccion-badge"
+            class="px-4 py-2 bg-green-500/20 text-green-400 text-[10px] font-black rounded-lg uppercase tracking-widest border border-green-500/30 text-center w-full sm:w-auto">
             Acceso Permitido
           </div>
         </div>
@@ -525,7 +698,9 @@
 
         <!-- SECCIÓN 3: HISTORIAL -->
         <div>
-          <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 border-b border-slate-800 pb-2">Historial de Pagos</p>
+          <p
+            class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 border-b border-slate-800 pb-2">
+            Historial de Pagos</p>
           <div class="bg-slate-900/50 rounded-xl border border-slate-800 overflow-hidden">
             <table class="w-full text-left">
               <thead class="bg-slate-800/50 text-[9px] font-black text-slate-400 uppercase tracking-widest">
@@ -548,8 +723,10 @@
 
       <!-- FOOTER -->
       <div class="p-4 border-t border-slate-800 bg-slate-900/30 flex justify-between items-center">
-        <p class="text-[9px] font-black text-slate-500 uppercase tracking-widest italic">Perfil de solo lectura — Administrador</p>
-        <button onclick="cerrarM()" class="px-6 py-2 bg-slate-800 text-slate-300 hover:bg-slate-700 text-[10px] font-black uppercase italic rounded-lg transition border border-slate-700">
+        <p class="text-[9px] font-black text-slate-500 uppercase tracking-widest italic">Perfil de solo lectura —
+          Administrador</p>
+        <button onclick="cerrarM()"
+          class="px-6 py-2 bg-slate-800 text-slate-300 hover:bg-slate-700 text-[10px] font-black uppercase italic rounded-lg transition border border-slate-700">
           Cerrar
         </button>
       </div>
@@ -559,7 +736,8 @@
 
   <!-- MODAL DE CONFIGURACIÓN DE PLANES Y PROMOS -->
   <div id="modal-precios" class="modal-base">
-    <div class="bg-[#020617] border border-slate-800 rounded-2xl w-full max-w-5xl overflow-hidden shadow-2xl relative flex flex-col max-h-[90vh]">
+    <div
+      class="bg-[#020617] border border-slate-800 rounded-2xl w-full max-w-5xl overflow-hidden shadow-2xl relative flex flex-col max-h-[90vh]">
       <!-- Header -->
       <div class="flex justify-between items-center p-6 border-b border-slate-800 bg-slate-900/50">
         <div class="flex items-center gap-3">
@@ -570,7 +748,7 @@
           <i class="fas fa-times text-2xl"></i>
         </button>
       </div>
-      
+
       <!-- Body -->
       <div class="flex flex-1 overflow-hidden flex-col md:flex-row">
         <!-- Izquierda: Lista -->
@@ -583,16 +761,22 @@
           <h3 class="text-sm font-black text-orange-500 uppercase tracking-widest mb-6">Editar Configuración</h3>
           <div class="space-y-5">
             <div>
-              <label class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Nombre del Plan</label>
-              <input type="text" id="edit-nombre-plan" disabled class="w-full bg-slate-900 border border-slate-800 text-slate-400 p-3 rounded-xl font-black uppercase cursor-not-allowed">
+              <label class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Nombre del
+                Plan</label>
+              <input type="text" id="edit-nombre-plan" disabled
+                class="w-full bg-slate-900 border border-slate-800 text-slate-400 p-3 rounded-xl font-black uppercase cursor-not-allowed">
             </div>
             <div>
-              <label class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Precio Base ($)</label>
-              <input type="number" id="edit-precio-base" class="w-full bg-slate-900 border border-slate-700 text-white p-3 rounded-xl font-black uppercase focus:outline-none focus:border-orange-500 transition">
+              <label class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Precio Base
+                ($)</label>
+              <input type="number" id="edit-precio-base"
+                class="w-full bg-slate-900 border border-slate-700 text-white p-3 rounded-xl font-black uppercase focus:outline-none focus:border-orange-500 transition">
             </div>
             <div>
-              <label class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Tipo de Promoción</label>
-              <select id="edit-tipo-promo" onchange="cambiarTipoPromo()" class="w-full bg-slate-900 border border-slate-700 text-white p-3 rounded-xl font-black uppercase focus:outline-none focus:border-orange-500 transition appearance-none">
+              <label class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Tipo de
+                Promoción</label>
+              <select id="edit-tipo-promo" onchange="cambiarTipoPromo()"
+                class="w-full bg-slate-900 border border-slate-700 text-white p-3 rounded-xl font-black uppercase focus:outline-none focus:border-orange-500 transition appearance-none">
                 <option value="ninguna">Ninguna</option>
                 <option value="dia_especial">Día Especial</option>
                 <option value="amigos">Por Amigos</option>
@@ -600,13 +784,17 @@
               </select>
             </div>
             <div>
-              <label class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Detalle de la Promoción</label>
+              <label class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Detalle de la
+                Promoción</label>
               <div id="contenedor-valor-promo">
-                <input type="text" id="edit-valor-promo" disabled class="w-full bg-slate-900 border border-slate-800 text-slate-500 p-3 rounded-xl font-black uppercase cursor-not-allowed" placeholder="Seleccione un tipo de promoción...">
+                <input type="text" id="edit-valor-promo" disabled
+                  class="w-full bg-slate-900 border border-slate-800 text-slate-500 p-3 rounded-xl font-black uppercase cursor-not-allowed"
+                  placeholder="Seleccione un tipo de promoción...">
               </div>
             </div>
             <div class="pt-4">
-              <button class="w-full bg-orange-500 hover:bg-orange-600 text-white p-4 rounded-xl font-black uppercase tracking-widest transition shadow-lg flex justify-center items-center gap-2">
+              <button
+                class="w-full bg-orange-500 hover:bg-orange-600 text-white p-4 rounded-xl font-black uppercase tracking-widest transition shadow-lg flex justify-center items-center gap-2">
                 <i class="fas fa-save"></i> Guardar Configuración
               </button>
             </div>

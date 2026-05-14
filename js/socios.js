@@ -70,12 +70,21 @@ function filtrarSocios() {
     const clase = document.getElementById('filter-clase')?.value || 'todos';
     const orden = document.getElementById('filter-orden')?.value || 'nombre';
 
-    // 1. Filtrar por sede si el usuario es Secretaria
-    let lista = sedeActual
-        ? sociosDB.filter(s => s.sede === sedeActual)
-        : [...sociosDB];
+    // 1. Aplicar restricciones de vista por Rol
+    const isEncargado = (rRol === 'encargado');
+    
+    // Ocultar herramientas de cobro para el Encargado
+    const proSection = document.getElementById('section-prorrateo');
+    const notSection = document.getElementById('section-notificar');
+    if (proSection) proSection.style.display = isEncargado ? 'none' : 'block';
+    if (notSection) notSection.style.display = isEncargado ? 'none' : 'flex';
 
-    // 2. Filtramos
+    // 2. Filtrar por sede si el usuario es Staff (Secretaria o Encargado)
+    let lista = (rRol === 'admin')
+        ? [...sociosDB]
+        : sociosDB.filter(s => s.sede === (sedeActual || 'Sede Norte'));
+
+    // 3. Filtramos por búsqueda y filtros
     lista = lista.filter(s => {
         const matchBusq = s.nombre.toLowerCase().includes(busq) || s.dni.includes(busq);
         const matchEstado = estado === 'todos' || s.estado.toLowerCase() === estado.toLowerCase();
@@ -83,43 +92,49 @@ function filtrarSocios() {
         return matchBusq && matchEstado && matchClase;
     });
 
-    // 3. Ordenamiento
+    // 4. Ordenamiento
     if (orden === 'nombre') lista.sort((a, b) => a.nombre.localeCompare(b.nombre));
     if (orden === 'monto') lista.sort((a, b) => b.deuda - a.deuda);
     if (orden === 'estado') lista.sort((a, b) => a.estado.localeCompare(b.estado));
 
-    // 4. Dibujamos la tabla
+    // 5. Dibujamos la tabla
     const tbody = document.getElementById('tabla-socios-body');
     if (!tbody) return;
 
-    tbody.innerHTML = lista.map(s => `
-        <tr class="border-b border-slate-800/50 hover:bg-slate-800/30 transition">
-            <td class="p-4">
-                <p class="text-white font-bold italic uppercase">${s.nombre}</p>
-                <p class="text-[9px] text-slate-500">DNI: ${s.dni}</p>
-            </td>
-            <td class="p-4 text-slate-400 text-xs">${s.dni}</td>
-            <td class="p-4 text-slate-400 text-xs">${s.clase}</td>
-            <td class="p-4 font-black ${s.deuda > 0 ? 'text-red-400' : 'text-slate-500'}">
-                ${s.deuda > 0 ? '$' + s.deuda.toLocaleString() : '—'}
-            </td>
-            <td class="p-4">
-                <span style="padding:2px 10px; border-radius:9999px; font-size:9px; font-weight:900; text-transform:uppercase;
-                    background:${s.estado === 'Al día' ? 'rgba(34,197,94,0.12)' : 'rgba(239,68,68,0.12)'};
-                    color:${s.estado === 'Al día' ? '#4ade80' : '#f87171'};
-                    border:1px solid ${s.estado === 'Al día' ? 'rgba(34,197,94,0.3)' : 'rgba(239,68,68,0.3)'};">
-                    ${s.estado}
-                </span>
-            </td>
-            <td class="p-4 text-right">
-                ${rRol !== 'admin' ? `
-                <button onclick="cobrarSocio('${s.dni}')" 
-                        class="bg-orange-500 hover:bg-orange-600 text-white text-[10px] px-4 py-2 rounded-full transition font-black uppercase tracking-tighter">
-                    Ver
-                </button>` : ''}
-            </td>
-        </tr>
-    `).join('');
+    tbody.innerHTML = lista.map(s => {
+        const isDeudor = s.deuda > 0;
+        const vencimiento = isDeudor ? '10/04/2026' : '10/05/2026';
+        
+        return `
+            <tr class="border-b border-slate-800/50 hover:bg-slate-800/30 transition">
+                <td class="p-4">
+                    <p class="text-white font-bold italic uppercase">${s.nombre}</p>
+                    <p class="text-[9px] text-slate-500">DNI: ${s.dni}</p>
+                </td>
+                <td class="p-4 text-slate-400 text-xs">${s.dni}</td>
+                <td class="p-4 text-slate-400 text-xs">${s.clase}</td>
+                <td class="p-4 text-slate-400 text-xs font-mono">${vencimiento}</td>
+                <td class="p-4 font-black ${isDeudor ? 'text-red-400' : 'text-slate-500'}">
+                    ${isDeudor ? '$' + s.deuda.toLocaleString() : '—'}
+                </td>
+                <td class="p-4">
+                    <span style="padding:2px 10px; border-radius:9999px; font-size:9px; font-weight:900; text-transform:uppercase;
+                        background:${s.estado === 'Al día' ? 'rgba(34,197,94,0.12)' : 'rgba(239,68,68,0.12)'};
+                        color:${s.estado === 'Al día' ? '#4ade80' : '#f87171'};
+                        border:1px solid ${s.estado === 'Al día' ? 'rgba(34,197,94,0.3)' : 'rgba(239,68,68,0.3)'};">
+                        ${s.estado}
+                    </span>
+                </td>
+                <td class="p-4 text-right">
+                    ${!isDeudor ? '' : `
+                    <button onclick="cobrarSocio('${s.dni}')" 
+                            class="bg-slate-700 hover:bg-slate-600 text-white text-[10px] px-4 py-2 rounded-full transition font-black uppercase tracking-tighter">
+                        ${isEncargado ? 'Ver Ficha' : 'Cobrar'}
+                    </button>`}
+                </td>
+            </tr>
+        `;
+    }).join('');
 }
 
 let socioActual = null; // guarda el socio que se está cobrando
@@ -127,36 +142,38 @@ let socioActual = null; // guarda el socio que se está cobrando
 function cobrarSocio(dni) {
     const s = sociosDB.find(x => x.dni === dni);
     const box = document.getElementById('cliente-box');
-    console.log("DNI que llega:", dni, " | Socio (s):", s, " | Panel (box):", box);
+    const isEncargado = (rRol === 'encargado');
 
     if (s && box) {
-        socioActual = s; // Asignamos el socio globalmente para los pagos y cupones
+        socioActual = s; 
         document.getElementById('display-nombre').innerText = s.nombre;
         document.getElementById('display-id').innerText = s.dni || "#0000";
 
         const container = document.getElementById('lista-deudas');
-        container.innerHTML = ""; // Limpiamos el panel
+        container.innerHTML = ""; 
 
         const panelAcciones = document.getElementById('panel-acciones-rapidas');
+        
+        // El encargado NUNCA ve el panel de cobro/acciones rápidas
+        if (panelAcciones) panelAcciones.style.display = isEncargado ? 'none' : 'block';
+
         if (s.deuda > 0) {
-            if (panelAcciones) panelAcciones.style.display = 'block';
             document.getElementById('display-total-cobro').innerText = '$' + s.deuda.toLocaleString();
 
             container.innerHTML += `
                 <div class="flex justify-between items-center bg-slate-800/50 border border-slate-700 p-3 rounded italic mb-2">
                     <div class="flex items-center gap-3">
                         <input type="checkbox" class="cuota-checkbox w-4 h-4 accent-orange-500" 
-                               data-monto="${s.deuda}" data-mes="Mes Pendiente" checked onchange="actualizarTotalCobro()" style="display:none;">
+                               data-monto="${s.deuda}" data-mes="Abril 2026" checked onchange="actualizarTotalCobro()" style="display:none;">
                         <div>
-                            <p class="text-white font-black text-sm">Mes Pendiente</p>
-                            <p class="text-[9px] text-red-400 font-bold uppercase">Deuda Pendiente</p>
+                            <p class="text-white font-black text-sm">Abril 2026</p>
+                            <p class="text-[9px] text-red-400 font-bold uppercase">Cuota Pendiente</p>
                         </div>
                     </div>
                     <span class="text-xl font-black text-white">$${s.deuda.toLocaleString()}</span>
                 </div>`;
 
-            // Forzamos el total cobro inicial al valor de la deuda
-            actualizarTotalCobro();
+            if (!isEncargado) actualizarTotalCobro();
         } else {
             if (panelAcciones) panelAcciones.style.display = 'none';
             document.getElementById('display-total-cobro').innerText = '$0';

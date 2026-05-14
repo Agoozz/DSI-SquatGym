@@ -8,7 +8,6 @@ async function cargarPantallas() {
         "alu-historial",
         "alu-notificaciones",
         "adm-inventario",
-        "alu-tienda",
         "adm-kiosco"
     ];
 
@@ -119,9 +118,19 @@ function selectRol(rol) {
     // activar seleccionado
     if (rol === "admin") {
         staff.classList.add("bg-orange-500", "text-white");
+        sedeActual = null; // Admin ve todas
+    } else if (rol === 'secretaria' || rol === 'encargado') {
+        client.classList.add("bg-orange-500", "text-white");
+        sedeActual = 'Sede Norte'; // Sede por defecto para staff
     } else {
         client.classList.add("bg-orange-500", "text-white");
+        sedeActual = null;
     }
+    
+    // Forzar actualización si estamos en una pantalla que depende de la sede
+    const activeView = document.querySelector('.view-section.active')?.id;
+    if (activeView === 'v-adm-membresia') setTimeout(filtrarSocios, 50);
+    if (activeView === 'v-adm-monitor') setTimeout(renderInformes, 50);
 }
 
 function confirmarTransferencia() {
@@ -191,8 +200,7 @@ function generarRecibo(socio, monto, metodo) {
           </div>
           <p class="text-[8px] text-slate-600 text-center uppercase tracking-widest">Este comprobante es válido como recibo de pago</p>
       `;
-    cerrarM();
-    setTimeout(() => abrirM('modal-recibo'), 150);
+    window.reciboPendienteDeMostrar = true;
 }
 
 function imprimirRecibo() {
@@ -325,8 +333,6 @@ function renderizarAlertaCliente() {
                   <p class="text-xs font-black text-yellow-300 uppercase">Cuota Mayo vence el 10/05/2025</p>
                   <p class="text-[9px] text-slate-400">Evitá restricciones abonando antes del vencimiento.</p>
               </div>
-              <button onclick="abrirM('modal-pago-selector','cuota')"
-                  class="btn-ui btn-naranja text-[9px] px-4 py-2 ml-auto flex-shrink-0">Pagar ahora</button>
           </div>`;
 
     // Restricción de ingreso por deuda vencida
@@ -401,16 +407,183 @@ function cobrarConProrrateo() {
     abrirM('modal-pago-selector', 'cuota');
 }
 
+function iniciarPagoAlumno() {
+    const socio = (typeof sociosDB !== 'undefined') ? sociosDB.find(s => s.dni === usuarioActual.dni) : null;
+    if (socio && socio.deuda > 0) {
+        window.totalCobro = socio.deuda;
+        window.socioActual = socio; // Sincronizar para el recibo
+
+        // Poblar campos del nuevo diseño de pasarela
+        const displayNombre = document.getElementById('pago-display-nombre');
+        const displayTotal = document.getElementById('pago-total-display');
+        
+        if (displayNombre) {
+            const partes = socio.nombre.split(' ');
+            displayNombre.innerText = `${partes[0]} ${partes[1] ? partes[1][0] + '.' : ''}`;
+        }
+        if (displayTotal) displayTotal.innerText = `$${socio.deuda.toLocaleString()}`;
+
+        abrirM('modal-pago-selector', 'cuota');
+    } else {
+        alert("No tienes cuotas pendientes por abonar.");
+    }
+}
+
 // ══════════════════════════════════════════════
 // HOOK: registrarPagoExitoso → genera recibo
 // ══════════════════════════════════════════════
 const _registrarPagoExitosoOrig = registrarPagoExitoso;
 registrarPagoExitoso = function (metodo) {
-    const nombre = socioActual ? socioActual.nombre : 'Socio';
-    const monto = socioActual ? socioActual.deuda : totalCobro;
+    const s = socioActual || (typeof sociosDB !== 'undefined' ? sociosDB.find(x => x.dni === usuarioActual.dni) : null);
+    
+    // CRÍTICO: Capturar los valores antes de llamar a la función original que los resetea
+    const montoAPagar = (s && s.deuda > 0) ? s.deuda : (window.totalCobro || 12000);
+    const nombreSocio = s ? s.nombre : (usuarioActual.nombre || 'Socio');
+
     _registrarPagoExitosoOrig(metodo);
-    generarRecibo(nombre, monto, metodo);
-};
+
+    // 1. Agregar nueva entrada al Historial con el monto capturado
+    const nuevoPago = {
+        dni: s ? s.dni : usuarioActual.dni,
+        id: 'REC-' + Date.now().toString().slice(-6),
+        fecha: new Date().toISOString().split('T')[0],
+        concepto: 'Cuota Mensual',
+        metodo: metodo,
+        monto: montoAPagar,
+        estado: 'Pagado'
+    };
+    historialPagosCliente.push(nuevoPago);
+
+    // 2. Asegurar limpieza en la DB si no lo hizo la original
+    if (s) {
+        s.deuda = 0;
+        s.estado = 'Al día';
+    }
+
+    // 3. Generar Recibo con los valores capturados (no con los reseteados)
+    generarRecibo(nombreSocio, montoAPagar, metodo);
+
+    // 4. Refrescar UI
+    if (typeof actualizarUIPerfilAlumno === 'function') actualizarUIPerfilAlumno();
+    if (typeof renderHistorial === 'function') renderHistorial();
+
+    // 5. Actualizar Notificaciones
+    if (typeof getNotificacionesData === 'function') {
+        renderNotificaciones();
+    }
+}
+
+// ══════════════════════════════════════════════
+// EXPORTAR HISTORIAL PDF (jsPDF + autoTable)
+// ══════════════════════════════════════════════
+function exportarHistorialPDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    const dniActual = (typeof usuarioActual !== 'undefined') ? usuarioActual?.dni : '8';
+    const s = (typeof sociosDB !== 'undefined') ? sociosDB.find(x => x.dni === dniActual) : null;
+    const nombre = s ? s.nombre : (usuarioActual.nombre || 'Socio');
+
+    // Estilo de Cabecera
+    doc.setFillColor(15, 23, 42); // Navy / Slate 900
+    doc.rect(0, 0, 210, 45, 'F');
+    
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(24);
+    doc.setFont("helvetica", "bold");
+    doc.text("SQUATGYM", 15, 22);
+    doc.setFontSize(8);
+    doc.setTextColor(148, 163, 184); // Slate 400
+    doc.text("PLATINUM MANAGEMENT SYSTEM OS", 15, 28);
+    
+    doc.setFontSize(10);
+    doc.setTextColor(249, 115, 22); // Orange 500
+    doc.text("INFORME OFICIAL DE PAGOS Y TRANSACCIONES", 15, 38);
+    
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(9);
+    doc.text(`Fecha de Emisión: ${new Date().toLocaleString('es-AR')}`, 145, 38);
+
+    // Información del Alumno
+    doc.setTextColor(15, 23, 42);
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "bold");
+    doc.text("DATOS DEL SOCIO", 15, 60);
+    
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "normal");
+    doc.text(`NOMBRE: ${nombre.toUpperCase()}`, 15, 68);
+    doc.text(`DNI: ${dniActual}`, 15, 74);
+    doc.text(`PLAN: ${s ? s.clase.toUpperCase() : 'MUSCULACIÓN'}`, 15, 80);
+    doc.text(`ESTADO DE CUENTA: ${s ? s.estado.toUpperCase() : 'AL DÍA'}`, 15, 86);
+    
+    // Línea divisoria
+    doc.setDrawColor(226, 232, 240); // Slate 200
+    doc.setLineWidth(0.5);
+    doc.line(15, 92, 195, 92);
+
+    // Generar datos para la tabla
+    const lista = historialPagosCliente.filter(p => p.dni === dniActual && p.estado === 'Pagado');
+    const tableData = lista.map(p => [
+        p.id,
+        new Date(p.fecha + 'T12:00:00').toLocaleDateString('es-AR'),
+        p.concepto.toUpperCase(),
+        p.metodo.toUpperCase(),
+        `$${p.monto.toLocaleString()}`,
+        'PAGADO'
+    ]);
+
+    // Tabla de Pagos
+    doc.autoTable({
+        startY: 100,
+        head: [['N° RECIBO', 'FECHA', 'CONCEPTO', 'MÉTODO', 'MONTO', 'ESTADO']],
+        body: tableData,
+        theme: 'striped',
+        headStyles: { 
+            fillColor: [249, 115, 22], 
+            textColor: [255, 255, 255],
+            fontSize: 9,
+            fontStyle: 'bold',
+            halign: 'center'
+        },
+        bodyStyles: { 
+            fontSize: 8,
+            textColor: [51, 65, 85]
+        },
+        columnStyles: {
+            4: { halign: 'right', fontStyle: 'bold' },
+            5: { halign: 'center', textColor: [34, 197, 94], fontStyle: 'bold' }
+        },
+        margin: { horizontal: 15 }
+    });
+
+    // Resumen Final
+    const totalAbonado = lista.reduce((acc, curr) => acc + curr.monto, 0);
+    const finalY = doc.lastAutoTable.finalY + 15;
+
+    doc.setFillColor(248, 250, 252); // Slate 50
+    doc.rect(15, finalY - 5, 180, 20, 'F');
+    doc.setDrawColor(249, 115, 22);
+    doc.setLineWidth(1);
+    doc.line(15, finalY - 5, 15, finalY + 15);
+
+    doc.setFontSize(14);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(15, 23, 42);
+    doc.text(`TOTAL HISTÓRICO ABONADO:`, 25, finalY + 8);
+    
+    doc.setTextColor(34, 197, 94); // Green 500
+    doc.text(`$${totalAbonado.toLocaleString()}`, 150, finalY + 8);
+
+    // Pie de página
+    doc.setFontSize(8);
+    doc.setTextColor(148, 163, 184);
+    doc.text("Este documento es un comprobante oficial de transacciones emitido por SquatGym Platinum OS.", 105, 285, { align: 'center' });
+
+    // Descarga
+    doc.save(`Historial_Pagos_${nombre.split(' ')[0]}_${dniActual}.pdf`);
+}
+
 
 
 // ══════════════════════════════════════════════
@@ -771,38 +944,99 @@ function actualizarKPIsKiosco() {
 // ══════════════════════════════════════════════
 // HISTORIAL DE PAGOS DEL CLIENTE (req. 3.1.24)
 // ══════════════════════════════════════════════
-const historialPagosCliente = [
-    { id: 'REC-240001', fecha: '2025-10-05', concepto: 'Cuota Octubre 2025', metodo: 'QR', monto: 11000, estado: 'Pagado' },
-    { id: 'REC-240002', fecha: '2025-10-18', concepto: 'Kiosco', metodo: 'Efectivo', monto: 3200, estado: 'Pagado' },
-    { id: 'REC-240003', fecha: '2025-11-03', concepto: 'Cuota Noviembre 2025', metodo: 'Transferencia', monto: 11000, estado: 'Pagado' },
-    { id: 'REC-240004', fecha: '2025-11-22', concepto: 'Kiosco', metodo: 'QR', monto: 1400, estado: 'Pagado' },
-    { id: 'REC-240005', fecha: '2025-12-04', concepto: 'Cuota Diciembre 2025', metodo: 'QR', monto: 11500, estado: 'Pagado' },
-    { id: 'REC-240006', fecha: '2026-01-07', concepto: 'Cuota Enero 2026', metodo: 'Tarjeta', monto: 12000, estado: 'Pagado' },
-    { id: 'REC-240007', fecha: '2026-01-15', concepto: 'Kiosco', metodo: 'Efectivo', monto: 4800, estado: 'Pagado' },
-    { id: 'REC-240008', fecha: '2026-02-05', concepto: 'Cuota Febrero 2026', metodo: 'QR', monto: 12000, estado: 'Pagado' },
-    { id: 'REC-240009', fecha: '2026-03-06', concepto: 'Cuota Marzo 2026', metodo: 'Transferencia', monto: 12500, estado: 'Pagado' },
-    { id: 'REC-240010', fecha: '2026-04-04', concepto: 'Cuota Abril 2026', metodo: 'QR', monto: 12500, estado: 'Pagado' },
-    { id: 'REC-240011', fecha: '2026-04-14', concepto: 'Kiosco', metodo: 'Efectivo', monto: 1200, estado: 'Pagado' },
-    { id: 'REC-PEND-1', fecha: '2026-05-01', concepto: 'Cuota Mayo 2026', metodo: '—', monto: 12500, estado: 'Pendiente' },
+let historialPagosCliente = [
+    // ══════════════════════════════════════════
+    // HISTORIAL VALENTINO PEREZ (DNI 8) - ALTA: 12/03/2024
+    // ══════════════════════════════════════════
+    { dni: '8', id: 'REC-240000', fecha: '2024-03-12', concepto: 'PRORRATEO MARZO 2024', metodo: 'EFECTIVO', monto: 6452, estado: 'Pagado' },
+    { dni: '8', id: 'REC-240001', fecha: '2024-04-05', concepto: 'CUOTA ABRIL 2024', metodo: 'QR', monto: 10000, estado: 'Pagado' },
+    { dni: '8', id: 'REC-240002', fecha: '2024-05-04', concepto: 'CUOTA MAYO 2024', metodo: 'QR', monto: 10000, estado: 'Pagado' },
+    { dni: '8', id: 'REC-240003', fecha: '2024-06-03', concepto: 'CUOTA JUNIO 2024', metodo: 'TRANSFERENCIA', monto: 10000, estado: 'Pagado' },
+    { dni: '8', id: 'REC-240004', fecha: '2024-07-06', concepto: 'CUOTA JULIO 2024', metodo: 'TARJETA', monto: 10000, estado: 'Pagado' },
+    { dni: '8', id: 'REC-240005', fecha: '2024-08-04', concepto: 'CUOTA AGOSTO 2024', metodo: 'QR', monto: 10000, estado: 'Pagado' },
+    { dni: '8', id: 'REC-240006', fecha: '2024-09-07', concepto: 'CUOTA SEPTIEMBRE 2024', metodo: 'TARJETA', monto: 10000, estado: 'Pagado' },
+    { dni: '8', id: 'REC-240007', fecha: '2024-10-05', concepto: 'CUOTA OCTUBRE 2024', metodo: 'QR', monto: 10000, estado: 'Pagado' },
+    { dni: '8', id: 'REC-240008', fecha: '2024-11-03', concepto: 'CUOTA NOVIEMBRE 2024', metodo: 'TRANSFERENCIA', monto: 10000, estado: 'Pagado' },
+    { dni: '8', id: 'REC-240009', fecha: '2024-12-04', concepto: 'CUOTA DICIEMBRE 2024', metodo: 'QR', monto: 10000, estado: 'Pagado' },
+    { dni: '8', id: 'REC-240101', fecha: '2025-01-05', concepto: 'CUOTA ENERO 2025', metodo: 'QR', monto: 12000, estado: 'Pagado' },
+    { dni: '8', id: 'REC-240102', fecha: '2025-02-04', concepto: 'CUOTA FEBRERO 2025', metodo: 'TRANSFERENCIA', monto: 12000, estado: 'Pagado' },
+    { dni: '8', id: 'REC-240103', fecha: '2025-03-06', concepto: 'CUOTA MARZO 2025', metodo: 'TARJETA', monto: 12000, estado: 'Pagado' },
+    { dni: '8', id: 'REC-240104', fecha: '2025-04-05', concepto: 'CUOTA ABRIL 2025', metodo: 'QR', monto: 12000, estado: 'Pagado' },
+    { dni: '8', id: 'REC-240105', fecha: '2025-05-04', concepto: 'CUOTA MAYO 2025', metodo: 'TRANSFERENCIA', monto: 12000, estado: 'Pagado' },
+    { dni: '8', id: 'REC-240106', fecha: '2025-06-03', concepto: 'CUOTA JUNIO 2025', metodo: 'QR', monto: 12000, estado: 'Pagado' },
+    { dni: '8', id: 'REC-240107', fecha: '2025-07-06', concepto: 'CUOTA JULIO 2025', metodo: 'TARJETA', monto: 12000, estado: 'Pagado' },
+    { dni: '8', id: 'REC-240108', fecha: '2025-08-04', concepto: 'CUOTA AGOSTO 2025', metodo: 'QR', monto: 12000, estado: 'Pagado' },
+    { dni: '8', id: 'REC-240109', fecha: '2025-09-07', concepto: 'CUOTA SEPTIEMBRE 2025', metodo: 'TRANSFERENCIA', monto: 12000, estado: 'Pagado' },
+    { dni: '8', id: 'REC-240110', fecha: '2025-10-05', concepto: 'CUOTA OCTUBRE 2025', metodo: 'QR', monto: 12000, estado: 'Pagado' },
+    { dni: '8', id: 'REC-240111', fecha: '2025-11-03', concepto: 'CUOTA NOVIEMBRE 2025', metodo: 'TRANSFERENCIA', monto: 12000, estado: 'Pagado' },
+    { dni: '8', id: 'REC-240112', fecha: '2025-12-04', concepto: 'CUOTA DICIEMBRE 2025', metodo: 'QR', monto: 12000, estado: 'Pagado' },
+    { dni: '8', id: 'REC-240201', fecha: '2026-01-07', concepto: 'CUOTA ENERO 2026', metodo: 'TARJETA', monto: 12000, estado: 'Pagado' },
+    { dni: '8', id: 'REC-240202', fecha: '2026-02-05', concepto: 'CUOTA FEBRERO 2026', metodo: 'QR', monto: 12000, estado: 'Pagado' },
+    { dni: '8', id: 'REC-240203', fecha: '2026-03-06', concepto: 'CUOTA MARZO 2026', metodo: 'TRANSFERENCIA', monto: 12000, estado: 'Pagado' },
+    { dni: '8', id: 'REC-240204', fecha: '2026-04-04', concepto: 'CUOTA ABRIL 2026', metodo: 'QR', monto: 12000, estado: 'Pagado' },
+
+    // ══════════════════════════════════════════
+    // HISTORIAL LUCÍA FERNÁNDEZ (DNI 9) - ALTA: 15/05/2024
+    // ══════════════════════════════════════════
+    { dni: '9', id: 'REC-940000', fecha: '2024-05-15', concepto: 'PRORRATEO MAYO 2024', metodo: 'EFECTIVO', monto: 4661, estado: 'Pagado' },
+    { dni: '9', id: 'REC-940001', fecha: '2024-06-10', concepto: 'CUOTA JUNIO 2024', metodo: 'TRANSFERENCIA', monto: 8500, estado: 'Pagado' },
+    { dni: '9', id: 'REC-940002', fecha: '2024-07-08', concepto: 'CUOTA JULIO 2024', metodo: 'QR', monto: 8500, estado: 'Pagado' },
+    { dni: '9', id: 'REC-940003', fecha: '2024-08-05', concepto: 'CUOTA AGOSTO 2024', metodo: 'TARJETA', monto: 8500, estado: 'Pagado' },
+    { dni: '9', id: 'REC-940004', fecha: '2024-09-12', concepto: 'CUOTA SEPTIEMBRE 2024', metodo: 'QR', monto: 8500, estado: 'Pagado' },
+    { dni: '9', id: 'REC-940005', fecha: '2024-10-10', concepto: 'CUOTA OCTUBRE 2024', metodo: 'TRANSFERENCIA', monto: 8500, estado: 'Pagado' },
+    { dni: '9', id: 'REC-940006', fecha: '2024-11-05', concepto: 'CUOTA NOVIEMBRE 2024', metodo: 'EFECTIVO', monto: 8500, estado: 'Pagado' },
+    { dni: '9', id: 'REC-940007', fecha: '2024-12-08', concepto: 'CUOTA DICIEMBRE 2024', metodo: 'QR', monto: 8500, estado: 'Pagado' },
+    { dni: '9', id: 'REC-940101', fecha: '2025-01-05', concepto: 'CUOTA ENERO 2025', metodo: 'TARJETA', monto: 12000, estado: 'Pagado' },
+    { dni: '9', id: 'REC-940102', fecha: '2025-02-12', concepto: 'CUOTA FEBRERO 2025', metodo: 'QR', monto: 12000, estado: 'Pagado' },
+    { dni: '9', id: 'REC-940103', fecha: '2025-03-08', concepto: 'CUOTA MARZO 2025', metodo: 'TRANSFERENCIA', monto: 12000, estado: 'Pagado' },
+    { dni: '9', id: 'REC-940104', fecha: '2025-04-10', concepto: 'CUOTA ABRIL 2025', metodo: 'EFECTIVO', monto: 12000, estado: 'Pagado' },
+    { dni: '9', id: 'REC-940105', fecha: '2025-05-15', concepto: 'CUOTA MAYO 2025', metodo: 'QR', monto: 12000, estado: 'Pagado' },
+    { dni: '9', id: 'REC-940106', fecha: '2025-06-08', concepto: 'CUOTA JUNIO 2025', metodo: 'TARJETA', monto: 12000, estado: 'Pagado' },
+    { dni: '9', id: 'REC-940107', fecha: '2025-07-11', concepto: 'CUOTA JULIO 2025', metodo: 'QR', monto: 12000, estado: 'Pagado' },
+    { dni: '9', id: 'REC-940108', fecha: '2025-08-05', concepto: 'CUOTA AGOSTO 2025', metodo: 'TRANSFERENCIA', monto: 12000, estado: 'Pagado' },
+    { dni: '9', id: 'REC-940109', fecha: '2025-09-12', concepto: 'CUOTA SEPTIEMBRE 2025', metodo: 'EFECTIVO', monto: 12000, estado: 'Pagado' },
+    { dni: '9', id: 'REC-940110', fecha: '2025-10-08', concepto: 'CUOTA OCTUBRE 2025', metodo: 'QR', monto: 12000, estado: 'Pagado' },
+    { dni: '9', id: 'REC-940111', fecha: '2025-11-10', concepto: 'CUOTA NOVIEMBRE 2025', metodo: 'TARJETA', monto: 12000, estado: 'Pagado' },
+    { dni: '9', id: 'REC-940112', fecha: '2025-12-05', concepto: 'CUOTA DICIEMBRE 2025', metodo: 'QR', monto: 12000, estado: 'Pagado' },
+    { dni: '9', id: 'REC-940201', fecha: '2026-01-12', concepto: 'CUOTA ENERO 2026', metodo: 'TRANSFERENCIA', monto: 12000, estado: 'Pagado' },
+    { dni: '9', id: 'REC-940202', fecha: '2026-02-10', concepto: 'CUOTA FEBRERO 2026', metodo: 'EFECTIVO', monto: 12000, estado: 'Pagado' },
+    { dni: '9', id: 'REC-940203', fecha: '2026-03-08', concepto: 'CUOTA MARZO 2026', metodo: 'QR', monto: 12000, estado: 'Pagado' },
+    { dni: '9', id: 'REC-940204', fecha: '2026-04-10', concepto: 'CUOTA ABRIL 2026', metodo: 'TARJETA', monto: 12000, estado: 'Pagado' }
 ];
 
 const metodoBadge = {
     'QR': { bg: 'rgba(59,130,246,0.12)', color: '#60a5fa', border: 'rgba(59,130,246,0.3)' },
-    'Transferencia': { bg: 'rgba(168,85,247,0.12)', color: '#c084fc', border: 'rgba(168,85,247,0.3)' },
-    'Tarjeta': { bg: 'rgba(249,115,22,0.12)', color: '#fb923c', border: 'rgba(249,115,22,0.3)' },
-    'Efectivo': { bg: 'rgba(34,197,94,0.12)', color: '#4ade80', border: 'rgba(34,197,94,0.3)' },
+    'TRANSFERENCIA': { bg: 'rgba(168,85,247,0.12)', color: '#c084fc', border: 'rgba(168,85,247,0.3)' },
+    'TARJETA': { bg: 'rgba(249,115,22,0.12)', color: '#fb923c', border: 'rgba(249,115,22,0.3)' },
+    'EFECTIVO': { bg: 'rgba(34,197,94,0.12)', color: '#4ade80', border: 'rgba(34,197,94,0.3)' },
     '—': { bg: 'rgba(100,116,139,0.12)', color: '#94a3b8', border: 'rgba(100,116,139,0.3)' },
 };
 
 function renderHistorial() {
-    const tipo = document.getElementById('hist-filter-tipo')?.value || 'todos';
+    const dniActual = (typeof usuarioActual !== 'undefined') ? usuarioActual?.dni : '8';
     const metodo = document.getElementById('hist-filter-metodo')?.value || 'todos';
     const orden = document.getElementById('hist-filter-orden')?.value || 'fecha-desc';
 
+    // KPIs Filtrados por DNI y DB (Sincronizados)
+    const socio = (typeof sociosDB !== 'undefined') ? sociosDB.find(s => s.dni === dniActual) : null;
+    const historialPropio = historialPagosCliente.filter(x => x.dni === dniActual);
+    const pagadosPropio = historialPropio.filter(x => x.estado === 'Pagado');
+    const totalAbonado = pagadosPropio.reduce((acc, curr) => acc + curr.monto, 0);
+    const cuotasPagas = pagadosPropio.length;
+    const cuotasPendientes = (socio && socio.deuda > 0) ? 1 : 0; // History is now only for paid items
+
+    const kpiTotal = document.getElementById('hist-kpi-total');
+    const kpiPagas = document.getElementById('hist-kpi-pagas');
+    const kpiPendientes = document.getElementById('hist-kpi-pendientes');
+
+    if (kpiTotal) kpiTotal.innerText = `$${totalAbonado.toLocaleString()}`;
+    if (kpiPagas) kpiPagas.innerText = cuotasPagas;
+    if (kpiPendientes) kpiPendientes.innerText = cuotasPendientes;
+
     let lista = historialPagosCliente.filter(p => {
-        const matchTipo = tipo === 'todos' || p.concepto.startsWith(tipo);
-        const matchMetodo = metodo === 'todos' || p.metodo === metodo;
-        return matchTipo && matchMetodo;
+        const matchDni = p.dni === dniActual;
+        const matchMetodo = metodo === 'todos' || p.metodo.toUpperCase() === metodo.toUpperCase();
+        return matchDni && matchMetodo;
     });
 
     if (orden === 'fecha-desc') lista.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
@@ -870,7 +1104,7 @@ function verComprobanteHistorial(id) {
               </div>
               <div class="flex justify-between text-xs font-black">
                   <span class="text-slate-400">Socio</span>
-                  <span class="text-white">Valentino P. — #4922</span>
+                  <span class="text-white">${usuarioActual.nombre.toUpperCase()} — #4922</span>
               </div>
               <div class="flex justify-between text-xs font-black">
                   <span class="text-slate-400">Concepto</span>
@@ -899,79 +1133,39 @@ function exportarHistorial() {
 // ══════════════════════════════════════════════
 // NOTIFICACIONES CLIENTE (req. 3.1.26)
 // ══════════════════════════════════════════════
-const alertasCliente = [
-    {
-        id: 1, tipo: 'vencimiento', icono: 'fas fa-exclamation-circle', color: '#f87171',
-        borderColor: '#ef4444', bgColor: 'rgba(239,68,68,0.06)',
-        titulo: 'Cuota Mayo 2026 — Vence el 10/05/2026',
-        desc: 'Tenés $12.500 pendientes de pago. Abonando antes del vencimiento evitás la restricción de acceso.',
-        fecha: 'Hace 2 días', leida: false,
-        accion: { label: 'Pagar Ahora', fn: "abrirM('modal-pago-selector','cuota')" }
-    },
-    {
-        id: 2, tipo: 'vencimiento', icono: 'fas fa-ban', color: '#f87171',
-        borderColor: '#dc2626', bgColor: 'rgba(239,68,68,0.08)',
-        titulo: 'Restricción de Acceso Activa',
-        desc: 'Tu deuda supera los 15 días. Tu acceso a las instalaciones está suspendido hasta regularizar tu situación.',
-        fecha: 'Hoy', leida: false,
-        accion: { label: 'Ver Estado', fn: "navV('alu-pago')" }
-    },
-    {
-        id: 3, tipo: 'promocion', icono: 'fas fa-star', color: '#fb923c',
-        borderColor: '#f97316', bgColor: 'rgba(249,115,22,0.06)',
-        titulo: '¡Canjeá tus SquatPoints!',
-        desc: 'Tenés 1.450 puntos acumulados. Podés usar 1.000 puntos para obtener $200 de descuento en tu próxima compra en el kiosco.',
-        fecha: 'Hace 3 días', leida: false,
-        accion: { label: 'Ir al Kiosco', fn: "navV('alu-tienda')" }
-    },
-    {
-        id: 4, tipo: 'promocion', icono: 'fas fa-tag', color: '#fb923c',
-        borderColor: '#f97316', bgColor: 'rgba(249,115,22,0.05)',
-        titulo: 'Promo Mayo: Cuota + Kiosco',
-        desc: 'Pagá tu cuota de Mayo antes del 5/5 y obtené $500 de crédito en el kiosco. Válido solo por tiempo limitado.',
-        fecha: 'Hace 5 días', leida: true,
-        accion: { label: 'Ver Promo', fn: "abrirM('modal-pago-selector','cuota')" }
-    },
-    {
-        id: 5, tipo: 'informacion', icono: 'fas fa-info-circle', color: '#60a5fa',
-        borderColor: '#3b82f6', bgColor: 'rgba(59,130,246,0.05)',
-        titulo: 'Actualización de Precios — Junio 2026',
-        desc: 'A partir del 1 de Junio la cuota mensual del plan Platinum pasará de $12.500 a $13.500. Tu débito automático se actualizará automáticamente.',
-        fecha: 'Hace 1 semana', leida: true,
-        accion: null
-    },
-    {
-        id: 6, tipo: 'informacion', icono: 'fas fa-check-circle', color: '#4ade80',
-        borderColor: '#22c55e', bgColor: 'rgba(34,197,94,0.05)',
-        titulo: 'Pago de Abril Acreditado',
-        desc: 'Tu pago de $12.500 por Cuota Abril 2026 fue acreditado correctamente el 04/04/2026 mediante QR.',
-        fecha: 'Hace 3 semanas', leida: true,
-        accion: { label: 'Ver Recibo', fn: "verComprobanteHistorial('REC-240010')" }
-    },
-];
-
 let filtroAlertaActivo = 'todas';
 
 function renderNotificaciones() {
     const panel = document.getElementById('panel-notificaciones');
     if (!panel) return;
 
-    const lista = filtroAlertaActivo === 'todas'
-        ? alertasCliente
-        : alertasCliente.filter(a => a.tipo === filtroAlertaActivo);
+    let notificaciones = getNotificacionesData();
 
-    panel.innerHTML = lista.map(a => `
+    // Aplicar filtro si no es 'todas'
+    if (filtroAlertaActivo !== 'todas') {
+        notificaciones = notificaciones.filter(a => a.tipo === filtroAlertaActivo);
+    }
+
+    if (notificaciones.length === 0) {
+        panel.innerHTML = `
+            <div class="glass-card p-10 text-center border-dashed border-2 border-slate-800">
+                <i class="fas fa-bell-slash text-slate-700 text-4xl mb-4"></i>
+                <p class="text-slate-500 font-black uppercase tracking-widest text-xs">No tienes notificaciones en esta categoría</p>
+            </div>`;
+        return;
+    }
+
+    panel.innerHTML = notificaciones.map(a => `
           <div class="glass-card p-5 border-l-4 transition-all"
               style="border-left-color:${a.borderColor};background:${a.bgColor};">
               <div class="flex items-start gap-4">
                   <div class="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center"
                       style="background:${a.bgColor};border:1px solid ${a.borderColor};">
-                      <i class="${a.icono}" style="color:${a.color};font-size:1rem;"></i>
+                      <i class="${a.icono}" style="color:${a.borderColor};font-size:1rem;"></i>
                   </div>
                   <div class="flex-1 min-w-0">
                       <div class="flex justify-between items-start gap-2">
                           <p class="text-xs font-black text-white leading-snug">
-                              ${a.leida ? '' : '<span style="display:inline-block;width:6px;height:6px;background:#f97316;border-radius:50%;margin-right:6px;vertical-align:middle;"></span>'}
                               ${a.titulo}
                           </p>
                           <span class="text-[9px] text-slate-500 font-black flex-shrink-0">${a.fecha}</span>
@@ -986,26 +1180,18 @@ function renderNotificaciones() {
               </div>
           </div>
       `).join('');
-
-    // Actualizar badge con no leídas
-    const noLeidas = alertasCliente.filter(a => !a.leida).length;
-    const badge = document.getElementById('badge-notif');
-    if (badge) badge.innerText = noLeidas > 0 ? noLeidas : '';
-
-    // Marcar todas como leídas al abrir
-    setTimeout(() => {
-        alertasCliente.forEach(a => a.leida = true);
-        if (badge) badge.innerText = '';
-    }, 2000);
 }
 
 function filtrarAlertas(tipo) {
     filtroAlertaActivo = tipo;
     document.querySelectorAll('.btn-alerta-tab').forEach(b => {
-        b.style.background = '#334155';
-        b.style.color = '#94a3b8';
+        b.classList.remove('btn-naranja');
+        b.classList.add('bg-slate-700');
     });
     const activo = document.getElementById('btn-alerta-' + tipo);
-    if (activo) { activo.style.background = '#f97316'; activo.style.color = 'white'; }
+    if (activo) {
+        activo.classList.remove('bg-slate-700');
+        activo.classList.add('btn-naranja');
+    }
     renderNotificaciones();
 }

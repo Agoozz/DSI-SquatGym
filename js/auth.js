@@ -1,18 +1,18 @@
 // Base de datos simulada de usuarios
 const usuariosDB = [
     // Admin
-    { dni: "1", password: "admin",      rol: "admin",      nombre: "Admin General", sede: null          },
+    { dni: "1", password: "admin", rol: "admin", nombre: "Admin General", sede: null },
     // Secretarias
-    { dni: "2", password: "secretaria", rol: "secretaria", nombre: "S. Centro",     sede: "Sede Centro" },
-    { dni: "3", password: "secretaria", rol: "secretaria", nombre: "S. Norte",      sede: "Sede Norte"  },
-    { dni: "4", password: "secretaria", rol: "secretaria", nombre: "S. Sur",        sede: "Sede Sur"    },
+    { dni: "2", password: "secretaria", rol: "secretaria", nombre: "S. Centro", sede: "Sede Centro" },
+    { dni: "3", password: "secretaria", rol: "secretaria", nombre: "S. Norte", sede: "Sede Norte" },
+    { dni: "4", password: "secretaria", rol: "secretaria", nombre: "S. Sur", sede: "Sede Sur" },
     // Encargados
-    { dni: "5", password: "encargado",  rol: "encargado",  nombre: "E. Centro",     sede: "Sede Centro" },
-    { dni: "6", password: "encargado",  rol: "encargado",  nombre: "E. Norte",      sede: "Sede Norte"  },
-    { dni: "7", password: "encargado",  rol: "encargado",  nombre: "E. Sur",        sede: "Sede Sur"    },
+    { dni: "5", password: "encargado", rol: "encargado", nombre: "E. Centro", sede: "Sede Centro" },
+    { dni: "6", password: "encargado", rol: "encargado", nombre: "E. Norte", sede: "Sede Norte" },
+    { dni: "7", password: "encargado", rol: "encargado", nombre: "E. Sur", sede: "Sede Sur" },
     // Alumnos (Pruebas)
-    { dni: "8", password: "alumno",     rol: "alumno",     nombre: "Valentino P.",  sede: "Sede Centro" },
-    { dni: "9", password: "alumno",     rol: "alumno",     nombre: "Melisa L.",     sede: "Sede Norte"  },
+    { dni: "8", password: "alumno", rol: "alumno", nombre: "Valentino P.", sede: "Sede Centro" },
+    { dni: "9", password: "alumno", rol: "alumno", nombre: "Lucía Fernández", sede: "Sede Norte" },
 ];
 
 // Variables globales para el estado del login
@@ -48,7 +48,7 @@ function entrarApp() {
     const dniInput = document.querySelector('input[placeholder="DNI..."]');
     const passInput = document.querySelector('input[placeholder="PASSWORD"]');
 
-    const dni      = dniInput.value.trim();
+    const dni = dniInput.value.trim();
     const password = passInput.value.trim();
 
     // Leer el subrol seleccionado en la nueva UI (window._loginSubrol)
@@ -88,15 +88,15 @@ function entrarApp() {
     }
 
     // ── Todo correcto: asignar datos de sesión directamente desde la DB ──
-    rRol       = usuario.rol;
-    rNombre    = usuario.nombre;
+    rRol = usuario.rol;
+    rNombre = usuario.nombre;
     sedeActual = usuario.sede; // se asigna automáticamente, sin selector HTML
 
     usuarioActual = {
-        dni:    dni,
+        dni: dni,
         nombre: usuario.nombre,
-        rol:    usuario.rol,
-        sede:   usuario.sede
+        rol: usuario.rol,
+        sede: usuario.sede
     };
 
     ingresarAlSistema();
@@ -176,30 +176,168 @@ function ingresarAlSistema() {
     // renderMarketCatalog(); // Esta función se llamará cuando se navegue al Kiosco
 
 
+    // Mostrar/Ocultar campanita según rol
+    const notifContainer = document.getElementById('notificaciones-header-container');
+    if (notifContainer) {
+        if (rRol === 'alumno') {
+            notifContainer.classList.remove('hidden');
+        } else {
+            notifContainer.classList.add('hidden');
+        }
+    }
+
     if (rRol === 'admin' || rRol === 'secretaria' || rRol === 'encargado') {
         setTimeout(renderizarAlertasStaff, 100);
     }
     if (rRol === 'alumno') {
-        setTimeout(renderizarAlertaCliente, 100);
+        setTimeout(() => {
+            actualizarUIPerfilAlumno();
+            cargarNotificaciones();
+            mostrarModalEstadoCuenta(); // Mostrar popup de bienvenida con estado
+        }, 100);
+    }
+}
+
+function actualizarUIPerfilAlumno() {
+    const dni = usuarioActual.dni;
+    const socio = sociosDB.find(s => s.dni === dni);
+    if (!socio) return;
+
+    // Simular días de mora para la demo
+    let diasMora = 0;
+    if (dni === "8") diasMora = 10; // Valentino: < 15 días
+    if (dni === "9") diasMora = 20; // Lucía: >= 15 días
+
+    const deuda = socio.deuda;
+    const bannerAlerta = document.getElementById('banner-alerta-cliente');
+    const bannerRestr = document.getElementById('banner-restriccion-cliente');
+    const badgeEstado = document.getElementById('alu-estado-cuota-badge');
+    const dotAcceso = document.getElementById('alu-estado-acceso-dot');
+    const txtAcceso = document.getElementById('alu-estado-acceso-texto');
+    const containerAcceso = document.getElementById('alu-estado-acceso-container');
+    const checkoutTotal = document.getElementById('al-checkout-total');
+    const resumenDeuda = document.getElementById('al-resumen-deuda');
+    const perfilNombre = document.getElementById('al-perfil-nombre');
+    const perfilImg = document.getElementById('al-perfil-img');
+    const detalleMonto = document.getElementById('al-detalle-monto');
+    const detalleBlock = document.getElementById('alu-detalle-deuda-block');
+
+    // Reset banners
+    if (bannerAlerta) bannerAlerta.innerHTML = '';
+    if (bannerRestr) bannerRestr.innerHTML = '';
+
+    // Inyección sincronizada de deuda - AHORA BASADA EN LA DB GLOBAL
+    const montoAMostrar = deuda; 
+
+    if (checkoutTotal) checkoutTotal.innerText = `$${montoAMostrar.toLocaleString()}`;
+    if (resumenDeuda) resumenDeuda.innerText = `$${deuda.toLocaleString()}`; 
+    if (detalleMonto) detalleMonto.innerText = `$${montoAMostrar.toLocaleString()}`;
+
+    if (perfilNombre) perfilNombre.innerHTML = socio.nombre.replace(' ', ' <br> <span class="text-slate-300">') + '</span>';
+
+    // Sincronizar datos de perfil (Alta, Plan, Sede)
+    const planEl = document.getElementById('alu-perfil-plan');
+    const sedeEl = document.getElementById('alu-perfil-sede');
+    const altaEl = document.getElementById('alu-perfil-alta');
+    
+    if (planEl) planEl.innerText = socio.clase.toUpperCase();
+    if (sedeEl) sedeEl.innerText = socio.sede.toUpperCase();
+    if (altaEl) {
+        const fecha = new Date(socio.fechaAlta + 'T12:00:00');
+        altaEl.innerText = fecha.toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit', year: 'numeric' });
     }
 
-    const btn = document.getElementById("btn-kiosco-accion");
-    if (btn) {
-        if (rRol === "admin" || rRol === "secretaria" || rRol === "encargado") {
-            btn.innerText = "Cobrar";
-            btn.onclick = () => abrirM('modal-cobro-kiosco');
+    // Lógica de Foto (Priorizar socio.foto)
+    if (perfilImg) {
+        perfilImg.src = socio.foto || `https://ui-avatars.com/api/?name=${socio.nombre}&background=f97316&color=fff&bold=true`;
+    }
+
+    if (deuda > 0) {
+        if (diasMora < 15) {
+            // CASO PAGO PENDIENTE (Amarillo)
+            if (bannerAlerta) {
+                bannerAlerta.innerHTML = `
+                    <div class="glass-card p-4 border-l-4 border-yellow-500 bg-yellow-500/5 flex items-center gap-4 animate-pulse">
+                        <i class="fas fa-exclamation-triangle text-yellow-500 text-xl flex-shrink-0"></i>
+                        <div>
+                            <p class="text-xs font-black text-yellow-500 uppercase">AVISO: Pago Pendiente</p>
+                            <p class="text-[9px] text-slate-300">Tienes una deuda activa. Evita restricciones abonando a la brevedad.</p>
+                        </div>
+                    </div>`;
+            }
+            if (badgeEstado) {
+                badgeEstado.innerText = "PENDIENTE";
+                badgeEstado.className = "bg-yellow-500/10 text-yellow-500 text-[8px] font-black px-2 py-1 rounded border border-yellow-500/20";
+                badgeEstado.classList.remove('hidden');
+            }
+            if (dotAcceso && txtAcceso && containerAcceso) {
+                dotAcceso.className = 'w-2 h-2 rounded-full bg-yellow-500';
+                txtAcceso.innerText = 'ADVERTENCIA';
+                txtAcceso.className = 'text-[8px] text-yellow-500 font-black tracking-widest';
+                containerAcceso.className = 'absolute top-4 right-4 flex items-center gap-1.5 bg-yellow-900/20 px-2 py-1 rounded-full border border-yellow-800/50';
+            }
         } else {
-            btn.innerText = "Pagar";
-            btn.onclick = () => abrirM('modal-pago-selector', 'kiosco');
+            // CASO DEUDA Y ACCESO DENEGADO (Rojo)
+            if (bannerRestr) {
+                bannerRestr.innerHTML = `
+                    <div class="glass-card p-4 border-l-4 border-red-600 bg-red-600/10 flex items-center gap-4 border-2 border-red-500/30">
+                        <i class="fas fa-ban text-red-500 text-xl flex-shrink-0"></i>
+                        <div>
+                            <p class="text-xs font-black text-red-500 uppercase">ACCESO DENEGADO</p>
+                            <p class="text-[9px] text-slate-300">Tu cuenta presenta una mora superior a 15 días. Acércate a recepción.</p>
+                        </div>
+                    </div>`;
+            }
+            if (badgeEstado) {
+                badgeEstado.innerText = "EN MORA";
+                badgeEstado.className = "bg-red-500/10 text-red-500 text-[8px] font-black px-2 py-1 rounded border border-red-500/20";
+                badgeEstado.classList.remove('hidden');
+            }
+            if (dotAcceso && txtAcceso && containerAcceso) {
+                dotAcceso.className = 'w-2 h-2 rounded-full bg-red-600';
+                txtAcceso.innerText = 'BLOQUEADO';
+                txtAcceso.className = 'text-[8px] text-red-500 font-black tracking-widest';
+                containerAcceso.className = 'absolute top-4 right-4 flex items-center gap-1.5 bg-red-900/20 px-2 py-1 rounded-full border border-red-800/50';
+            }
         }
-    }
+        if (detalleBlock) detalleBlock.classList.remove('hidden');
+    } else {
+        // CASO AL DÍA (Verde)
+        if (badgeEstado) {
+            badgeEstado.innerText = "AL DÍA";
+            badgeEstado.className = "bg-green-500/10 text-green-500 text-[8px] font-black px-2 py-1 rounded border border-green-500/20";
+            badgeEstado.classList.remove('hidden');
+        }
 
-    const btnEntregas = document.getElementById('btn-entregas');
-    if (btnEntregas) {
-        if (rRol === 'admin' || rRol === 'secretaria' || rRol === 'encargado') {
-            btnEntregas.style.display = 'flex';
-        } else {
-            btnEntregas.style.display = 'none';
+        // Ocultar detalles de deuda
+        if (detalleBlock) detalleBlock.classList.add('hidden');
+
+        // Mostrar banner de Acceso Habilitado
+        if (bannerAlerta) bannerAlerta.innerHTML = '';
+        if (bannerRestr) {
+            bannerRestr.innerHTML = `
+                <div class="glass-card p-4 border-l-4 border-green-500 bg-green-500/10 flex items-center gap-4">
+                    <i class="fas fa-check-circle text-green-500 text-xl flex-shrink-0"></i>
+                    <div>
+                        <p class="text-xs font-black text-green-400 uppercase">Acceso Habilitado</p>
+                        <p class="text-[9px] text-slate-300">Tu cuenta está al día. ¡Disfrutá de tu entrenamiento!</p>
+                    </div>
+                </div>`;
+        }
+
+        if (dotAcceso && txtAcceso && containerAcceso) {
+            dotAcceso.className = 'w-2 h-2 rounded-full bg-green-500';
+            txtAcceso.innerText = 'HABILITADO';
+            txtAcceso.className = 'text-[8px] text-green-400 font-black tracking-widest';
+            containerAcceso.className = 'absolute top-4 right-4 flex items-center gap-1.5 bg-green-900/20 px-2 py-1 rounded-full border border-green-800/50';
+        }
+
+        // Deshabilitar botón de pagar si está al día
+        const btnPagar = document.getElementById('alu-btn-pagar');
+        if (btnPagar) {
+            btnPagar.disabled = true;
+            btnPagar.innerText = "CUOTA AL DÍA";
+            btnPagar.className = "w-full bg-slate-800 text-slate-500 text-[10px] font-black py-3 rounded-lg flex justify-center items-center gap-2 cursor-not-allowed";
         }
     }
 }
@@ -281,7 +419,7 @@ function configurarMenuStaff() {
             // Al volver a Staff desde Alumno, resetear la selección
             if (window._loginSubrol === 'alumno' || !window._loginSubrol) {
                 window._loginSubrol = null;
-                window._loginSede   = null;
+                window._loginSede = null;
             }
             // Seleccionar admin por defecto si no hay subrol de staff elegido
             if (!window._loginSubrol) {
@@ -296,7 +434,7 @@ function configurarMenuStaff() {
         alumnoBtn.addEventListener('click', (e) => {
             e.preventDefault();
             window._loginSubrol = 'alumno';
-            window._loginSede   = null;
+            window._loginSede = null;
             setLoginUIRol('alumno');
         });
     }
@@ -348,7 +486,7 @@ function setLoginUIRol(categoria, rol = null) {
         if (subMenu) { subMenu.classList.add('hidden'); subMenu.style.display = 'none'; }
         // Limpiar selección de subrol/sede
         window._loginSubrol = 'alumno';
-        window._loginSede   = null;
+        window._loginSede = null;
     }
 }
 
@@ -372,8 +510,192 @@ document.addEventListener('DOMContentLoaded', () => {
             if (e.key === 'Enter') entrarApp();
         });
     }
+
+    // Vincular botón de notificaciones
+    const btnNotif = document.getElementById('btn-notificaciones');
+    if (btnNotif) {
+        btnNotif.onclick = toggleNotificaciones;
+    }
 });
 
+// ══════════════════════════════════════════════
+// SISTEMA DE NOTIFICACIONES DINÁMICAS
+// ══════════════════════════════════════════════
+
+function getNotificacionesData() {
+    const data = [];
+    
+    // Obtener socio actual desde la base de datos global (sociosDB de data.js)
+    const socio = (typeof sociosDB !== 'undefined')
+        ? sociosDB.find(s => s.dni === usuarioActual.dni)
+        : null;
+
+    if (!socio) return data;
+
+    // 1. Lógica de Deuda/Mora (Generalizada para todos los alumnos)
+    if (socio.deuda > 0) {
+        const cuotaPendiente = (typeof historialPagosCliente !== 'undefined') 
+            ? historialPagosCliente.find(p => p.dni === socio.dni && p.estado === 'Pendiente')
+            : null;
+        const montoStr = cuotaPendiente ? `$${cuotaPendiente.monto.toLocaleString()}` : `$${socio.deuda.toLocaleString()}`;
+
+        if (socio.dni === "9") {
+            // Caso de Mora Pesada (Ej: Lucía)
+            data.push({
+                id: 'notif-bloqueo',
+                tipo: 'vencimiento',
+                icono: 'fas fa-ban',
+                color: 'text-red-500',
+                borderColor: '#ef4444',
+                bgColor: 'rgba(239, 68, 68, 0.1)',
+                titulo: 'ACCESO RESTRINGIDO',
+                desc: `Tu cuenta presenta una mora de $${socio.deuda.toLocaleString()}. Dirígete a administración.`,
+                fecha: 'Ayer • 08:15 PM',
+                accion: { label: 'Ver Estado', fn: "navV('alu-pago')" }
+            });
+        } else {
+            // Caso de Deuda Pendiente (Valentino y otros)
+            data.push({
+                id: 'notif-deuda',
+                tipo: 'vencimiento',
+                icono: 'fas fa-exclamation-triangle',
+                color: 'text-yellow-500',
+                borderColor: '#eab308',
+                bgColor: 'rgba(234, 179, 8, 0.1)',
+                titulo: 'Pago Pendiente',
+                desc: `Tienes una cuota pendiente de $${socio.deuda.toLocaleString()}. Abona para evitar recargos.`,
+                fecha: 'Hoy • 10:30 AM',
+                accion: { label: 'Pagar Ahora', fn: "abrirM('modal-pago-selector','cuota')" }
+            });
+        }
+    }
+
+    // 2. Notificación SIEMPRE (Promo genérica del Gym)
+    data.push({
+        id: 'notif-promo',
+        tipo: 'promocion',
+        icono: 'fas fa-gift',
+        color: 'text-orange-500',
+        borderColor: '#f97316',
+        bgColor: 'rgba(249, 115, 22, 0.1)',
+        titulo: '¡Sorteo Mensual!',
+        desc: 'Participa por una suscripción anual gratis en nuestro Instagram.',
+        fecha: 'Hace 1 hora',
+        accion: { label: 'Ir a Instagram', fn: "window.open('https://instagram.com/squatgym','_blank')" }
+    });
+
+    return data;
+}
+
+function toggleNotificaciones() {
+    const dropdown = document.getElementById('dropdown-notificaciones');
+    if (!dropdown) return;
+
+    if (dropdown.classList.contains('hidden')) {
+        cargarNotificaciones();
+        dropdown.classList.remove('hidden');
+    } else {
+        dropdown.classList.add('hidden');
+    }
+}
+
+function cargarNotificaciones() {
+    const lista = document.getElementById('lista-notificaciones');
+    const badge = document.getElementById('badge-notificaciones');
+    if (!lista) return;
+
+    lista.innerHTML = '';
+    const notificaciones = getNotificacionesData();
+
+    notificaciones.forEach(notif => {
+        lista.innerHTML += `
+            <div class="p-4 border-b border-slate-800/50 hover:bg-slate-800/30 transition cursor-pointer flex gap-4">
+                <div class="w-10 h-10 rounded-full ${notif.bgColor.replace('rgba', 'bg').replace(', 0.1)', '/10')} flex items-center justify-center shrink-0">
+                    <i class="${notif.icono} ${notif.color} text-sm"></i>
+                </div>
+                <div class="space-y-1">
+                    <p class="text-[11px] font-black text-white leading-tight uppercase">${notif.titulo}</p>
+                    <p class="text-[10px] text-slate-400 leading-snug">${notif.desc}</p>
+                    <p class="text-[9px] font-bold text-slate-500 uppercase">${notif.fecha}</p>
+                </div>
+            </div>`;
+    });
+
+    // Actualizar badge
+    if (badge) {
+        badge.innerText = notificaciones.length;
+        badge.classList.toggle('hidden', notificaciones.length === 0);
+    }
+}
+
+// ══════════════════════════════════════════════
+// POPUP DE ESTADO DE CUENTA (INICIO ALUMNO)
+// ══════════════════════════════════════════════
+
+function mostrarModalEstadoCuenta() {
+    const socio = (typeof sociosDB !== 'undefined')
+        ? sociosDB.find(s => s.dni === usuarioActual.dni)
+        : null;
+
+    if (!socio) return;
+
+    const iconCont = document.getElementById('status-icon-container');
+    const icon = document.getElementById('status-icon');
+    const title = document.getElementById('status-title');
+    const desc = document.getElementById('status-desc');
+    const extraInfo = document.getElementById('status-extra-info');
+    const monto = document.getElementById('status-monto');
+    const btnSec = document.getElementById('status-btn-secondary');
+
+    // Reset
+    iconCont.className = 'w-20 h-20 rounded-full mx-auto mb-6 flex items-center justify-center text-4xl shadow-2xl';
+    extraInfo.classList.add('hidden');
+    btnSec.classList.add('hidden');
+
+    if (socio.deuda > 0) {
+        if (socio.dni === "9") {
+            // DEUDA / MORA PESADA
+            iconCont.classList.add('bg-red-500/20', 'text-red-500', 'border', 'border-red-500/30');
+            icon.className = 'fas fa-ban';
+            title.innerText = 'Acceso Restringido';
+            title.className = 'text-2xl font-black text-red-500 uppercase tracking-tighter mb-2 italic';
+            desc.innerText = 'Tu cuenta registra una mora superior a 15 días. El acceso a las instalaciones se encuentra suspendido.';
+            monto.innerText = `$${socio.deuda.toLocaleString()}`; 
+            extraInfo.classList.remove('hidden');
+            btnSec.classList.remove('hidden');
+        } else {
+            // PENDIENTE
+            iconCont.classList.add('bg-yellow-500/20', 'text-yellow-500', 'border', 'border-yellow-500/30');
+            icon.className = 'fas fa-exclamation-triangle';
+            title.innerText = 'Pago Pendiente';
+            title.className = 'text-2xl font-black text-yellow-500 uppercase tracking-tighter mb-2 italic';
+            desc.innerText = 'Tienes una cuota pendiente por abonar. Recuerda regularizar para evitar recargos o bloqueos.';
+            monto.innerText = `$${socio.deuda.toLocaleString()}`; 
+            extraInfo.classList.remove('hidden');
+            btnSec.classList.remove('hidden');
+        }
+    } else {
+        // AL DÍA
+        iconCont.classList.add('bg-green-500/20', 'text-green-400', 'border', 'border-green-500/30');
+        icon.className = 'fas fa-check-circle';
+        title.innerText = '¡Todo en orden!';
+        title.className = 'text-2xl font-black text-green-400 uppercase tracking-tighter mb-2 italic';
+        desc.innerText = 'Tu cuenta se encuentra al día. ¡Gracias por ser parte de SquatGym! Nos vemos en el entrenamiento.';
+    }
+
+    abrirM('modal-estado-cuenta-alumno');
+}
+
+// Cerrar el dropdown al hacer clic fuera
+document.addEventListener('click', (e) => {
+    const dropdown = document.getElementById('dropdown-notificaciones');
+    const btn = document.getElementById('btn-notificaciones');
+    if (!dropdown || !btn) return;
+
+    if (!dropdown.contains(e.target) && !btn.contains(e.target)) {
+        dropdown.classList.add('hidden');
+    }
+});
 
 // ══════════════════════════════════════════════
 // LECTURA DE DATOS PARA PERFIL SOCIO
@@ -424,13 +746,23 @@ function verPerfilSocio(nombre) {
     document.getElementById('perfil-nombre').innerText = nombre;
 
     const badgeEstado = document.getElementById('perfil-estado-badge');
+        const planEl = document.getElementById('alu-perfil-plan');
+        const sedeEl = document.getElementById('alu-perfil-sede');
+        const altaEl = document.getElementById('alu-perfil-alta');
+        
+        if (planEl) planEl.innerText = socio.clase.toUpperCase();
+        if (sedeEl) sedeEl.innerText = socio.sede.toUpperCase();
+        if (altaEl) {
+            const fecha = new Date(socio.fechaAlta + 'T12:00:00');
+            altaEl.innerText = fecha.toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        }
+let textoCuenta = socio.estado;
+
     const montoEl = document.getElementById('perfil-monto');
     const tituloMonto = document.getElementById('perfil-titulo-monto');
 
     montoEl.innerText = `$${deuda.toLocaleString()}`;
     montoEl.classList.remove('text-green-400', 'text-white', 'text-red-500', 'text-yellow-500');
-
-    let textoCuenta = socio.estado;
 
     if (deuda > 0 && esMora) {
         // Mora real

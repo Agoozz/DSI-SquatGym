@@ -7,17 +7,32 @@
       <!-- Filtros -->
       <div class="glass-card p-5">
           <div class="flex flex-wrap gap-3 items-center">
-              <label class="text-[9px] font-black text-slate-500 uppercase tracking-widest flex-shrink-0">Período:</label>
+              <label class="text-[9px] font-black text-slate-500 uppercase tracking-widest flex-shrink-0">Año:</label>
+              <select id="inf-anio-sel" onchange="renderInformes()" class="bg-slate-900 border border-slate-700 rounded-full px-5 py-2.5 text-xs text-white outline-none focus:border-orange-500 transition">
+                  <option value="todos">Todos</option>
+                  <option value="2024">2024</option>
+                  <option value="2025">2025</option>
+                  <option value="2026" selected>2026</option>
+              </select>
+
+              <label class="text-[9px] font-black text-slate-500 uppercase tracking-widest flex-shrink-0 ml-2">Mes:</label>
               <select id="inf-mes-sel" onchange="renderInformes()" class="bg-slate-900 border border-slate-700 rounded-full px-5 py-2.5 text-xs text-white outline-none focus:border-orange-500 transition">
-                  <option value="2026-01">Enero 2026</option>
-                  <option value="2026-02">Febrero 2026</option>
-                  <option value="2026-03">Marzo 2026</option>
-                  <option value="2026-04" selected>Abril 2026</option>
+                  <option value="todos">Todos</option>
+                  <option value="01">Enero</option>
+                  <option value="02">Febrero</option>
+                  <option value="03">Marzo</option>
+                  <option value="04" selected>Abril</option>
+                  <option value="05">Mayo</option>
+                  <option value="06">Junio</option>
+                  <option value="07">Julio</option>
+                  <option value="08">Agosto</option>
+                  <option value="09">Septiembre</option>
+                  <option value="10">Octubre</option>
+                  <option value="11">Noviembre</option>
+                  <option value="12">Diciembre</option>
               </select>
-              <select id="inf-tipo-sel" onchange="renderInformes()" class="bg-slate-900 border border-slate-700 rounded-full px-5 py-2.5 text-xs text-white outline-none focus:border-orange-500 transition">
-                  <option value="Cuota">Cuotas</option>
-              </select>
-              <select id="inf-sede-sel" onchange="renderInformes()" class="bg-slate-900 border border-slate-700 rounded-full px-5 py-2.5 text-xs text-white outline-none focus:border-orange-500 transition">
+
+              <select id="inf-sede-sel" onchange="renderInformes()" class="bg-slate-900 border border-slate-700 rounded-full px-5 py-2.5 text-xs text-white outline-none focus:border-orange-500 transition ml-2">
                   <option value="todas">Todas las Sedes</option>
                   <option value="Sede Centro">Sede Centro</option>
                   <option value="Sede Norte">Sede Norte</option>
@@ -42,14 +57,14 @@
                   <thead class="bg-slate-900 text-[9px] text-slate-500 uppercase tracking-widest border-b border-slate-800">
                       <tr>
                           <th class="p-3">#</th>
-                          <th class="p-3">Fecha</th>
-                          <th class="p-3">Cliente</th>
+                          <th class="p-3 cursor-pointer hover:text-white transition" onclick="cambiarOrden('fecha')">Fecha <i class="fas fa-sort ml-1 opacity-40"></i></th>
+                          <th class="p-3 cursor-pointer hover:text-white transition" onclick="cambiarOrden('cliente')">Cliente <i class="fas fa-sort ml-1 opacity-40"></i></th>
                           <th class="p-3">DNI</th>
                           <th class="p-3">Sede</th>
                           <th class="p-3">Concepto</th>
                           <th class="p-3">Método</th>
-                          <th class="p-3 text-right">Monto</th>
-                          <th class="p-3">Estado</th>
+                          <th class="p-3 text-right cursor-pointer hover:text-white transition" onclick="cambiarOrden('monto')">Monto <i class="fas fa-sort ml-1 opacity-40"></i></th>
+                          <th class="p-3 cursor-pointer hover:text-white transition" onclick="cambiarOrden('estado')">Estado <i class="fas fa-sort ml-1 opacity-40"></i></th>
                       </tr>
                   </thead>
                   <tbody id="lista-transacciones" class="text-xs font-bold divide-y divide-slate-800/50"></tbody>
