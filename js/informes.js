@@ -33,10 +33,11 @@ function renderInformes() {
     const sedeSel    = (typeof rRol !== 'undefined' && rRol === 'admin')
         ? (document.getElementById('inf-sede-sel')?.value || 'todas')
         : sedeActual;
+    const estadoSel  = (document.getElementById('inf-estado-sel')?.value || 'todos');
     const clienteBus = (document.getElementById('inf-cliente-sel')?.value || '').toLowerCase().trim();
     const dniBus     = (document.getElementById('inf-dni-sel')?.value     || '').trim();
 
-    const filtradas = transacciones.filter(t => {
+    const filtradasTotales = transacciones.filter(t => {
         let matchFecha = true;
         if (anioSel !== 'todos' && mesSel !== 'todos') {
             matchFecha = t.fecha && t.fecha.startsWith(`${anioSel}-${mesSel}`);
@@ -55,6 +56,10 @@ function renderInformes() {
         const matchDni = !dniBus || (socio && socio.dni.startsWith(dniBus));
 
         return matchFecha && matchSede && matchCliente && matchDni;
+    });
+
+    const filtradas = filtradasTotales.filter(t => {
+        return estadoSel === 'todos' || getEstadoTransaccion(t) === estadoSel;
     });
 
     // APLICAR ORDENAMIENTO
@@ -77,7 +82,7 @@ function renderInformes() {
     });
 
     const totales = { QR: 0, TRANSFERENCIA: 0, EFECTIVO: 0, TARJETA: 0 };
-    filtradas.forEach(t => { 
+    filtradasTotales.forEach(t => { 
         const estado = getEstadoTransaccion(t);
         if (estado === 'ACREDITADO') {
             const tipoKey = t.tipo.toUpperCase();
@@ -89,7 +94,7 @@ function renderInformes() {
     let totalPendiente = 0;
     let totalMora = 0;
 
-    filtradas.forEach(t => {
+    filtradasTotales.forEach(t => {
         const estado = getEstadoTransaccion(t);
         if (estado === 'ACREDITADO') {
             totalRecaudado += t.monto;

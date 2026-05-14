@@ -38,6 +38,12 @@
                   <option value="Sede Norte">Sede Norte</option>
                   <option value="Sede Sur">Sede Sur</option>
               </select>
+              <select id="inf-estado-sel" onchange="renderInformes()" class="bg-slate-900 border border-slate-700 rounded-full px-5 py-2.5 text-xs text-white outline-none focus:border-orange-500 transition ml-2">
+                  <option value="todos">Todos los estados</option>
+                  <option value="ACREDITADO">Acreditado</option>
+                  <option value="PENDIENTE">Pendiente</option>
+                  <option value="EN MORA">En mora</option>
+              </select>
               <input id="inf-cliente-sel" oninput="renderInformes()" type="text" placeholder="Buscar cliente..."
                   class="bg-slate-900 border border-slate-700 rounded-full px-5 py-2.5 text-xs text-white outline-none focus:border-orange-500 transition placeholder-slate-600">
               <input id="inf-dni-sel" oninput="renderInformes()" type="text" placeholder="Buscar DNI..."
