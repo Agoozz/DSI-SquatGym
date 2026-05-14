@@ -56,11 +56,6 @@ function configMenu() {
                 <i class="fas fa-history"></i> Mis Pagos
             </div>
 
-            <div onclick="navV('alu-notificaciones'); renderNotificaciones();" class="nav-item" id="li-alu-notificaciones">
-                <i class="fas fa-bell"></i> Notificaciones
-                <span id="badge-notif" style="margin-left:auto;background:#f97316;color:white;font-size:8px;font-weight:900;padding:1px 6px;border-radius:9999px;">3</span>
-            </div>
-
             <div onclick="navV('alu-tienda')" class="nav-item" id="li-alu-tienda">
                 <i class="fas fa-shopping-basket"></i> Kiosco
             </div>
@@ -130,4 +125,3 @@ function quickAction() {
         navV('adm-monitor');
     }
 }
-
