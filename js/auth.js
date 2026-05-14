@@ -100,10 +100,6 @@ function entrarApp() {
     };
 
     ingresarAlSistema();
-
-    if (rRol === 'alumno') {
-        setTimeout(verificarNotificacionesNuevas, 1000);
-    }
 }
 
 // Ingresar al sistema después de validación exitosa
@@ -173,8 +169,6 @@ function ingresarAlSistema() {
         bStaffHero.classList.add('hidden');
         bClientProfile.classList.remove('hidden');
         document.getElementById('header-username').innerText = `${rNombre}`;
-
-        actualizarBadgeHeader(3);
     }
 
     configMenu();
@@ -207,37 +201,6 @@ function ingresarAlSistema() {
         } else {
             btnEntregas.style.display = 'none';
         }
-    }
-}
-
-// manejar estado del Badge en el Header
-function actualizarBadgeHeader(cantidad) {
-    const badge = document.getElementById('badge-notif-header');
-    if (!badge) return;
-
-    if (cantidad > 0) {
-        badge.innerText = cantidad;
-        badge.classList.remove('hidden');
-    } else {
-        badge.classList.add('hidden');
-    }
-}
-
-// verificar notificaciones nuevas
-function verificarNotificacionesNuevas() {
-    if (rRol !== 'alumno') return;
-
-    const tieneNotif = true; 
-
-    if (tieneNotif) {
-        const msg = document.createElement('div');
-        msg.className = "fixed bottom-5 right-5 bg-orange-600 text-white p-4 rounded-xl shadow-2xl font-black text-xs uppercase italic animate-bounce z-[20000]";
-        msg.innerHTML = `<i class="fas fa-bell mr-2"></i> ¡Tienes notificaciones nuevas!`;
-        
-        document.body.appendChild(msg);
-        setTimeout(() => msg.remove(), 5000);
-        
-        actualizarBadgeHeader(3); 
     }
 }
 
@@ -693,12 +656,3 @@ function cambiarTipoPromo(valorPorDefecto = '') {
         contenedor.innerHTML = `<input type="text" id="edit-valor-promo" class="w-full bg-slate-900 border border-slate-700 text-white p-3 rounded-xl font-black uppercase focus:outline-none focus:border-orange-500 transition placeholder-slate-600" placeholder="Ej: CROSS20" value="${valorPorDefecto}">`;
     }
 }
-
-// sobrescribir la navegacion para limpiar badge
-const originalNavV = navV;
-navV = function(id) {
-    if (id === 'alu-notificaciones') {
-        actualizarBadgeHeader(0); // Limpiamos el badge al ver las notificaciones
-    }
-    originalNavV(id);
-};
