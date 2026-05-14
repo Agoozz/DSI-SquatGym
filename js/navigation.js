@@ -97,13 +97,14 @@ function navV(id) {
 }
 
 // Mostrar toast de acceso denegado
-function mostrarToastAccesoDenegado() {
+function mostrarToast(mensaje, tipo) {
     const toast = document.createElement('div');
+    const colorFondo = (tipo === 'error') ? '#ef4444' : '#22c55e'; // Rojo o Verde
     toast.style.cssText = `
             position: fixed;
             top: 20px;
             right: 20px;
-            background: #ef4444;
+            background: ${colorFondo};
             color: white;
             padding: 16px 24px;
             border-radius: 8px;
@@ -112,7 +113,7 @@ function mostrarToastAccesoDenegado() {
             z-index: 10000;
             animation: slideIn 0.3s ease-out;
       `;
-    toast.textContent = '❌ Acceso denegado: Solo administradores pueden ver Informes';
+    toast.textContent = mensaje;
     document.body.appendChild(toast);
 
     setTimeout(() => {

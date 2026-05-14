@@ -279,8 +279,13 @@ function renderReclamos() {
                 <button onclick="verComprobante('${r.comprobanteURL}')" class="flex-1 bg-slate-700 hover:bg-slate-600 text-white text-[10px] py-2 rounded transition font-bold tracking-widest flex items-center justify-center gap-2">
                     <i class="fas fa-image"></i> Ver Foto
                 </button>
+                
+                <button onclick="denegarReclamo('${r.id}')" class="flex-1 bg-red-600 hover:bg-red-500 text-white text-[10px] py-2 rounded transition font-bold tracking-widest flex items-center justify-center gap-2">
+                    <i class="fas fa-times"></i> Rechazar
+                </button>
+
                 <button onclick="resolverReclamo('${r.id}')" class="flex-1 bg-green-600 hover:bg-green-500 text-white text-[10px] py-2 rounded transition font-bold tracking-widest flex items-center justify-center gap-2">
-                    <i class="fas fa-check"></i> Aprobar Pago
+                    <i class="fas fa-check"></i> Aprobar
                 </button>
             </div>
         </div>
@@ -301,4 +306,44 @@ function resolverReclamo(idReclamo) {
         alert(`El pago de ${reclamo.socio} ha sido aprobado.`);
         renderReclamos(); // Recarga la vista para que desaparezca la tarjeta
     }
+}
+
+// 1. Variable para recordar qué botón se tocó (solo para la interfaz)
+let reclamoActivoParaRechazar = null;
+
+// 2. Abre el modal
+function denegarReclamo(idReclamo) {
+    reclamoActivoParaRechazar = idReclamo; 
+    document.getElementById('input-motivo-rechazo').value = ""; // Limpia el cuadro de texto
+    document.getElementById('modal-rechazo-reclamo').classList.remove('hidden'); 
+}
+
+// 3. Cierra el modal con el botón Cancelar o la cruz
+function cerrarModalRechazo() {
+    document.getElementById('modal-rechazo-reclamo').classList.add('hidden');
+    reclamoActivoParaRechazar = null; 
+}
+
+// 4. Botón Confirmar (Versión solo visual)
+function confirmarRechazo() {
+    const motivo = document.getElementById('input-motivo-rechazo').value.trim();
+    
+    if (motivo === "") {
+        mostrarToast("Por favor, escriba un motivo antes de continuar.", "error");
+        return;
+    }
+
+    // 1. Buscamos el reclamo en la base y le cambiamos el estado
+    const reclamo = reclamosDB.find(r => r.id === reclamoActivoParaRechazar);
+    if (reclamo) {
+        reclamo.estado = "Rechazado"; 
+    }
+
+    mostrarToast("Motivo enviado correctamente.", "exito");
+    
+    // 2. Cerramos la ventana
+    cerrarModalRechazo();
+    
+    // 3. Redibujamos la pantalla (al no ser más "Pendiente", la tarjeta desaparece)
+    renderReclamos();
 }
