@@ -5,43 +5,49 @@
       </div>
 
       <!-- Filtros -->
-      <div class="glass-card p-5">
-          <div class="flex flex-wrap gap-3 items-center">
-              <label class="text-[9px] font-black text-slate-500 uppercase tracking-widest flex-shrink-0">Año:</label>
-              <select id="inf-anio-sel" onchange="renderInformes()" class="bg-slate-900 border border-slate-700 rounded-full px-5 py-2.5 text-xs text-white outline-none focus:border-orange-500 transition">
+      <div class="glass-card p-4">
+          <div class="flex flex-wrap items-center gap-2">
+              <label class="text-[9px] font-black text-slate-500 uppercase tracking-widest">Año:</label>
+              <select id="inf-anio-sel" onchange="renderInformes()" class="bg-slate-900 border border-slate-700 rounded-full px-3 py-2 text-xs text-white outline-none focus:border-orange-500 transition w-20">
                   <option value="todos">Todos</option>
                   <option value="2024">2024</option>
                   <option value="2025">2025</option>
                   <option value="2026" selected>2026</option>
               </select>
 
-              <label class="text-[9px] font-black text-slate-500 uppercase tracking-widest flex-shrink-0 ml-2">Mes:</label>
-              <select id="inf-mes-sel" onchange="renderInformes()" class="bg-slate-900 border border-slate-700 rounded-full px-5 py-2.5 text-xs text-white outline-none focus:border-orange-500 transition">
+              <label class="text-[9px] font-black text-slate-500 uppercase tracking-widest">Mes:</label>
+              <select id="inf-mes-sel" onchange="renderInformes()" class="bg-slate-900 border border-slate-700 rounded-full px-3 py-2 text-xs text-white outline-none focus:border-orange-500 transition w-24">
                   <option value="todos">Todos</option>
-                  <option value="01">Enero</option>
-                  <option value="02">Febrero</option>
-                  <option value="03">Marzo</option>
-                  <option value="04" selected>Abril</option>
-                  <option value="05">Mayo</option>
-                  <option value="06">Junio</option>
-                  <option value="07">Julio</option>
-                  <option value="08">Agosto</option>
-                  <option value="09">Septiembre</option>
-                  <option value="10">Octubre</option>
-                  <option value="11">Noviembre</option>
-                  <option value="12">Diciembre</option>
+                  <option value="01">Ene</option>
+                  <option value="02">Feb</option>
+                  <option value="03">Mar</option>
+                  <option value="04" selected>Abr</option>
+                  <option value="05">May</option>
+                  <option value="06">Jun</option>
+                  <option value="07">Jul</option>
+                  <option value="08">Ago</option>
+                  <option value="09">Sep</option>
+                  <option value="10">Oct</option>
+                  <option value="11">Nov</option>
+                  <option value="12">Dic</option>
               </select>
 
-              <select id="inf-sede-sel" onchange="renderInformes()" class="bg-slate-900 border border-slate-700 rounded-full px-5 py-2.5 text-xs text-white outline-none focus:border-orange-500 transition ml-2">
+              <select id="inf-sede-sel" onchange="renderInformes()" class="bg-slate-900 border border-slate-700 rounded-full px-3 py-2 text-xs text-white outline-none focus:border-orange-500 transition w-36">
                   <option value="todas">Todas las Sedes</option>
                   <option value="Sede Centro">Sede Centro</option>
                   <option value="Sede Norte">Sede Norte</option>
                   <option value="Sede Sur">Sede Sur</option>
               </select>
+              <select id="inf-estado-sel" onchange="renderInformes()" class="bg-slate-900 border border-slate-700 rounded-full px-3 py-2 text-xs text-white outline-none focus:border-orange-500 transition w-36">
+                  <option value="todos">Todos los estados</option>
+                  <option value="ACREDITADO">Acreditado</option>
+                  <option value="PENDIENTE">Pendiente</option>
+                  <option value="EN MORA">En mora</option>
+              </select>
               <input id="inf-cliente-sel" oninput="renderInformes()" type="text" placeholder="Buscar cliente..."
-                  class="bg-slate-900 border border-slate-700 rounded-full px-5 py-2.5 text-xs text-white outline-none focus:border-orange-500 transition placeholder-slate-600">
+                  class="bg-slate-900 border border-slate-700 rounded-full px-3 py-2 text-xs text-white outline-none focus:border-orange-500 transition placeholder-slate-600 w-52">
               <input id="inf-dni-sel" oninput="renderInformes()" type="text" placeholder="Buscar DNI..."
-                  class="bg-slate-900 border border-slate-700 rounded-full px-5 py-2.5 text-xs text-white outline-none focus:border-orange-500 transition placeholder-slate-600 w-32">
+                  class="bg-slate-900 border border-slate-700 rounded-full px-3 py-2 text-xs text-white outline-none focus:border-orange-500 transition placeholder-slate-600 w-28">
           </div>
       </div>
 
