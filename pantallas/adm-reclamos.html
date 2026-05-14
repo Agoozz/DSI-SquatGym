@@ -1,0 +1,14 @@
+<div id="v-adm-reclamos" class="view-section hidden space-y-8 uppercase italic">
+    <h3 class="text-4xl font-black tracking-tighter">Bandeja de <span class="text-orange-500">Reclamos</span></h3>
+
+    <div id="lista-reclamos-container" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        </div>
+</div>
+
+<div id="modal-comprobante" class="hidden fixed inset-0 bg-slate-900/90 z-50 flex justify-center items-center p-4">
+    <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 max-w-sm w-full relative">
+        <button onclick="document.getElementById('modal-comprobante').classList.add('hidden')" class="absolute top-2 right-4 text-white text-2xl hover:text-orange-500">&times;</button>
+        <p class="text-xs text-slate-400 font-bold uppercase mb-2 tracking-widest text-center">Comprobante Adjunto</p>
+        <img id="img-comprobante-visor" src="" alt="Comprobante" class="w-full rounded-lg border border-slate-700">
+    </div>
+</div>

@@ -8,7 +8,8 @@ async function cargarPantallas() {
         "alu-historial",
         "alu-notificaciones",
         "adm-inventario",
-        "adm-kiosco"
+        "adm-kiosco",
+        "adm-reclamos"
     ];
 
     const contenedor = document.getElementById("contenedor-pantallas");

@@ -24,6 +24,10 @@ function configMenu() {
                 <i class="fas fa-users"></i> Gestión Alumnos
             </div>
 
+            <div onclick="navV('adm-reclamos')" class="nav-item" id="li-adm-reclamos">
+                <i class="fas fa-exclamation-circle"></i> Reclamos
+            </div>
+
             <div onclick="navV('adm-kiosco')" class="nav-item" id="li-adm-kiosco">
                 <i class="fas fa-store"></i> Kiosco
             </div>
@@ -65,7 +69,7 @@ function navV(id) {
     if (id === 'adm-planes'  && rRol !== 'admin') return;
 
     // Pantallas de secretaria/encargado (solo ellos y no el admin)
-    const pantallasStaff = ['adm-membresia', 'adm-inventario'];
+    const pantallasStaff = ['adm-membresia', 'adm-inventario', 'adm-reclamos'];
     if (pantallasStaff.includes(id) && rRol === 'admin') return;
 
     // Encargado solo puede ver inicio y adm-membresia
@@ -76,6 +80,7 @@ function navV(id) {
     if(id === "adm-planes")     abrirModalPrecios();
     if (id === "adm-membresia") setTimeout(filtrarSocios, 50);
     if (id === "adm-inventario") setTimeout(filtrarInventario, 50);
+    if (id === "adm-reclamos") setTimeout(renderReclamos, 50);
 
     document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(l => l.classList.remove('active'));
