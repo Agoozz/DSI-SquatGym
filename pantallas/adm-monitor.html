@@ -118,12 +118,57 @@
           </div>
       </div>
 
-      <!-- Botón principal CU7 -->
-      <div>
-          <button onclick="generarReporteCobranzas()"
-              class="btn-ui bg-orange-600 hover:bg-orange-500 w-full py-4 text-xs font-black rounded-full tracking-widest transition-all shadow-lg shadow-orange-500/20 flex justify-center items-center gap-3">
-              <i class="fas fa-chart-bar text-base"></i> Generar Informe Consolidado
+      <!-- Botones principales -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <button onclick="abrirM('modal-seleccionar-mes-acreditados')"
+              class="btn-ui bg-green-600 hover:bg-green-500 w-full py-4 text-xs font-black rounded-full tracking-widest transition-all shadow-lg shadow-green-500/20 flex justify-center items-center gap-3">
+              <i class="fas fa-check-circle text-base"></i> Reporte Pagos Acreditados
           </button>
+          <button onclick="abrirM('modal-seleccionar-anio-anual')"
+              class="btn-ui bg-orange-600 hover:bg-orange-500 w-full py-4 text-xs font-black rounded-full tracking-widest transition-all shadow-lg shadow-orange-500/20 flex justify-center items-center gap-3">
+              <i class="fas fa-chart-bar text-base"></i> Reporte Anual Consolidado
+          </button>
+      </div>
+
+      <!-- Modal Seleccionar Mes Acreditados -->
+      <div id="modal-seleccionar-mes-acreditados" class="modal-base">
+          <div class="glass-card p-8 w-full max-w-sm bg-[#020617] border border-green-500/30 rounded-3xl shadow-2xl text-center">
+              <h3 class="text-xl font-black text-white mb-6 uppercase tracking-widest">Seleccionar Mes</h3>
+              <select id="modal-mes-acreditados-sel" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-green-500 transition mb-6">
+                  <option value="01">Enero</option>
+                  <option value="02">Febrero</option>
+                  <option value="03">Marzo</option>
+                  <option value="04" selected>Abril</option>
+                  <option value="05">Mayo</option>
+                  <option value="06">Junio</option>
+                  <option value="07">Julio</option>
+                  <option value="08">Agosto</option>
+                  <option value="09">Septiembre</option>
+                  <option value="10">Octubre</option>
+                  <option value="11">Noviembre</option>
+                  <option value="12">Diciembre</option>
+              </select>
+              <div class="flex gap-3">
+                  <button onclick="cerrarM()" class="btn-ui bg-slate-700 w-full text-xs rounded-full uppercase font-black">Cancelar</button>
+                  <button onclick="confirmarReportePagosAcreditados()" class="btn-ui bg-green-600 hover:bg-green-500 w-full text-xs rounded-full uppercase font-black">Generar</button>
+              </div>
+          </div>
+      </div>
+
+      <!-- Modal Seleccionar Año Anual -->
+      <div id="modal-seleccionar-anio-anual" class="modal-base">
+          <div class="glass-card p-8 w-full max-w-sm bg-[#020617] border border-orange-500/30 rounded-3xl shadow-2xl text-center">
+              <h3 class="text-xl font-black text-white mb-6 uppercase tracking-widest">Seleccionar Año</h3>
+              <select id="modal-anio-anual-sel" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-orange-500 transition mb-6">
+                  <option value="2024">2024</option>
+                  <option value="2025">2025</option>
+                  <option value="2026" selected>2026</option>
+              </select>
+              <div class="flex gap-3">
+                  <button onclick="cerrarM()" class="btn-ui bg-slate-700 w-full text-xs rounded-full uppercase font-black">Cancelar</button>
+                  <button onclick="confirmarReporteConsolidadoAnual()" class="btn-ui bg-orange-600 hover:bg-orange-500 w-full text-xs rounded-full uppercase font-black">Generar</button>
+              </div>
+          </div>
       </div>
 
   </div>
