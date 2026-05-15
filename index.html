@@ -804,6 +804,366 @@
     </div>
   </div>
 
+  <!-- Wizard Step 1: Detalles del Cobro -->
+  <div id="modal-wizard-1" class="fixed inset-0 z-[16000] hidden flex items-center justify-center p-6 bg-slate-950/80 backdrop-blur-sm">
+    <div class="bg-[#0f172a] w-full max-w-xl rounded-3xl border border-slate-700 shadow-2xl flex flex-col max-h-[90vh]">
+      <!-- Header -->
+      <div class="px-8 py-6 border-b border-slate-800 flex justify-between items-center bg-slate-900/50">
+        <div>
+          <p class="text-[10px] font-black text-orange-500 uppercase tracking-widest mb-1">Paso 1 de 3</p>
+          <h3 class="text-xl font-black text-white">Detalles del Cobro</h3>
+        </div>
+        <button onclick="cerrarModalWizard('modal-wizard-1')" class="text-slate-500 hover:text-white transition-colors">
+          <i class="fas fa-times text-xl"></i>
+        </button>
+      </div>
+
+      <!-- Body -->
+      <div class="p-8 overflow-y-auto flex-1">
+        
+        <!-- Datos del Socio -->
+        <div class="mb-8">
+          <h4 class="text-sm font-bold text-white mb-4 flex items-center gap-2">
+            <i class="fas fa-user text-orange-500"></i> Datos del Socio
+          </h4>
+          <div class="grid grid-cols-3 gap-4">
+            <div>
+              <label class="block text-xs font-bold text-slate-400 mb-2 uppercase tracking-wide">DNI</label>
+              <input type="text" id="wiz-dni" placeholder="Ingrese DNI..." 
+                class="w-full bg-[#020617] border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-orange-500 transition-colors">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-400 mb-2 uppercase tracking-wide">Nombre y Apellido</label>
+              <input type="text" id="wiz-nombre" placeholder="Nombre completo" readonly
+                class="w-full bg-[#020617] border border-slate-700 rounded-xl px-4 py-3 text-slate-300 focus:outline-none focus:border-orange-500 transition-colors read-only:bg-slate-900 read-only:text-slate-500 read-only:cursor-not-allowed">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-400 mb-2 uppercase tracking-wide">Fecha de Pago</label>
+              <input type="date" id="wiz-fecha" 
+                class="w-full bg-[#020617] border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-orange-500 transition-colors">
+            </div>
+          </div>
+          <div id="wiz-msg-socio" class="mt-2 text-xs font-medium hidden"></div>
+        </div>
+
+        <!-- Actividades -->
+        <div class="mb-8">
+          <h4 class="text-sm font-bold text-white mb-4 flex items-center gap-2">
+            <i class="fas fa-dumbbell text-orange-500"></i> Actividades a Abonar
+          </h4>
+          <div class="space-y-3">
+            
+            <!-- Checkbox 1 -->
+            <label class="relative flex items-center cursor-pointer group">
+              <input type="checkbox" class="peer sr-only wiz-act-checkbox" value="Musculación" data-price="25000">
+              <div class="w-full flex items-center justify-between bg-[#020617] border border-slate-700 rounded-xl p-4 transition-all hover:border-slate-500 peer-checked:border-orange-500 peer-checked:bg-orange-500/10 peer-disabled:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:border-emerald-500 peer-disabled:bg-emerald-500/10">
+                <div class="flex items-center gap-3">
+                  <div class="w-6 h-6 rounded-md border-2 border-slate-600 flex items-center justify-center transition-colors">
+                    <i class="fas fa-check text-orange-500 text-xs opacity-0 transform scale-50 transition-all wiz-check-icon"></i>
+                  </div>
+                  <span class="font-bold text-white">Musculación</span>
+                </div>
+                <span class="font-black text-slate-300">$25.000</span>
+              </div>
+              <div class="absolute right-4 hidden text-[10px] font-black text-emerald-500 uppercase tracking-widest bg-emerald-500/10 px-2 py-1 rounded badge-pagado">YA ABONADO</div>
+            </label>
+
+            <!-- Checkbox 2 -->
+            <label class="relative flex items-center cursor-pointer group">
+              <input type="checkbox" class="peer sr-only wiz-act-checkbox" value="Zumba" data-price="31500">
+              <div class="w-full flex items-center justify-between bg-[#020617] border border-slate-700 rounded-xl p-4 transition-all hover:border-slate-500 peer-checked:border-orange-500 peer-checked:bg-orange-500/10 peer-disabled:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:border-emerald-500 peer-disabled:bg-emerald-500/10">
+                <div class="flex items-center gap-3">
+                  <div class="w-6 h-6 rounded-md border-2 border-slate-600 flex items-center justify-center transition-colors">
+                    <i class="fas fa-check text-orange-500 text-xs opacity-0 transform scale-50 transition-all wiz-check-icon"></i>
+                  </div>
+                  <span class="font-bold text-white">Zumba</span>
+                </div>
+                <span class="font-black text-slate-300">$31.500</span>
+              </div>
+              <div class="absolute right-4 hidden text-[10px] font-black text-emerald-500 uppercase tracking-widest bg-emerald-500/10 px-2 py-1 rounded badge-pagado">YA ABONADO</div>
+            </label>
+
+            <!-- Checkbox 3 -->
+            <label class="relative flex items-center cursor-pointer group">
+              <input type="checkbox" class="peer sr-only wiz-act-checkbox" value="Crossfit" data-price="40000">
+              <div class="w-full flex items-center justify-between bg-[#020617] border border-slate-700 rounded-xl p-4 transition-all hover:border-slate-500 peer-checked:border-orange-500 peer-checked:bg-orange-500/10 peer-disabled:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:border-emerald-500 peer-disabled:bg-emerald-500/10">
+                <div class="flex items-center gap-3">
+                  <div class="w-6 h-6 rounded-md border-2 border-slate-600 flex items-center justify-center transition-colors">
+                    <i class="fas fa-check text-orange-500 text-xs opacity-0 transform scale-50 transition-all wiz-check-icon"></i>
+                  </div>
+                  <span class="font-bold text-white">Crossfit</span>
+                </div>
+                <span class="font-black text-slate-300">$40.000</span>
+              </div>
+              <div class="absolute right-4 hidden text-[10px] font-black text-emerald-500 uppercase tracking-widest bg-emerald-500/10 px-2 py-1 rounded badge-pagado">YA ABONADO</div>
+            </label>
+
+          </div>
+        </div>
+
+        <!-- Opciones de Prorrateo -->
+        <div class="mb-4">
+          <label class="relative flex items-center cursor-pointer group">
+            <input type="checkbox" id="wiz-prorrateo" class="peer sr-only">
+            <div class="w-full flex items-center justify-between bg-orange-500/5 border border-orange-500/20 rounded-xl p-4 transition-all peer-checked:border-orange-500 peer-checked:bg-orange-500/20">
+              <div class="flex items-center gap-3">
+                <div class="w-5 h-5 rounded border-2 border-orange-500/50 flex items-center justify-center transition-colors bg-[#020617]">
+                  <i class="fas fa-check text-orange-500 text-[10px] opacity-0 transform scale-50 transition-all wiz-check-icon-pro"></i>
+                </div>
+                <div>
+                  <span class="font-bold text-orange-400 text-sm block">ES PRIMER MES (CALCULAR PRORRATEO)</span>
+                  <span class="text-[10px] text-slate-400">Aplica 50% de descuento a las actividades nuevas.</span>
+                </div>
+              </div>
+            </div>
+          </label>
+          <style>
+            .peer:checked ~ div .wiz-check-icon,
+            .peer:checked ~ div .wiz-check-icon-pro {
+              opacity: 1;
+              transform: scale(1);
+            }
+          </style>
+        </div>
+
+      </div>
+
+      <!-- Footer / Resumen -->
+      <div class="p-6 border-t border-slate-800 bg-[#020617] flex justify-between items-center rounded-b-3xl">
+        <div>
+          <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Subtotal a Cobrar</p>
+          <div class="flex items-baseline gap-3">
+            <p id="wiz-subtotal" class="text-3xl font-black text-white">$0</p>
+            <p id="wiz-detalle-subtotal" class="text-[10px] text-slate-400 font-medium"></p>
+          </div>
+        </div>
+        <button id="btn-continuar-paso2" class="bg-orange-500 hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed text-white px-8 py-4 rounded-xl font-bold uppercase tracking-wide transition-all shadow-lg shadow-orange-500/20" disabled>
+          Continuar <i class="fas fa-arrow-right ml-2"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Wizard Step 2: Medio de Pago -->
+  <div id="modal-wizard-2" class="fixed inset-0 z-[16000] hidden flex items-center justify-center p-6 bg-slate-950/80 backdrop-blur-sm">
+    <div class="bg-[#0f172a] w-full max-w-lg rounded-3xl border border-slate-700 shadow-2xl flex flex-col">
+      <!-- Header -->
+      <div class="px-8 py-6 border-b border-slate-800 flex justify-between items-center bg-slate-900/50">
+        <div class="flex items-center gap-4">
+          <button onclick="volverPaso1Wizard()" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-white transition-colors">
+            <i class="fas fa-arrow-left text-xs"></i>
+          </button>
+          <div>
+            <p class="text-[10px] font-black text-orange-500 uppercase tracking-widest mb-1">Paso 2 de 3</p>
+            <h3 class="text-xl font-black text-white">Medio de Pago</h3>
+          </div>
+        </div>
+        <button onclick="cerrarModalWizard('modal-wizard-2')" class="text-slate-500 hover:text-white transition-colors">
+          <i class="fas fa-times text-xl"></i>
+        </button>
+      </div>
+
+      <div class="p-8">
+        
+        <div class="flex justify-between items-center bg-[#020617] p-5 rounded-2xl border border-slate-800 mb-6">
+          <div>
+            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Total a Abonar</p>
+            <div class="flex items-baseline gap-2">
+              <p id="wiz2-total" class="text-3xl font-black text-white">$0</p>
+              <p id="wiz2-total-tachado" class="text-sm font-bold text-slate-500 line-through hidden">$0</p>
+            </div>
+          </div>
+          <div class="text-right">
+            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Socio</p>
+            <p id="wiz2-socio" class="text-sm font-bold text-slate-300">--</p>
+          </div>
+        </div>
+
+        <!-- Cupón de Descuento -->
+        <div class="mb-6 bg-slate-900/50 p-4 rounded-2xl border border-slate-800">
+          <label class="block text-[10px] font-bold text-slate-400 mb-2 uppercase tracking-wide">Código de Descuento</label>
+          <div class="flex gap-2 relative">
+            <input type="text" id="wiz-cupon" placeholder="Ej: CROSS20" 
+              class="w-full bg-[#020617] border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-orange-500 transition-colors uppercase">
+            <button onclick="aplicarCuponWizard()" class="bg-slate-800 hover:bg-orange-500 text-white px-6 rounded-xl font-bold uppercase transition-colors text-[10px] tracking-widest whitespace-nowrap border border-slate-700 hover:border-orange-500">
+              Aplicar
+            </button>
+          </div>
+          <p id="wiz-msg-cupon" class="text-[10px] font-bold mt-2 hidden"></p>
+        </div>
+
+        <h4 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4">Seleccionar Método</h4>
+        <div class="grid grid-cols-2 gap-3">
+          <button onclick="procesarPagoWizard('Efectivo')" class="flex flex-col items-center justify-center gap-3 p-5 rounded-2xl bg-[#020617] border border-slate-800 hover:border-green-500 hover:bg-green-500/5 transition-all group">
+            <i class="fas fa-money-bill-wave text-2xl text-slate-500 group-hover:text-green-500 transition-colors"></i>
+            <span class="text-xs font-bold text-white uppercase">Efectivo</span>
+          </button>
+          <button onclick="procesarPagoWizard('QR')" class="flex flex-col items-center justify-center gap-3 p-5 rounded-2xl bg-[#020617] border border-slate-800 hover:border-[#009EE3] hover:bg-[#009EE3]/5 transition-all group">
+            <i class="fas fa-qrcode text-2xl text-slate-500 group-hover:text-[#009EE3] transition-colors"></i>
+            <span class="text-xs font-bold text-white uppercase">QR / App</span>
+          </button>
+          <button onclick="procesarPagoWizard('Transferencia')" class="flex flex-col items-center justify-center gap-3 p-5 rounded-2xl bg-[#020617] border border-slate-800 hover:border-blue-500 hover:bg-blue-500/5 transition-all group">
+            <i class="fas fa-university text-2xl text-slate-500 group-hover:text-blue-500 transition-colors"></i>
+            <span class="text-xs font-bold text-white uppercase">Transferencia</span>
+          </button>
+          <button onclick="procesarPagoWizard('Tarjeta')" class="flex flex-col items-center justify-center gap-3 p-5 rounded-2xl bg-[#020617] border border-slate-800 hover:border-purple-500 hover:bg-purple-500/5 transition-all group">
+            <i class="fas fa-credit-card text-2xl text-slate-500 group-hover:text-purple-500 transition-colors"></i>
+            <span class="text-xs font-bold text-white uppercase">Tarjeta</span>
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+  <!-- SUBPASOS (INTERMEDIOS DE PAGO) -->
+  <!-- Modal QR -->
+  <div id="modal-wizard-qr" class="fixed inset-0 z-[16000] hidden flex items-center justify-center p-6 bg-slate-950/80 backdrop-blur-sm">
+    <div class="bg-[#0f172a] w-full max-w-sm rounded-3xl border border-slate-700 shadow-2xl flex flex-col p-8 items-center relative">
+      <button onclick="volverDesdeSubpaso('modal-wizard-qr')" class="absolute top-6 left-6 text-slate-500 hover:text-white text-xs font-bold transition-colors">
+        <i class="fas fa-arrow-left mr-1"></i> VOLVER
+      </button>
+      <div class="mt-8 mb-6 flex flex-col items-center">
+        <h3 class="text-xl font-black text-[#009EE3] mb-6 tracking-wide">MERCADO PAGO QR</h3>
+        <div class="w-48 h-48 bg-white p-2 rounded-xl flex items-center justify-center shadow-inner">
+          <i class="fas fa-qrcode text-8xl text-slate-900"></i>
+        </div>
+        <p class="text-[10px] text-slate-400 mt-4 text-center">Pídele al socio que escanee el código con su app.</p>
+      </div>
+      <button onclick="finalizarSubpaso('QR', 'modal-wizard-qr')" class="w-full bg-[#009EE3] hover:bg-blue-500 text-white py-4 rounded-xl font-bold uppercase tracking-wide transition-all shadow-lg shadow-[#009EE3]/20">
+        Simular Escaneo Exitoso
+      </button>
+    </div>
+  </div>
+
+  <!-- Modal Transferencia -->
+  <div id="modal-wizard-transf" class="fixed inset-0 z-[16000] hidden flex items-center justify-center p-6 bg-slate-950/80 backdrop-blur-sm">
+    <div class="bg-[#0f172a] w-full max-w-md rounded-3xl border border-slate-700 shadow-2xl flex flex-col p-8 relative">
+      <button onclick="volverDesdeSubpaso('modal-wizard-transf')" class="absolute top-6 left-6 text-slate-500 hover:text-white text-xs font-bold transition-colors">
+        <i class="fas fa-arrow-left mr-1"></i> VOLVER
+      </button>
+      <div class="mt-8 mb-6 flex flex-col">
+        <h3 class="text-xl font-black text-blue-400 mb-6 tracking-wide text-center">TRANSFERENCIA BANCARIA</h3>
+        
+        <div class="bg-[#020617] p-5 rounded-2xl border border-slate-800 mb-6 space-y-2">
+          <p class="text-xs text-slate-400"><strong class="text-slate-300">CBU:</strong> 0000003100001234567890</p>
+          <p class="text-xs text-slate-400"><strong class="text-slate-300">ALIAS:</strong> SQUAT.GYM</p>
+          <p class="text-xs text-slate-400"><strong class="text-slate-300">TITULAR:</strong> SQUATGYM SA</p>
+        </div>
+
+        <div class="space-y-4">
+          <div>
+            <label class="block text-[10px] font-bold text-slate-400 mb-2 uppercase tracking-wide">CBU o Alias de origen</label>
+            <input type="text" id="transf-cbu" placeholder="Ej: perez.banco" class="w-full bg-[#020617] border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500 transition-colors">
+          </div>
+          <div>
+            <label class="block text-[10px] font-bold text-slate-400 mb-2 uppercase tracking-wide">N° de comprobante</label>
+            <input type="text" id="transf-comp" placeholder="Ej: 12345678" class="w-full bg-[#020617] border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500 transition-colors">
+          </div>
+        </div>
+      </div>
+      <button onclick="finalizarSubpaso('Transferencia', 'modal-wizard-transf')" class="w-full bg-blue-500 hover:bg-blue-600 text-white py-4 rounded-xl font-bold uppercase tracking-wide transition-all shadow-lg shadow-blue-500/20">
+        Confirmar Transferencia
+      </button>
+    </div>
+  </div>
+
+  <!-- Modal Tarjeta -->
+  <div id="modal-wizard-tarjeta" class="fixed inset-0 z-[16000] hidden flex items-center justify-center p-6 bg-slate-950/80 backdrop-blur-sm">
+    <div class="bg-[#0f172a] w-full max-w-md rounded-3xl border border-slate-700 shadow-2xl flex flex-col p-8 relative">
+      <button onclick="volverDesdeSubpaso('modal-wizard-tarjeta')" class="absolute top-6 left-6 text-slate-500 hover:text-white text-xs font-bold transition-colors">
+        <i class="fas fa-arrow-left mr-1"></i> VOLVER
+      </button>
+      <div class="mt-8 mb-6 flex flex-col">
+        <h3 class="text-xl font-black text-purple-400 mb-6 tracking-wide text-center">PAGO CON TARJETA</h3>
+        
+        <div class="space-y-4">
+          <div>
+            <label class="block text-[10px] font-bold text-slate-400 mb-2 uppercase tracking-wide">Nombre del titular</label>
+            <input type="text" id="tarjeta-nombre" placeholder="TAL CUAL APARECE EN LA TARJETA" class="w-full bg-[#020617] border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500 transition-colors uppercase">
+          </div>
+          <div>
+            <label class="block text-[10px] font-bold text-slate-400 mb-2 uppercase tracking-wide">Número de Tarjeta</label>
+            <input type="text" id="tarjeta-num" placeholder="XXXX XXXX XXXX XXXX" class="w-full bg-[#020617] border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500 transition-colors tracking-widest">
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-[10px] font-bold text-slate-400 mb-2 uppercase tracking-wide">Vencimiento</label>
+              <input type="text" id="tarjeta-venc" placeholder="MM/AA" class="w-full bg-[#020617] border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500 transition-colors text-center tracking-widest">
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-400 mb-2 uppercase tracking-wide">CVV</label>
+              <input type="password" id="tarjeta-cvv" placeholder="***" maxlength="4" class="w-full bg-[#020617] border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500 transition-colors text-center tracking-widest">
+            </div>
+          </div>
+        </div>
+      </div>
+      <button onclick="finalizarSubpaso('Tarjeta', 'modal-wizard-tarjeta')" class="w-full bg-purple-500 hover:bg-purple-600 text-white py-4 rounded-xl font-bold uppercase tracking-wide transition-all shadow-lg shadow-purple-500/20">
+        Procesar con Posnet
+      </button>
+    </div>
+  </div>
+
+  <!-- Wizard Step 3: Recibo Electrónico -->
+  <div id="modal-wizard-3" class="fixed inset-0 z-[16000] hidden flex items-center justify-center p-6 bg-slate-950/80 backdrop-blur-sm">
+    <div class="bg-slate-100 w-full max-w-sm rounded-lg shadow-2xl overflow-hidden flex flex-col text-slate-900 font-mono text-sm relative">
+      
+      <!-- Decoración ticket (borde dentado superior e inferior) -->
+      <div class="h-2 w-full bg-[radial-gradient(circle,transparent_4px,#f1f5f9_4px)] bg-[length:12px_10px] absolute top-[-5px] left-0"></div>
+      
+      <div class="p-8 pb-4 text-center border-b border-dashed border-slate-300 mt-2">
+        <h2 class="text-2xl font-black tracking-tighter uppercase mb-1">SquatGym SA</h2>
+        <p class="text-xs text-slate-500">Av. Siempre Viva 123</p>
+        <p class="text-xs text-slate-500">CUIT: 30-12345678-9</p>
+        
+        <div class="mt-6 inline-flex items-center gap-2 bg-emerald-100 text-emerald-800 px-4 py-1.5 rounded-full border border-emerald-300">
+          <i class="fas fa-check-circle"></i>
+          <span class="font-bold text-xs uppercase">Pago Acreditado</span>
+        </div>
+      </div>
+
+      <div class="p-8 space-y-4">
+        <div class="flex justify-between">
+          <span class="text-slate-500">Fecha:</span>
+          <span class="font-bold" id="wiz-rec-fecha">--/--/----</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-slate-500">Comprobante:</span>
+          <span class="font-bold" id="wiz-rec-comp">#000000</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-slate-500">Socio:</span>
+          <span class="font-bold text-right" id="wiz-rec-socio">--</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-slate-500">Método:</span>
+          <span class="font-bold" id="wiz-rec-metodo">--</span>
+        </div>
+
+        <div class="pt-4 border-t border-dashed border-slate-300">
+          <p class="text-slate-500 mb-2">Concepto:</p>
+          <div id="wiz-rec-conceptos" class="space-y-1 font-bold text-xs">
+            <!-- Inyectado por JS -->
+          </div>
+        </div>
+
+        <div class="pt-4 border-t border-dashed border-slate-300 flex justify-between items-end">
+          <span class="text-lg font-bold uppercase">Total</span>
+          <span class="text-2xl font-black" id="wiz-rec-total">$0</span>
+        </div>
+      </div>
+
+      <div class="bg-slate-200 p-6 flex gap-3 mt-4">
+        <button onclick="finalizarCobroWizard()" class="flex-1 bg-slate-800 hover:bg-slate-900 text-white py-3 rounded font-bold uppercase transition-colors text-xs">
+          Cerrar
+        </button>
+        <button onclick="window.print()" class="flex-1 bg-white hover:bg-slate-50 text-slate-900 border border-slate-300 py-3 rounded font-bold uppercase transition-colors text-xs flex items-center justify-center gap-2">
+          <i class="fas fa-print"></i> Imprimir
+        </button>
+      </div>
+
+    </div>
+  </div>
+
   <script src="js/data.js"></script>
   <script src="js/auth.js"></script>
   <script src="js/navigation.js"></script>
@@ -813,6 +1173,7 @@
   <script src="js/socios.js"></script>
   <script src="js/inventario.js"></script>
   <script src="js/informes.js"></script>
+  <script src="js/wizard.js"></script>
   <script src="js/app.js"></script>
 </body>
 
