@@ -46,6 +46,27 @@ let itemsCAlu = []; let tAluK = 0; let itemsCStaff = []; let tStaffK = 0;
             { nombre: "Barra Proteica",    proveedor: "Mervick",         costo: 750,  precio: 1200, estado: "Pagado",    cat: "Snacks",      vencimiento: "2026-07-30" },
         ];
         
+        const reclamosDB = [
+            { 
+                id: "REC-001", 
+                socio: "Rodrigo Sosa", 
+                dni: "55443322", 
+                fecha: "13/05/2026",
+                mensaje: "Hola! Hice la transferencia ayer por la tarde pero cuando intento entrar al gimnasio me sigue saliendo que soy deudor. Les dejo el comprobante.", 
+                comprobanteURL: "https://i.pinimg.com/736x/87/00/ce/8700ce2697b055d21a22bd0aeb953153.jpg", // Imagen de ejemplo
+                estado: "Pendiente" 
+            },
+            { 
+                id: "REC-002", 
+                socio: "Florencia Medina", 
+                dni: "66778899", 
+                fecha: "14/05/2026",
+                mensaje: "Buenas, pagué la cuota en el kiosco pero en mi perfil figura impago. Adjunto ticket.", 
+                comprobanteURL: "https://i.pinimg.com/736x/21/df/b8/21dfb85b2e666a33c2a6132da954cd79.jpg", 
+                estado: "Pendiente" 
+            }
+        ];
+
         const transacciones = [
             // --- HISTORIAL 2024 ---
             // Valentino (Alta: 2024-03-12)
