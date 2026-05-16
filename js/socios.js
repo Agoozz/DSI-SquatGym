@@ -76,8 +76,11 @@ function filtrarSocios() {
     // Ocultar herramientas de cobro para el Encargado
     const proSection = document.getElementById('section-prorrateo');
     const notSection = document.getElementById('section-notificar');
+    const btnNuevoCobro = document.getElementById('btn-nuevo-cobro');
+
     if (proSection) proSection.style.display = isEncargado ? 'none' : 'block';
     if (notSection) notSection.style.display = isEncargado ? 'none' : 'flex';
+    if (btnNuevoCobro) btnNuevoCobro.style.display = isEncargado ? 'none' : 'flex';
 
     // 2. Filtrar por sede si el usuario es Staff (Secretaria o Encargado)
     let lista = (rRol === 'admin')

@@ -220,6 +220,61 @@ const alertasVencimiento = [
     { nombre: "Lucía Fernández", dni: "11223344", dias: -17, deuda: 18500 },
 ];
 
+function actualizarMetricasDashboard() {
+    const elSocios = document.getElementById('count-socios-inicio');
+    const elDeudores = document.getElementById('count-deudores-inicio');
+    const elCaja = document.getElementById('count-caja-inicio');
+    const elProveedores = document.getElementById('kiosco-count-inicio');
+    
+    if (!elSocios || !elDeudores || !elCaja) return;
+
+    let filtradosSocios = sociosDB;
+    let filtradosTrans = transacciones;
+    let filtradosInventario = inventarioDB;
+
+    // Si no es admin, filtramos por la sede actual asignada al usuario
+    if (rRol !== 'admin' && sedeActual) {
+        filtradosSocios = sociosDB.filter(s => s.sede === sedeActual);
+        filtradosTrans = transacciones.filter(t => t.sede === sedeActual);
+    }
+
+    // --- SIMULACIÓN DE NÚMEROS REALISTAS ---
+    const baseSocios = {
+        'Sede Centro': 240,
+        'Sede Norte': 185,
+        'Sede Sur': 130
+    };
+
+    let fakeSocios = 0;
+    let fakeCaja = 0;
+    let fakeProveedores = 0;
+
+    if (rRol === 'admin') {
+        fakeSocios = 240 + 185 + 130;
+        fakeCaja = 1250000; // Caja de cierre global
+        fakeProveedores = 8;
+    } else {
+        fakeSocios = baseSocios[sedeActual] || 150;
+        fakeCaja = fakeSocios * 2200; // Simular cierre proporcional a la sede
+        fakeProveedores = Math.floor(fakeSocios / 60);
+    }
+    
+    let fakeDeudores = Math.floor(fakeSocios * 0.08); // 8% de morosidad base
+
+    // Sumar los valores reales de la DB para que las acciones en la app sigan impactando
+    const totalSocios = fakeSocios + filtradosSocios.length;
+    const totalDeudores = fakeDeudores + filtradosSocios.filter(s => s.estado === 'En mora' || s.estado === 'Pendiente' || s.deuda > 0).length;
+    
+    // Las transacciones reales son históricas en la db, calculamos un offset realista
+    const totalCaja = fakeCaja + filtradosTrans.reduce((acc, curr) => acc + (curr.monto * 0.05), 0); 
+    const totalProveedores = fakeProveedores + filtradosInventario.filter(i => i.estado === 'Pendiente').length;
+
+    elSocios.innerText = totalSocios;
+    elDeudores.innerText = totalDeudores;
+    elCaja.innerText = `$${totalCaja.toLocaleString()}`;
+    if (elProveedores) elProveedores.innerText = totalProveedores;
+}
+
 function renderizarAlertasStaff() {
     const panel = document.getElementById('panel-alertas-staff');
     if (!panel) return;

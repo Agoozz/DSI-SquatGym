@@ -7,7 +7,7 @@ function configMenu() {
                 <i class="fas fa-home"></i> Inicio
             </div>
             <div onclick="navV('adm-planes')" class="nav-item" id="li-adm-planes">
-                <i class="fas fa-tags"></i> Config. de Planes
+                <i class="fas fa-tags"></i> Planes-Promociones
             </div>
 
             <div onclick="navV('adm-monitor')" class="nav-item" id="li-adm-monitor">

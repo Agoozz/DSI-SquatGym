@@ -27,15 +27,15 @@ let itemsCAlu = []; let tAluK = 0; let itemsCStaff = []; let tStaffK = 0;
         };
 
         const sociosDB = [
-            { nombre: "Valentino Perez",   dni: "8", clase: "Musculación",  estado: "Deudor",  deuda: 12000, sede: "Sede Centro", foto: "https://randomuser.me/api/portraits/men/32.jpg", fechaAlta: "2024-03-12" },
-            { nombre: "Lucía Fernández",   dni: "9", clase: "Zumba",        estado: "Deudor",  deuda: 12000, sede: "Sede Sur",    foto: "https://randomuser.me/api/portraits/women/44.jpg", fechaAlta: "2024-05-15" },
-            { nombre: "Juan Romero",       dni: "33221100", clase: "Crossfit",      estado: "Deudor",  deuda: 12500, sede: "Sede Norte", fechaAlta: "2025-01-10" },
-            { nombre: "Camila Torres",     dni: "44556677", clase: "Musculación",   estado: "Al día",  deuda: 0,     sede: "Sede Norte", fechaAlta: "2024-11-20" },
-            { nombre: "Melisa Lopez",      dni: "77665544", clase: "Zumba",         estado: "Al día",  deuda: 0,     sede: "Sede Centro", fechaAlta: "2024-12-05" },
-            { nombre: "Rodrigo Sosa",      dni: "55443322", clase: "Zumba",         estado: "Deudor",  deuda: 23000, sede: "Sede Sur", fechaAlta: "2024-08-05" },
-            { nombre: "Florencia Medina",  dni: "66778899", clase: "Crossfit",      estado: "Deudor",  deuda: 27000, sede: "Sede Sur", fechaAlta: "2024-07-15" },
-            { nombre: "Matías Alvarez",    dni: "77889900", clase: "Musculación",   estado: "Deudor",  deuda: 10000, sede: "Sede Norte", fechaAlta: "2025-02-01" },
-            { nombre: "Marta Gómez",       dni: "11223344", clase: "Zumba",         estado: "Deudor",  deuda: 18500, sede: "Sede Sur", fechaAlta: "2024-09-12" },
+            { nombre: "Valentino Perez",   dni: "8", clase: "Musculación",  estado: "Pendiente",  deuda: 12000, sede: "Sede Centro", foto: "https://randomuser.me/api/portraits/men/32.jpg", fechaAlta: "2024-03-12" },
+            { nombre: "Lucía Fernández",   dni: "9", clase: "Zumba",        estado: "En mora",  deuda: 12000, sede: "Sede Sur",    foto: "https://randomuser.me/api/portraits/women/44.jpg", fechaAlta: "2024-05-15" },
+            { nombre: "Juan Romero",       dni: "33221100", clase: "Crossfit",      estado: "Pendiente",  deuda: 12500, sede: "Sede Norte", fechaAlta: "2025-01-10" },
+            { nombre: "Camila Torres",     dni: "44556677", clase: "Musculación",   estado: "Acreditado",  deuda: 0,     sede: "Sede Norte", fechaAlta: "2024-11-20" },
+            { nombre: "Melisa Lopez",      dni: "77665544", clase: "Zumba",         estado: "Acreditado",  deuda: 0,     sede: "Sede Centro", fechaAlta: "2024-12-05" },
+            { nombre: "Rodrigo Sosa",      dni: "55443322", clase: "Zumba",         estado: "Pendiente",  deuda: 23000, sede: "Sede Sur", fechaAlta: "2024-08-05" },
+            { nombre: "Florencia Medina",  dni: "66778899", clase: "Crossfit",      estado: "En mora",  deuda: 27000, sede: "Sede Sur", fechaAlta: "2024-07-15" },
+            { nombre: "Matías Alvarez",    dni: "77889900", clase: "Musculación",   estado: "Pendiente",  deuda: 10000, sede: "Sede Norte", fechaAlta: "2025-02-01" },
+            { nombre: "Marta Gómez",       dni: "11223344", clase: "Zumba",         estado: "Pendiente",  deuda: 18500, sede: "Sede Sur", fechaAlta: "2024-09-12" },
         ];
 
         const inventarioDB = [

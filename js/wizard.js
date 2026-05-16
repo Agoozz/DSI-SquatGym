@@ -1,24 +1,30 @@
 let mockAlumnos = [
-  { dni: '87654321', nombre: 'Melisa Lopez', clase: 'Musculación', deuda: 0, estado: 'AL DÍA' },
-  { dni: '12345678', nombre: 'Valentino Perez', clase: 'Zumba', deuda: 31500, estado: 'DEUDOR' },
-  { dni: '88888888', nombre: 'Lionel Messi', clase: 'Musculación + Zumba', deuda: 0, estado: 'AL DÍA' },
-  { dni: '35123456', nombre: 'Pozzer', clase: 'Crossfit', deuda: 40000, estado: 'DEUDOR' },
-  { dni: '23000001', nombre: 'Emiliano Martinez', clase: 'Crossfit', deuda: 0, estado: 'AL DÍA' },
-  { dni: '23000002', nombre: 'Nicolas Otamendi', clase: 'Musculación', deuda: 25000, estado: 'DEUDOR' },
-  { dni: '23000003', nombre: 'Cristian Romero', clase: 'Crossfit', deuda: 40000, estado: 'DEUDOR' },
-  { dni: '23000004', nombre: 'Rodrigo De Paul', clase: 'Zumba', deuda: 0, estado: 'AL DÍA' },
-  { dni: '23000005', nombre: 'Leandro Paredes', clase: 'Musculación', deuda: 0, estado: 'AL DÍA' },
-  { dni: '23000006', nombre: 'Enzo Fernandez', clase: 'Zumba + Crossfit', deuda: 71500, estado: 'DEUDOR' },
-  { dni: '23000007', nombre: 'Alexis Mac Allister', clase: 'Musculación', deuda: 25000, estado: 'DEUDOR' },
-  { dni: '23000008', nombre: 'Angel Di Maria', clase: 'Crossfit', deuda: 0, estado: 'AL DÍA' },
-  { dni: '23000009', nombre: 'Julian Alvarez', clase: 'Zumba', deuda: 31500, estado: 'DEUDOR' },
-  { dni: '23000010', nombre: 'Lautaro Martinez', clase: 'Musculación', deuda: 0, estado: 'AL DÍA' }
+  { dni: '87654321', nombre: 'Melisa Lopez', clase: 'Musculación', deuda: 0, estado: 'ACREDITADO' },
+  { dni: '12345678', nombre: 'Valentino Perez', clase: 'Zumba', deuda: 31500, estado: 'PENDIENTE' },
+  { dni: '88888888', nombre: 'Lionel Messi', clase: 'Musculación + Zumba', deuda: 0, estado: 'ACREDITADO' },
+  { dni: '35123456', nombre: 'Pozzer', clase: 'Crossfit', deuda: 40000, estado: 'EN MORA' },
+  { dni: '23000001', nombre: 'Emiliano Martinez', clase: 'Crossfit', deuda: 0, estado: 'ACREDITADO' },
+  { dni: '23000002', nombre: 'Nicolas Otamendi', clase: 'Musculación', deuda: 25000, estado: 'PENDIENTE' },
+  { dni: '23000003', nombre: 'Cristian Romero', clase: 'Crossfit', deuda: 40000, estado: 'EN MORA' },
+  { dni: '23000004', nombre: 'Rodrigo De Paul', clase: 'Zumba', deuda: 0, estado: 'ACREDITADO' },
+  { dni: '23000005', nombre: 'Leandro Paredes', clase: 'Musculación', deuda: 0, estado: 'ACREDITADO' },
+  { dni: '23000006', nombre: 'Enzo Fernandez', clase: 'Zumba + Crossfit', deuda: 71500, estado: 'EN MORA' },
+  { dni: '23000007', nombre: 'Alexis Mac Allister', clase: 'Musculación', deuda: 25000, estado: 'PENDIENTE' },
+  { dni: '23000008', nombre: 'Angel Di Maria', clase: 'Crossfit', deuda: 0, estado: 'ACREDITADO' },
+  { dni: '23000009', nombre: 'Julian Alvarez', clase: 'Zumba', deuda: 31500, estado: 'PENDIENTE' },
+  { dni: '23000010', nombre: 'Lautaro Martinez', clase: 'Musculación', deuda: 0, estado: 'ACREDITADO' }
 ];
 
 function filtrarSocios() {
     const busq = document.getElementById('search-socio')?.value.toLowerCase() || '';
     const estado = document.getElementById('filter-estado')?.value || 'todos';
     const clase = document.getElementById('filter-clase')?.value || 'todos';
+
+    const isEncargado = (typeof rRol !== 'undefined' && rRol === 'encargado');
+    const btnNuevoCobro = document.getElementById('btn-nuevo-cobro');
+    if (btnNuevoCobro) {
+        btnNuevoCobro.style.display = isEncargado ? 'none' : 'flex';
+    }
 
     let lista = mockAlumnos.filter(s => {
         const matchBusq = s.nombre.toLowerCase().includes(busq) || s.dni.includes(busq);
@@ -31,7 +37,19 @@ function filtrarSocios() {
     if (!tbody) return;
 
     tbody.innerHTML = lista.map(s => {
-        const isDeudor = s.estado === 'DEUDOR';
+        let bgEstado = 'rgba(34,197,94,0.12)';
+        let colorEstado = '#4ade80';
+        let borderEstado = 'rgba(34,197,94,0.3)';
+
+        if (s.estado === 'PENDIENTE') {
+            bgEstado = 'rgba(249,115,22,0.12)'; // Naranja
+            colorEstado = '#f97316';
+            borderEstado = 'rgba(249,115,22,0.3)';
+        } else if (s.estado === 'EN MORA') {
+            bgEstado = 'rgba(239,68,68,0.12)'; // Rojo
+            colorEstado = '#f87171';
+            borderEstado = 'rgba(239,68,68,0.3)';
+        }
         
         return `
             <tr class="border-b border-slate-800/50 hover:bg-slate-800/30 transition">
@@ -42,14 +60,14 @@ function filtrarSocios() {
                 <td class="p-4 text-slate-400 text-xs">${s.dni}</td>
                 <td class="p-4 text-slate-400 text-xs">${s.clase}</td>
                 <td class="p-4 text-slate-400 text-xs font-mono">--/--/----</td>
-                <td class="p-4 font-black ${isDeudor ? 'text-red-400' : 'text-slate-500'}">
-                    ${isDeudor ? '$' + s.deuda.toLocaleString() : '—'}
+                <td class="p-4 font-black ${(s.estado === 'PENDIENTE' || s.estado === 'EN MORA') ? 'text-orange-400' : 'text-slate-500'}">
+                    ${(s.estado === 'PENDIENTE' || s.estado === 'EN MORA') ? '$' + s.deuda.toLocaleString() : '—'}
                 </td>
                 <td class="p-4">
                     <span style="padding:2px 10px; border-radius:9999px; font-size:9px; font-weight:900; text-transform:uppercase;
-                        background:${!isDeudor ? 'rgba(34,197,94,0.12)' : 'rgba(239,68,68,0.12)'};
-                        color:${!isDeudor ? '#4ade80' : '#f87171'};
-                        border:1px solid ${!isDeudor ? 'rgba(34,197,94,0.3)' : 'rgba(239,68,68,0.3)'};">
+                        background:${bgEstado};
+                        color:${colorEstado};
+                        border:1px solid ${borderEstado};">
                         ${s.estado}
                     </span>
                 </td>
@@ -112,7 +130,7 @@ function cobrarSocio(dni) {
 function cobrarPago() {
     if (!window.socioActual) return;
     
-    if (window.socioActual.estado === 'AL DÍA') {
+    if (window.socioActual.estado === 'ACREDITADO') {
         alert("El usuario ya se encuentra al día con sus cuotas.");
         return;
     }
@@ -472,8 +490,8 @@ function procesarPagoExitoso(tx) {
         // Solo si se está pagando alguna de las clases que ya tenía (por las que es deudor)
         const pagaDeuda = clasesViejas.some(c => clasesNuevas.includes(c));
         
-        if (pagaDeuda || mockAlumnos[socioIdx].estado === 'AL DÍA') {
-            mockAlumnos[socioIdx].estado = 'AL DÍA';
+        if (pagaDeuda || mockAlumnos[socioIdx].estado === 'ACREDITADO') {
+            mockAlumnos[socioIdx].estado = 'ACREDITADO';
             mockAlumnos[socioIdx].deuda = 0;
         }
         
@@ -487,7 +505,7 @@ function procesarPagoExitoso(tx) {
             nombre: tx.nombre,
             clase: tx.actividades,
             deuda: 0,
-            estado: 'AL DÍA'
+            estado: 'ACREDITADO'
         });
     }
     

@@ -1,17 +1,17 @@
 // Base de datos simulada de usuarios
 const usuariosDB = [
     // Admin
-    { dni: "1", password: "admin", rol: "admin", nombre: "Admin General", sede: null },
+    { dni: "1", password: "admin", rol: "admin", nombre: "Carlos Giménez", sede: null },
     // Secretarias
-    { dni: "2", password: "secretaria", rol: "secretaria", nombre: "S. Centro", sede: "Sede Centro" },
-    { dni: "3", password: "secretaria", rol: "secretaria", nombre: "S. Norte", sede: "Sede Norte" },
-    { dni: "4", password: "secretaria", rol: "secretaria", nombre: "S. Sur", sede: "Sede Sur" },
+    { dni: "2", password: "secretaria", rol: "secretaria", nombre: "María González", sede: "Sede Centro" },
+    { dni: "3", password: "secretaria", rol: "secretaria", nombre: "Laura Martínez", sede: "Sede Norte" },
+    { dni: "4", password: "secretaria", rol: "secretaria", nombre: "Ana López", sede: "Sede Sur" },
     // Encargados
-    { dni: "5", password: "encargado", rol: "encargado", nombre: "E. Centro", sede: "Sede Centro" },
-    { dni: "6", password: "encargado", rol: "encargado", nombre: "E. Norte", sede: "Sede Norte" },
-    { dni: "7", password: "encargado", rol: "encargado", nombre: "E. Sur", sede: "Sede Sur" },
+    { dni: "5", password: "encargado", rol: "encargado", nombre: "Martín Rodríguez", sede: "Sede Centro" },
+    { dni: "6", password: "encargado", rol: "encargado", nombre: "Diego Sánchez", sede: "Sede Norte" },
+    { dni: "7", password: "encargado", rol: "encargado", nombre: "Pablo Fernández", sede: "Sede Sur" },
     // Alumnos (Pruebas)
-    { dni: "8", password: "alumno", rol: "alumno", nombre: "Valentino P.", sede: "Sede Centro" },
+    { dni: "8", password: "alumno", rol: "alumno", nombre: "Valentino Perez", sede: "Sede Centro" },
     { dni: "9", password: "alumno", rol: "alumno", nombre: "Lucía Fernández", sede: "Sede Norte" },
 ];
 
@@ -115,8 +115,9 @@ function ingresarAlSistema() {
     const hFrame = document.getElementById('hero-inicio');
     const sDashboard = document.getElementById('staff-home-dashboard');
     const cGallery = document.getElementById('client-home-gallery');
-    const bStaffHero = document.getElementById('btn-hero-action');
     const bClientProfile = document.getElementById('btn-goto-profile');
+    const badgeSedeActiva = document.getElementById('badge-sede-activa');
+    const txtSedeActiva = document.getElementById('txt-sede-activa');
     const btnEf = document.getElementById("btn-efectivo");
 
     if (btnEf) {
@@ -130,9 +131,10 @@ function ingresarAlSistema() {
         hFrame.style.backgroundImage = "linear-gradient(to right, rgba(2,6,23,0.98), rgba(2,6,23,0.5)), url('https://images.unsplash.com/photo-1593079831268-3381b0db4a77?auto=format&fit=crop&q=80&w=1200')";
         sDashboard.classList.remove('hidden');
         cGallery.classList.add('hidden');
-        bStaffHero.classList.remove('hidden');
         bClientProfile.classList.add('hidden');
-        document.getElementById('header-username').innerText = `${rNombre}`;
+        if (badgeSedeActiva) badgeSedeActiva.classList.remove('hidden');
+        if (txtSedeActiva) txtSedeActiva.innerText = 'Global';
+        document.getElementById('header-username').innerText = `${rNombre} - Administrador General`;
         const btnConfig = document.getElementById('btn-config-planes-container');
         if (btnConfig) btnConfig.classList.remove('hidden');
     } else if (rRol === 'secretaria') {
@@ -142,9 +144,10 @@ function ingresarAlSistema() {
         hFrame.style.backgroundImage = "linear-gradient(to right, rgba(2,6,23,0.98), rgba(2,6,23,0.5)), url('https://images.unsplash.com/photo-1593079831268-3381b0db4a77?auto=format&fit=crop&q=80&w=1200')";
         sDashboard.classList.remove('hidden');
         cGallery.classList.add('hidden');
-        bStaffHero.classList.remove('hidden');
         bClientProfile.classList.add('hidden');
-        document.getElementById('header-username').innerText = `${rNombre} — Secretaria`;
+        if (badgeSedeActiva) badgeSedeActiva.classList.remove('hidden');
+        if (txtSedeActiva) txtSedeActiva.innerText = sedeActual || 'Sede';
+        document.getElementById('header-username').innerText = `${rNombre} - Secretaria - ${sedeActual}`;
         const btnConfig = document.getElementById('btn-config-planes-container');
         if (btnConfig) btnConfig.classList.add('hidden');
     } else if (rRol === 'encargado') {
@@ -154,9 +157,10 @@ function ingresarAlSistema() {
         hFrame.style.backgroundImage = "linear-gradient(to right, rgba(2,6,23,0.98), rgba(2,6,23,0.5)), url('https://images.unsplash.com/photo-1593079831268-3381b0db4a77?auto=format&fit=crop&q=80&w=1200')";
         sDashboard.classList.remove('hidden');
         cGallery.classList.add('hidden');
-        bStaffHero.classList.remove('hidden');
         bClientProfile.classList.add('hidden');
-        document.getElementById('header-username').innerText = `${rNombre} — Encargado`;
+        if (badgeSedeActiva) badgeSedeActiva.classList.remove('hidden');
+        if (txtSedeActiva) txtSedeActiva.innerText = sedeActual || 'Sede';
+        document.getElementById('header-username').innerText = `${rNombre} - Encargado - ${sedeActual}`;
         const btnConfigEnc = document.getElementById('btn-config-planes-container');
         if (btnConfigEnc) btnConfigEnc.classList.add('hidden');
     } else {
@@ -166,9 +170,33 @@ function ingresarAlSistema() {
         hFrame.style.backgroundImage = "linear-gradient(to right, rgba(2,6,23,0.98), rgba(2,6,23,0.4)), url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&q=80&w=1200')";
         sDashboard.classList.add('hidden');
         cGallery.classList.remove('hidden');
-        bStaffHero.classList.add('hidden');
         bClientProfile.classList.remove('hidden');
-        document.getElementById('header-username').innerText = `${rNombre}`;
+        if (badgeSedeActiva) badgeSedeActiva.classList.add('hidden');
+        document.getElementById('header-username').innerText = `${rNombre} - Alumno`;
+    }
+
+    // Configurar foto de perfil en el header
+    const pImg = document.getElementById('header-profile-img');
+    if (pImg) {
+        pImg.classList.remove('hidden');
+        if (rRol === 'alumno') {
+            const socioInfo = (typeof sociosDB !== 'undefined') ? sociosDB.find(s => s.dni === usuarioActual.dni) : null;
+            if (socioInfo && socioInfo.foto) {
+                pImg.src = socioInfo.foto;
+            } else {
+                pImg.src = `https://ui-avatars.com/api/?name=${rNombre}&background=f97316&color=fff&bold=true`;
+            }
+        } else if (rRol === 'admin') {
+            pImg.src = "https://randomuser.me/api/portraits/men/45.jpg";
+        } else if (rRol === 'secretaria') {
+            // usamos un offset para variar las fotos de mujer
+            const seed = parseInt(usuarioActual.dni) + 60; 
+            pImg.src = `https://randomuser.me/api/portraits/women/${seed}.jpg`;
+        } else if (rRol === 'encargado') {
+            // usamos un offset para variar las fotos de hombre
+            const seed = parseInt(usuarioActual.dni) + 60;
+            pImg.src = `https://randomuser.me/api/portraits/men/${seed}.jpg`;
+        }
     }
 
     configMenu();
@@ -187,7 +215,12 @@ function ingresarAlSistema() {
     }
 
     if (rRol === 'admin' || rRol === 'secretaria' || rRol === 'encargado') {
-        setTimeout(renderizarAlertasStaff, 100);
+        setTimeout(() => {
+            renderizarAlertasStaff();
+            if (typeof actualizarMetricasDashboard === 'function') {
+                actualizarMetricasDashboard();
+            }
+        }, 100);
     }
     if (rRol === 'alumno') {
         setTimeout(() => {

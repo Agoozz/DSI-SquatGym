@@ -40,7 +40,7 @@
     </div>
 
       <!-- BOTON REGISTRAR NUEVO COBRO -->
-      <button onclick="abrirWizardPaso1()" class="w-full bg-[#F27127] hover:bg-[#D9601D] text-white py-5 rounded-2xl font-black text-xl uppercase tracking-widest transition-all shadow-lg shadow-orange-500/20 mb-4 flex justify-center items-center gap-3">
+      <button id="btn-nuevo-cobro" onclick="abrirWizardPaso1()" class="w-full bg-[#F27127] hover:bg-[#D9601D] text-white py-5 rounded-2xl font-black text-xl uppercase tracking-widest transition-all shadow-lg shadow-orange-500/20 mb-4 flex justify-center items-center gap-3">
           <i class="fas fa-plus-circle text-2xl"></i>
           Registrar Nuevo Cobro
       </button>
@@ -52,8 +52,9 @@
 
               <select id="filter-estado" onchange="filtrarSocios()" class="bg-slate-900 border border-slate-700 rounded-full px-4 py-3 text-xs text-white outline-none focus:border-orange-500 transition">
                   <option value="todos">Todos los Estados</option>
-                  <option value="Deudor">Con deuda</option>
-                  <option value="Al día">Al día</option>
+                  <option value="Acreditado">Acreditados</option>
+                  <option value="Pendiente">Pendientes</option>
+                  <option value="En mora">En Mora</option>
               </select>
 
               <select id="filter-clase" onchange="filtrarSocios()" class="bg-slate-900 border border-slate-700 rounded-full px-4 py-3 text-xs text-white outline-none focus:border-orange-500 transition">

@@ -1,118 +1,208 @@
-<div id="v-inicio" class="view-section active">
+<div id="v-inicio" class="view-section active space-y-8">
 
-    <div class="mb-6 flex justify-between items-center italic uppercase">
-        <h3 id="txt-saludo" class="text-2xl font-black text-white tracking-tighter italic">¡Hola!</h3>
-        <div class="bg-green-500/10 px-5 py-2 rounded-full border border-green-500/50 flex items-center gap-3">
-            <div class="w-2 h-2 bg-green-500 rounded-full animate-ping"></div>
-            <span class="text-[10px] font-black text-green-500">Sede Activa</span>
-        </div>
-    </div>
-
-    <div class="glass-card mb-8 p-6 border-l-8 border-blue-600 relative italic uppercase overflow-hidden"
-        style="background: linear-gradient(rgba(2,6,23,0.9), rgba(2,6,23,0.9)), url('https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&q=80&w=800'); background-size: cover; background-position: center;">
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-            <h4 class="font-black text-white text-lg italic tracking-tighter">Horarios de Atención</h4>
-            <div class="flex flex-col gap-1 text-[11px] font-black italic">
-                <p class="text-white"><span class="text-blue-500">LUN A VIE:</span> 08:00 a 13:00 y 15:00 a 23:00</p>
-                <p class="text-white"><span class="text-blue-500">SÁBADOS:</span> 08:00 a 13:00</p>
-                <p class="text-red-500">DOMINGOS Y FERIADOS: CERRADO</p>
+    <!-- 1. Fusión de Cabecera y Hero -->
+    <div id="hero-inicio" class="relative rounded-3xl overflow-hidden shadow-2xl border border-slate-800/60 p-8 md:p-12 flex flex-col justify-end"
+        style="height: 320px; background-size: cover; background-position: center;">
+        <!-- Overlay oscuro para legibilidad -->
+        <div class="absolute inset-0 bg-gradient-to-t from-[#020617] via-[#020617]/80 to-transparent"></div>
+        
+        <div class="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+            <div class="max-w-2xl">
+                <!-- Saludo movido aquí -->
+                <h3 id="txt-saludo" class="text-xl md:text-2xl font-black text-orange-500 tracking-widest uppercase italic mb-2">¡Hola!</h3>
+                <span id="hero-tag" class="text-slate-400 font-bold text-[10px] uppercase tracking-[0.3em] mb-1 block"></span>
+                <h2 id="hero-title" class="text-3xl md:text-5xl font-black text-white leading-none italic uppercase tracking-tighter"></h2>
             </div>
-        </div>
-    </div>
-
-    <div id="hero-inicio" class="hero-home shadow-2xl border border-slate-800 mb-12 italic uppercase"
-        style="height: 200px; background-size: cover; border-radius: 2rem; display: flex; align-items: center; padding: 0 4rem; position: relative; overflow: hidden;">
-        <div class="relative z-10 max-w-lg">
-            <span id="hero-tag"
-                class="text-orange-500 font-black text-[9px] uppercase tracking-[0.5em] mb-2 block italic"></span>
-            <h2 id="hero-title" class="text-3xl font-black text-white leading-none italic mb-4"></h2>
-            <button onclick="navV('alu-pago')" id="btn-goto-profile"
-                class="hidden btn-ui btn-naranja px-10 py-3.5 text-[10px] font-black italic uppercase shadow-xl">Ir a Mi
-                Perfil</button>
-            <button onclick="quickAction()" id="btn-hero-action"
-                class="hidden btn-ui btn-naranja px-10 py-3.5 text-[10px] font-black italic uppercase shadow-xl">Monitor
-                Staff</button>
-        </div>
-    </div>
-
-    <div id="staff-home-dashboard" class="hidden space-y-8 italic uppercase">
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 font-black">
-            <div class="glass-card p-6 border-l-4 border-green-500 italic">
-                <p class="text-[8px] text-slate-500">SOCIOS ACTIVOS</p>
-                <p class="text-3xl text-white mt-1">248</p>
-            </div>
-            <div class="glass-card p-6 border-l-4 border-red-500 italic">
-                <p class="text-[8px] text-slate-500">DEUDORES</p>
-                <p class="text-3xl text-white mt-1">14</p>
-            </div>
-            <div class="glass-card p-6 border-l-4 border-orange-500 italic">
-                <p class="text-[8px] text-slate-500">DEUDA A PROVEEDORES</p>
-                <p id="kiosco-count-inicio" class="text-3xl text-white mt-1">2</p>
-            </div>
-            <div class="glass-card p-6 border-l-4 border-blue-500 italic">
-                <p class="text-[8px] text-slate-500">CAJA CIERRE</p>
-                <p class="text-3xl text-white mt-1">$393.500</p>
-            </div>
-        </div>
-
-
-    </div>
-
-
-    <div id="client-home-gallery" class="hidden space-y-12 italic uppercase">
-        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
-            <div class="g-card">
-                <div class="g-img"
-                    style="background-image: url('https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5');">
+            
+            <div class="flex flex-col items-end gap-4">
+                <div id="badge-sede-activa" class="glass-card px-4 py-2 rounded-full border border-green-500/30 flex items-center gap-3 backdrop-blur-md bg-[#020617]/50 shadow-lg shadow-green-500/10 hidden">
+                    <div class="w-2 h-2 bg-green-500 rounded-full animate-ping"></div>
+                    <span id="txt-sede-activa" class="text-[10px] font-black text-green-400 uppercase tracking-widest">Sede Activa</span>
                 </div>
-                <div class="g-overlay"></div>
-                <div class="g-text">Musculación</div>
-            </div>
-            <div class="g-card">
-                <div class="g-img"
-                    style="background-image: url('https://images.unsplash.com/photo-1599058917212-d750089bc07e');">
-                </div>
-                <div class="g-overlay"></div>
-                <div class="g-text">Funcional</div>
-            </div>
-            <div class="g-card">
-                <div class="g-img"
-                    style="background-image: url('https://images.unsplash.com/photo-1527933053326-89d1746b76b9');">
-                </div>
-                <div class="g-overlay"></div>
-                <div class="g-text">Zumba</div>
-            </div>
-            <div class="g-card">
-                <div class="g-img"
-                    style="background-image: url('https://images.unsplash.com/photo-1549719386-74dfcbf7dbed');"></div>
-                <div class="g-overlay"></div>
-                <div class="g-text">Boxeo</div>
-            </div>
-            <div class="g-card">
-                <div class="g-img"
-                    style="background-image: url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48');">
-                </div>
-                <div class="g-overlay"></div>
-                <div class="g-text">Spinning</div>
+                
+                <button onclick="navV('alu-pago')" id="btn-goto-profile"
+                    class="hidden bg-orange-500 hover:bg-orange-600 text-white px-8 py-3 rounded-xl text-[11px] font-black italic uppercase shadow-xl shadow-orange-500/20 transition-all transform hover:scale-105 border border-orange-400/50">
+                    Ir a Mi Perfil
+                </button>
             </div>
         </div>
     </div>
-    <div class="mt-10">
-        <div class="glass-card overflow-hidden border border-slate-800">
-            <div style="
-                  height: 200px;
-                  background-image: url('https://images.unsplash.com/photo-1571902943202-507ec2618e8f?auto=format&fit=crop&w=1200&q=80');
-                  background-size: cover;
-                  background-position: center;
-              ">
+
+    <!-- 2. Vista Staff (Dashboard) -->
+    <div id="staff-home-dashboard" class="hidden space-y-8 uppercase italic">
+        <!-- Métricas Rápidas -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <!-- Socios Activos -->
+            <div class="glass-card p-6 border-l-4 border-green-500 relative overflow-hidden group hover:border-l-8 transition-all">
+                <div class="absolute -right-4 -top-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                    <i class="fas fa-users text-8xl text-green-500"></i>
+                </div>
+                <div class="relative z-10">
+                    <div class="flex items-center gap-2 mb-2">
+                        <i class="fas fa-users text-green-500 text-sm"></i>
+                        <p class="text-[9px] font-bold text-slate-400 tracking-widest">SOCIOS ACTIVOS</p>
+                    </div>
+                    <p id="count-socios-inicio" class="text-4xl font-black text-white tracking-tighter">0</p>
+                </div>
+            </div>
+            
+            <!-- Deudores -->
+            <div class="glass-card p-6 border-l-4 border-red-500 relative overflow-hidden group hover:border-l-8 transition-all shadow-lg shadow-red-500/10">
+                <div class="absolute -right-4 -top-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                    <i class="fas fa-exclamation-circle text-8xl text-red-500"></i>
+                </div>
+                <div class="relative z-10">
+                    <div class="flex items-center gap-2 mb-2">
+                        <i class="fas fa-exclamation-circle text-red-500 text-sm"></i>
+                        <p class="text-[9px] font-bold text-slate-400 tracking-widest">DEUDORES</p>
+                    </div>
+                    <p id="count-deudores-inicio" class="text-4xl font-black text-white tracking-tighter">0</p>
+                </div>
             </div>
 
-            <div class="p-4 text-center">
-                <p class="text-[40px] text-slate-400 font-black italic">
-                    Nuestro espacio, tu evolución 💪
+            <!-- Proveedores / Kiosco -->
+            <div class="glass-card p-6 border-l-4 border-orange-500 relative overflow-hidden group hover:border-l-8 transition-all">
+                <div class="absolute -right-4 -top-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                    <i class="fas fa-boxes text-8xl text-orange-500"></i>
+                </div>
+                <div class="relative z-10">
+                    <div class="flex items-center gap-2 mb-2">
+                        <i class="fas fa-boxes text-orange-500 text-sm"></i>
+                        <p class="text-[9px] font-bold text-slate-400 tracking-widest">DEUDA PROVEEDORES</p>
+                    </div>
+                    <p id="kiosco-count-inicio" class="text-4xl font-black text-white tracking-tighter">2</p>
+                </div>
+            </div>
+
+            <!-- Caja -->
+            <div class="glass-card p-6 border-l-4 border-blue-500 relative overflow-hidden group hover:border-l-8 transition-all shadow-lg shadow-blue-500/10">
+                <div class="absolute -right-4 -top-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                    <i class="fas fa-wallet text-8xl text-blue-500"></i>
+                </div>
+                <div class="relative z-10">
+                    <div class="flex items-center gap-2 mb-2">
+                        <i class="fas fa-wallet text-blue-500 text-sm"></i>
+                        <p class="text-[9px] font-bold text-slate-400 tracking-widest">CAJA CIERRE</p>
+                    </div>
+                    <p id="count-caja-inicio" class="text-3xl lg:text-4xl font-black text-white tracking-tighter">$0</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. Vista Alumno (Tu Espacio Platinum) -->
+    <div id="client-home-gallery" class="hidden space-y-6 italic uppercase">
+        <h4 class="text-sm font-black text-slate-500 tracking-[0.2em] mb-2 uppercase">Tu Espacio Platinum</h4>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            
+            <div class="relative h-48 rounded-2xl overflow-hidden group cursor-pointer border border-slate-800/50 shadow-lg">
+                <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5')] bg-cover bg-center transition-transform duration-700 group-hover:scale-110"></div>
+                <div class="absolute inset-0 bg-gradient-to-t from-[#020617] via-[#020617]/50 to-transparent opacity-80 group-hover:opacity-90 transition-opacity"></div>
+                <div class="absolute bottom-0 left-0 w-full p-6 flex justify-between items-end">
+                    <div>
+                        <p class="text-[10px] text-orange-500 font-bold tracking-widest mb-1">ZONA DE FUERZA</p>
+                        <h3 class="text-2xl font-black text-white tracking-tighter">Musculación</h3>
+                    </div>
+                    <div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center backdrop-blur-md border border-white/20 group-hover:bg-orange-500 transition-colors">
+                        <i class="fas fa-arrow-right text-white text-xs"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="relative h-48 rounded-2xl overflow-hidden group cursor-pointer border border-slate-800/50 shadow-lg">
+                <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1599058917212-d750089bc07e')] bg-cover bg-center transition-transform duration-700 group-hover:scale-110"></div>
+                <div class="absolute inset-0 bg-gradient-to-t from-[#020617] via-[#020617]/50 to-transparent opacity-80 group-hover:opacity-90 transition-opacity"></div>
+                <div class="absolute bottom-0 left-0 w-full p-6 flex justify-between items-end">
+                    <div>
+                        <p class="text-[10px] text-orange-500 font-bold tracking-widest mb-1">ALTA INTENSIDAD</p>
+                        <h3 class="text-2xl font-black text-white tracking-tighter">Funcional</h3>
+                    </div>
+                    <div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center backdrop-blur-md border border-white/20 group-hover:bg-orange-500 transition-colors">
+                        <i class="fas fa-arrow-right text-white text-xs"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="relative h-48 rounded-2xl overflow-hidden group cursor-pointer border border-slate-800/50 shadow-lg">
+                <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1527933053326-89d1746b76b9')] bg-cover bg-center transition-transform duration-700 group-hover:scale-110"></div>
+                <div class="absolute inset-0 bg-gradient-to-t from-[#020617] via-[#020617]/50 to-transparent opacity-80 group-hover:opacity-90 transition-opacity"></div>
+                <div class="absolute bottom-0 left-0 w-full p-6 flex justify-between items-end">
+                    <div>
+                        <p class="text-[10px] text-orange-500 font-bold tracking-widest mb-1">RITMO & CARDIO</p>
+                        <h3 class="text-2xl font-black text-white tracking-tighter">Zumba</h3>
+                    </div>
+                    <div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center backdrop-blur-md border border-white/20 group-hover:bg-orange-500 transition-colors">
+                        <i class="fas fa-arrow-right text-white text-xs"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="relative h-48 rounded-2xl overflow-hidden group cursor-pointer border border-slate-800/50 shadow-lg">
+                <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1549719386-74dfcbf7dbed')] bg-cover bg-center transition-transform duration-700 group-hover:scale-110"></div>
+                <div class="absolute inset-0 bg-gradient-to-t from-[#020617] via-[#020617]/50 to-transparent opacity-80 group-hover:opacity-90 transition-opacity"></div>
+                <div class="absolute bottom-0 left-0 w-full p-6 flex justify-between items-end">
+                    <div>
+                        <p class="text-[10px] text-orange-500 font-bold tracking-widest mb-1">COMBATE</p>
+                        <h3 class="text-2xl font-black text-white tracking-tighter">Boxeo</h3>
+                    </div>
+                    <div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center backdrop-blur-md border border-white/20 group-hover:bg-orange-500 transition-colors">
+                        <i class="fas fa-arrow-right text-white text-xs"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="relative h-48 rounded-2xl overflow-hidden group cursor-pointer border border-slate-800/50 shadow-lg md:col-span-2 lg:col-span-2">
+                <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48')] bg-cover bg-center transition-transform duration-700 group-hover:scale-110"></div>
+                <div class="absolute inset-0 bg-gradient-to-t from-[#020617] via-[#020617]/50 to-transparent opacity-80 group-hover:opacity-90 transition-opacity"></div>
+                <div class="absolute bottom-0 left-0 w-full p-6 flex justify-between items-end">
+                    <div>
+                        <p class="text-[10px] text-orange-500 font-bold tracking-widest mb-1">RESISTENCIA EXTREMA</p>
+                        <h3 class="text-3xl md:text-4xl font-black text-white tracking-tighter">Spinning</h3>
+                    </div>
+                    <div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center backdrop-blur-md border border-white/20 group-hover:bg-orange-500 transition-colors">
+                        <i class="fas fa-arrow-right text-white text-sm"></i>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+    <!-- 4. Footer (Horarios y Cierre) -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-12 italic uppercase">
+        <!-- Horarios -->
+        <div class="glass-card p-8 border border-slate-800/50 flex flex-col justify-center">
+            <div class="flex items-center gap-3 mb-4">
+                <i class="far fa-clock text-orange-500 text-xl"></i>
+                <h4 class="font-black text-white tracking-tighter text-lg">Horarios de Atención</h4>
+            </div>
+            <div class="flex flex-col gap-3 text-xs font-black">
+                <div class="flex justify-between items-center border-b border-slate-800/50 pb-2">
+                    <span class="text-slate-400">LUNES A VIERNES</span>
+                    <span class="text-white bg-slate-800 px-3 py-1 rounded-full">08:00 A 23:00</span>
+                </div>
+                <div class="flex justify-between items-center border-b border-slate-800/50 pb-2">
+                    <span class="text-slate-400">SÁBADOS</span>
+                    <span class="text-white bg-slate-800 px-3 py-1 rounded-full">08:00 A 13:00</span>
+                </div>
+                <div class="flex justify-between items-center pb-2">
+                    <span class="text-red-500">DOMINGOS Y FERIADOS</span>
+                    <span class="text-red-500 bg-red-500/10 border border-red-500/20 px-3 py-1 rounded-full">CERRADO</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Banner Motivacional -->
+        <div class="relative rounded-2xl overflow-hidden border border-slate-800 flex items-center justify-center p-8 group">
+            <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1571902943202-507ec2618e8f?auto=format&fit=crop&w=800&q=80')] bg-cover bg-center transition-transform duration-1000 group-hover:scale-105"></div>
+            <div class="absolute inset-0 bg-black/60 group-hover:bg-black/50 transition-colors"></div>
+            <div class="relative z-10 text-center">
+                <i class="fas fa-dumbbell text-3xl text-orange-500 mb-4 opacity-50"></i>
+                <p class="text-2xl md:text-3xl text-white font-black leading-tight">
+                    NUESTRO ESPACIO,<br><span class="text-orange-500">TU EVOLUCIÓN</span>
                 </p>
             </div>
-
         </div>
     </div>
+
 </div>
