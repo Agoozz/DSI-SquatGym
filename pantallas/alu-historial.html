@@ -32,13 +32,19 @@
 
       <!-- Filtros -->
       <div class="glass-card p-4">
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
               <select id="hist-filter-metodo" onchange="renderHistorial()" class="bg-slate-900 border border-slate-700 rounded-full px-4 py-3 text-xs text-white outline-none focus:border-orange-500 transition">
                   <option value="todos">Todos los Métodos</option>
                   <option value="QR">QR</option>
                   <option value="Transferencia">Transferencia</option>
                   <option value="Tarjeta">Tarjeta</option>
                   <option value="Efectivo">Efectivo</option>
+              </select>
+              <select id="hist-filter-plan" onchange="renderHistorial()" class="bg-slate-900 border border-slate-700 rounded-full px-4 py-3 text-xs text-white outline-none focus:border-orange-500 transition">
+                  <option value="todos">Todos los Planes</option>
+                  <option value="Musculación">Musculación</option>
+                  <option value="Zumba">Zumba</option>
+                  <option value="Crossfit">Crossfit</option>
               </select>
               <select id="hist-filter-orden" onchange="renderHistorial()" class="bg-slate-900 border border-slate-700 rounded-full px-4 py-3 text-xs text-white outline-none focus:border-orange-500 transition">
                   <option value="fecha-desc">Más Reciente Primero</option>
@@ -58,7 +64,7 @@
                       <th class="p-4">Concepto</th>
                       <th class="p-4">Método</th>
                       <th class="p-4">Monto</th>
-                      <th class="p-4">Estado</th>
+                      <th class="p-4">Plan</th>
                       <th class="p-4 text-right">Comprobante</th>
                   </tr>
               </thead>

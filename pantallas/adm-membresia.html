@@ -46,7 +46,7 @@
       </button>
 
       <div class="glass-card p-5">
-          <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+          <div class="grid grid-cols-1 md:grid-cols-5 gap-3">
               <input id="search-socio" type="text" onkeyup="filtrarSocios()" placeholder="Buscar por nombre o DNI..."
                      class="w-full px-5 py-3 rounded-full bg-slate-900 border border-slate-700 text-white text-xs outline-none focus:border-orange-500 transition">
 
@@ -64,6 +64,13 @@
                   <option value="Crossfit">Crossfit</option>
               </select>
 
+              <select id="filter-mes-pago" onchange="filtrarSocios()" class="bg-slate-900 border border-slate-700 rounded-full px-4 py-3 text-xs text-white outline-none focus:border-orange-500 transition">
+                  <option value="todos">Todos los Meses de Pago</option>
+                  <option value="05">Mayo 2026</option>
+                  <option value="04">Abril 2026</option>
+                  <option value="03">Marzo 2026</option>
+              </select>
+
               <select id="filter-orden" onchange="filtrarSocios()" class="bg-slate-900 border border-slate-700 rounded-full px-4 py-3 text-xs text-white outline-none focus:border-orange-500 transition">
                   <option value="nombre">Ordenar por Nombre</option>
                   <option value="monto">Ordenar por Monto</option>
@@ -79,6 +86,7 @@
                       <th class="p-4">Socio</th>
                       <th class="p-4">DNI</th>
                       <th class="p-4">Clase</th>
+                      <th class="p-4">Fecha Pago</th>
                       <th class="p-4">Vencimiento</th>
                       <th class="p-4">Deuda</th>
                       <th class="p-4">Estado</th>

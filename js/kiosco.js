@@ -1,14 +1,18 @@
 const kioscoProductos = [
-    { id: 'agua-15', nombre: 'Agua Mineral 1.5L', precio: 1000, descripcion: 'Botella hidratante' },
-    { id: 'lata-energ', nombre: 'Energizante', precio: 2500, descripcion: 'Lata 500ml' },
-    { id: 'gatorade', nombre: 'Gatorade Blue', precio: 1400, descripcion: 'Sabor c�trico' },
-    { id: 'whey', nombre: 'Prote�na Whey', precio: 5500, descripcion: 'Sachet 30g' },
-    { id: 'creatina', nombre: 'Creatina Monohidrato', precio: 4800, descripcion: '30 servicios' }
+    { id: 'agua-15', nombre: 'Agua Mineral 1.5L', precio: 1000, descripcion: 'Botella hidratante', img: 'img/kiosco/agua.png' },
+    { id: 'lata-energ', nombre: 'Energizante Speed', precio: 2500, descripcion: 'Lata 500ml', img: 'img/kiosco/speed.png' },
+    { id: 'gatorade', nombre: 'Gatorade Blue', precio: 1400, descripcion: 'Sabor cítrico', img: 'img/kiosco/gatorade.png' },
+    { id: 'whey', nombre: 'Proteína Whey', precio: 5500, descripcion: 'Sachet 30g', img: 'img/kiosco/whey.png' },
+    { id: 'creatina', nombre: 'Creatina Monohidrato', precio: 4800, descripcion: '30 servicios', img: 'img/kiosco/creatina.png' },
+    { id: 'barrita', nombre: 'Barra Proteica ENA', precio: 1200, descripcion: 'Sabor Chocolate', img: 'img/kiosco/barrita.png' },
+    { id: 'banana', nombre: 'Banana', precio: 800, descripcion: 'Fruta fresca', img: 'img/kiosco/banana.png' },
+    { id: 'mix-frutos', nombre: 'Mix Frutos Secos', precio: 2000, descripcion: 'Snack saludable', img: 'img/kiosco/mix.png' },
+    { id: 'toalla', nombre: 'Alquiler Toalla', precio: 1500, descripcion: 'Uso por sesión', img: 'img/kiosco/toalla.png' }
 ];
 
 const kioscoState = {
     turnoId: `turno-${Date.now()}`,
-    fondoCaja: 0,
+    fondoCaja: 10000,
     metodoPago: 'Efectivo',
     carrito: []
 };
@@ -20,6 +24,16 @@ function iniciarKiosco() {
     actualizarKPIs();
     renderVentasRecientes();
     solicitarAperturaCaja();
+    actualizarCajaEstado();
+    poblarClientesKiosco();
+}
+
+function poblarClientesKiosco() {
+    const select = document.getElementById('kiosco-cliente-select');
+    if (!select || typeof sociosDB === 'undefined') return;
+    
+    const opciones = sociosDB.map(s => `<option value="${s.nombre}">${s.nombre} (DNI: ${s.dni})</option>`).join('');
+    select.innerHTML = `<option value="Mostrador">Consumidor Final (Mostrador)</option>${opciones}`;
 }
 
 function solicitarAperturaCaja() {
@@ -34,7 +48,7 @@ function guardarFondoCaja() {
 
     const valor = Number(input.value);
     if (!valor || valor <= 0) {
-        kioscoMostrarToast('Ingres� un monto v�lido mayor a $0', 'error');
+        kioscoMostrarToast('Ingresá un monto válido mayor a $0', 'error');
         input.focus();
         return;
     }
@@ -69,16 +83,22 @@ function renderKioscoProductos() {
     if (!grid) return;
 
     grid.innerHTML = kioscoProductos.map(producto => `
-        <div class="group rounded-3xl border border-slate-800 bg-slate-950/80 p-4 text-left shadow-lg shadow-slate-950/20 transition hover:-translate-y-1 hover:border-orange-500">
-            <div class="mb-4 flex items-center justify-between">
-                <span class="text-[9px] uppercase tracking-[0.35em] text-slate-500">${producto.descripcion}</span>
-                <span class="rounded-full border border-orange-500/30 bg-orange-500/10 px-3 py-1 text-[10px] font-black uppercase text-orange-300">POS</span>
+        <div onclick="agregarProducto('${producto.id}')" class="group relative cursor-pointer overflow-hidden rounded-3xl border border-slate-800 bg-slate-950/80 text-left shadow-lg shadow-slate-950/20 transition-all duration-300 hover:-translate-y-1 hover:border-orange-500 hover:shadow-orange-500/10 active:scale-95">
+            <div class="h-32 w-full overflow-hidden bg-slate-900 border-b border-slate-800/50">
+                <img src="${producto.img}" alt="${producto.nombre}" class="h-full w-full object-cover opacity-60 transition-transform duration-500 group-hover:scale-110 group-hover:opacity-100" />
             </div>
-            <div class="mb-4 space-y-2">
-                <h5 class="text-sm font-black text-white">${producto.nombre}</h5>
-                <p class="text-[11px] text-slate-400">$${producto.precio.toLocaleString()}</p>
+            <div class="p-4">
+                <div class="mb-2 flex items-center justify-between">
+                    <span class="text-[9px] uppercase tracking-[0.35em] text-slate-500">${producto.descripcion}</span>
+                </div>
+                <div class="space-y-1">
+                    <h5 class="text-sm font-black text-white">${producto.nombre}</h5>
+                    <p class="text-xs font-black text-orange-400">$${producto.precio.toLocaleString()}</p>
+                </div>
             </div>
-            <button onclick="agregarProducto('${producto.id}')" class="mt-auto w-full rounded-2xl border border-orange-500 bg-orange-500/10 px-3 py-3 text-[10px] font-black uppercase tracking-widest text-orange-300 transition hover:bg-orange-500/20">Agregar</button>
+            <div class="absolute right-4 top-4 flex h-8 w-8 -translate-y-2 transform items-center justify-center rounded-full bg-orange-500 text-white opacity-0 shadow-lg transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
+                <i class="fas fa-plus text-xs"></i>
+            </div>
         </div>
     `).join('');
 }
@@ -99,7 +119,7 @@ function renderCart() {
     if (!container || !countLabel || !subtotalLabel || !confirmButton) return;
 
     if (kioscoState.carrito.length === 0) {
-        container.innerHTML = '<p class="text-slate-500 text-sm text-center py-12">Carrito vac�o. Agreg� productos desde el cat�logo.</p>';
+        container.innerHTML = '<p class="text-slate-500 text-sm text-center py-12">Carrito vacío. Agregá productos desde el catálogo.</p>';
     } else {
         const agrupado = kioscoState.carrito.reduce((acc, producto) => {
             const key = producto.id;
@@ -168,12 +188,23 @@ function actualizarMetodoPagoVisual() {
 }
 
 function actualizarMontoEfectivoPanel() {
-    const panel = document.getElementById('kiosco-efectivo-panel');
-    if (!panel) return;
-    if (kioscoState.metodoPago === 'Efectivo') {
-        panel.classList.remove('hidden');
-    } else {
-        panel.classList.add('hidden');
+    const paneles = {
+        'Efectivo': document.getElementById('kiosco-efectivo-panel'),
+        'QR': document.getElementById('kiosco-qr-panel'),
+        'Tarjeta': document.getElementById('kiosco-tarjeta-panel'),
+        'Transferencia': document.getElementById('kiosco-transferencia-panel')
+    };
+
+    Object.values(paneles).forEach(panel => {
+        if (panel) panel.classList.add('hidden');
+    });
+
+    const activo = paneles[kioscoState.metodoPago];
+    if (activo) {
+        activo.classList.remove('hidden');
+    }
+
+    if (kioscoState.metodoPago !== 'Efectivo') {
         const input = document.getElementById('kiosco-monto-recibido');
         if (input) input.value = '';
         const vuelto = document.getElementById('kiosco-vuelto-display');
@@ -206,9 +237,12 @@ function kioscoConfirmarCobro() {
     const subtotal = calcularSubtotal();
     const metodo = kioscoState.metodoPago;
     const detalle = generarDetalleVenta();
+    
+    const clienteSelect = document.getElementById('kiosco-cliente-select');
+    const clienteAsociado = clienteSelect ? clienteSelect.value : 'Mostrador';
 
     if (!metodo) {
-        kioscoMostrarToast('Seleccion� un m�todo de pago.', 'error');
+        kioscoMostrarToast('Seleccioná un método de pago.', 'error');
         return;
     }
 
@@ -229,7 +263,7 @@ function kioscoConfirmarCobro() {
         concepto: 'Kiosco',
         tipo: metodo,
         monto: subtotal,
-        cliente: 'Mostrador',
+        cliente: clienteAsociado,
         estado: 'Completado',
         turno: kioscoState.turnoId,
         detalle,
@@ -240,12 +274,13 @@ function kioscoConfirmarCobro() {
     kioscoState.carrito = [];
     const inputEfectivo = document.getElementById('kiosco-monto-recibido');
     if (inputEfectivo) inputEfectivo.value = '';
+    if (clienteSelect) clienteSelect.value = 'Mostrador';
     kioscoCalcularVuelto();
     renderCart();
     actualizarKPIs();
     renderVentasRecientes();
 
-    const extra = metodo === 'Efectivo' && vuelto > 0 ? ` � Vuelto $${vuelto.toLocaleString()}` : '';
+    const extra = metodo === 'Efectivo' && vuelto > 0 ? ` — Vuelto $${vuelto.toLocaleString()}` : '';
     kioscoMostrarToast(`Cobro registrado ${metodo} por $${subtotal.toLocaleString()}${extra}`);
 }
 
@@ -259,7 +294,7 @@ function generarDetalleVenta() {
         acc[item.nombre].qty += 1;
         return acc;
     }, {});
-    return Object.values(resumen).map(item => `${item.qty}� ${item.nombre}`).join(', ');
+    return Object.values(resumen).map(item => `${item.qty}x ${item.nombre}`).join(', ');
 }
 
 function kioscoRegistrarTransaccion(transaccion) {
@@ -313,7 +348,7 @@ function kioscoRenderDesglose(turnoTransacciones) {
     ];
 
     if (!total) {
-        desgloseEl.innerHTML = '<div class="text-xs text-slate-500">A�n no hay ventas en el turno.</div>';
+        desgloseEl.innerHTML = '<div class="text-xs text-slate-500">Aún no hay ventas en el turno.</div>';
         return;
     }
 
@@ -322,7 +357,7 @@ function kioscoRenderDesglose(turnoTransacciones) {
         const porcentaje = total ? Math.round((monto * 100) / total) : 0;
         return `
             <div class="space-y-2">
-                <div class="flex justify-between text-xs font-black text-slate-400"><span>${label}</span><span class="text-white">$${monto.toLocaleString()} � ${porcentaje}%</span></div>
+                <div class="flex justify-between text-xs font-black text-slate-400"><span>${label}</span><span class="text-white">$${monto.toLocaleString()} — ${porcentaje}%</span></div>
                 <div class="h-2 w-full rounded-full bg-slate-800 overflow-hidden">
                     <div class="h-full rounded-full bg-gradient-to-r ${color}" style="width: ${porcentaje}%;"></div>
                 </div>
@@ -337,7 +372,7 @@ function renderVentasRecientes() {
 
     const turnoTransacciones = kioscoObtenerTransaccionesTurno().slice(-6).reverse();
     if (turnoTransacciones.length === 0) {
-        container.innerHTML = '<p class="text-slate-500 text-sm text-center py-10">A�n no hay ventas registradas en este turno.</p>';
+        container.innerHTML = '<p class="text-slate-500 text-sm text-center py-10">Aún no hay ventas registradas en este turno.</p>';
         return;
     }
 
@@ -416,7 +451,7 @@ function kioscoRenderCierreTurno() {
             const colors = metodo === 'Efectivo' ? 'from-emerald-400 to-emerald-500' : metodo === 'QR' ? 'from-sky-400 to-sky-500' : metodo === 'Tarjeta' ? 'from-violet-400 to-violet-500' : 'from-orange-400 to-orange-500';
             return `
                 <div class="space-y-2">
-                    <div class="flex justify-between text-xs font-black text-slate-400"><span>${metodo}</span><span class="text-white">$${monto.toLocaleString()} � ${porcentaje}%</span></div>
+                    <div class="flex justify-between text-xs font-black text-slate-400"><span>${metodo}</span><span class="text-white">$${monto.toLocaleString()} — ${porcentaje}%</span></div>
                     <div class="h-2 w-full rounded-full bg-slate-800 overflow-hidden">
                         <div class="h-full rounded-full bg-gradient-to-r ${colors}" style="width:${porcentaje}%;"></div>
                     </div>
@@ -440,7 +475,7 @@ function kioscoConfirmarCierreTurno() {
     const turnoTransacciones = kioscoObtenerTransaccionesTurno();
     const total = turnoTransacciones.reduce((sum, tx) => sum + tx.monto, 0);
     kioscoCerrarCierreTurno();
-    kioscoState.fondoCaja = 0;
+    kioscoState.fondoCaja = 10000;
     kioscoState.carrito = [];
     kioscoState.metodoPago = 'Efectivo';
     kioscoState.turnoId = `turno-${Date.now()}`;
@@ -465,7 +500,7 @@ function kioscoExportarVentasTurno() {
         return `${tx.fecha}\t${tx.tipo}\t${detalle}\t$${tx.monto.toLocaleString()}`;
     }).join('\n');
 
-    const txt = `Fecha\tM�todo\tDetalle\tMonto\n${filas}`;
+    const txt = `Fecha\tMétodo\tDetalle\tMonto\n${filas}`;
     const enlace = document.createElement('a');
     enlace.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(txt);
     enlace.download = `ventas_turno_${new Date().toISOString().slice(0,10)}.txt`;

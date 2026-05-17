@@ -5,13 +5,12 @@
         </div>
 </div>
 
-<div id="modal-comprobante" class="hidden fixed inset-0 bg-slate-900/90 z-50 flex justify-center items-center p-4">
-    <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 max-w-sm w-full relative">
-        <button onclick="document.getElementById('modal-comprobante').classList.add('hidden')" class="absolute top-2 right-4 text-white text-2xl hover:text-orange-500">&times;</button>
-        <p class="text-xs text-slate-400 font-bold uppercase mb-2 tracking-widest text-center">Comprobante Adjunto</p>
-        <img id="img-comprobante-visor" src="" alt="Comprobante" class="w-full rounded-lg border border-slate-700">
+<div id="modal-comprobante" class="modal-base p-4">
+    <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 max-w-sm w-full relative shadow-2xl">
+        <button onclick="cerrarM('modal-comprobante')" class="absolute top-2 right-4 text-slate-400 text-2xl hover:text-white">&times;</button>
+        <p class="text-xs text-slate-400 font-bold uppercase mb-4 tracking-widest text-center">Comprobante Adjunto</p>
+        <img id="img-comprobante-visor" src="" alt="Comprobante" class="w-full rounded-lg border border-slate-700 max-h-[80vh] object-contain">
     </div>
-    
 </div>
 <div id="modal-rechazo-reclamo" class="hidden fixed inset-0 bg-slate-900/90 z-50 flex justify-center items-center p-4 backdrop-blur-sm">
     <div class="bg-slate-900 p-6 rounded-2xl border-2 border-red-500/50 max-w-md w-full shadow-2xl shadow-red-900/20">
