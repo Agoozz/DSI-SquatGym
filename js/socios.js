@@ -279,8 +279,8 @@ function renderReclamos() {
             </div>
 
             <div class="flex gap-2">
-                <button onclick="verComprobante('${r.comprobanteURL}')" class="flex-1 bg-slate-700 hover:bg-slate-600 text-white text-[10px] py-2 rounded transition font-bold tracking-widest flex items-center justify-center gap-2">
-                    <i class="fas fa-image"></i> Ver Foto
+                <button onclick="verComprobanteReclamo('${r.id}')" class="flex-1 bg-slate-700 hover:bg-slate-600 text-white text-[10px] py-2 rounded transition font-bold tracking-widest flex items-center justify-center gap-2">
+                    <i class="fas fa-receipt"></i> Ver Comprobante
                 </button>
                 
                 <button onclick="denegarReclamo('${r.id}')" class="flex-1 bg-red-600 hover:bg-red-500 text-white text-[10px] py-2 rounded transition font-bold tracking-widest flex items-center justify-center gap-2">
@@ -295,10 +295,115 @@ function renderReclamos() {
     `).join('');
 }
 
-// Función para abrir la imagen en grande
-function verComprobante(url) {
-    document.getElementById('img-comprobante-visor').src = url;
-    document.getElementById('modal-comprobante').classList.remove('hidden');
+// Función para descargar el comprobante digital en PDF manteniendo la estética del modal
+function verComprobanteReclamo(idReclamo) {
+    const r = reclamosDB.find(x => x.id === idReclamo);
+    if (!r) return;
+    
+    const s = sociosDB.find(x => x.dni === r.dni);
+    const monto = s && s.deuda > 0 ? s.deuda : 12000;
+    
+    let metodo = "TRANSFERENCIA";
+    if (r.mensaje.toLowerCase().includes("kiosco") || r.mensaje.toLowerCase().includes("efectivo")) metodo = "EFECTIVO";
+    if (r.mensaje.toLowerCase().includes("qr")) metodo = "QR";
+
+    if (!window.jspdf || !window.jspdf.jsPDF) {
+        alert("La librería jsPDF no está cargada.");
+        return;
+    }
+
+    const { jsPDF } = window.jspdf;
+    // Creamos un PDF tamaño personalizado para que parezca un recibo (ej: 100mm x 150mm)
+    const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: [100, 140] });
+
+    // Fondo oscuro (bg-slate-900 -> #0f172a)
+    doc.setFillColor(15, 23, 42);
+    doc.rect(0, 0, 100, 140, 'F');
+    
+    // Cabecera naranja (bg-orange-500 -> #f97316)
+    doc.setFillColor(249, 115, 22);
+    doc.rect(0, 0, 100, 16, 'F');
+    
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "bold");
+    doc.text("RECIBO ELECTRÓNICO", 8, 10);
+    
+    // Subcabecera
+    doc.setFontSize(6);
+    doc.setTextColor(100, 116, 139); // text-slate-500
+    doc.text("SQUATGYM SA", 8, 24);
+    doc.text(r.fecha, 92, 24, { align: "right" });
+    
+    // Línea separadora
+    doc.setDrawColor(51, 65, 85); // border-slate-700
+    doc.line(8, 27, 92, 27);
+    
+    // Datos del recibo
+    let startY = 35;
+    const lineHeight = 8;
+    
+    doc.setFontSize(8);
+    
+    // N° Comprobante
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(148, 163, 184); // text-slate-400
+    doc.text("N° Comprobante", 8, startY);
+    doc.setTextColor(249, 115, 22); // text-orange-400
+    doc.text(r.id, 92, startY, { align: "right" });
+    startY += lineHeight;
+    
+    // Socio
+    doc.setTextColor(148, 163, 184);
+    doc.text("Socio", 8, startY);
+    doc.setTextColor(255, 255, 255);
+    doc.text(`${r.socio.toUpperCase()} — DNI: ${r.dni}`, 92, startY, { align: "right" });
+    startY += lineHeight;
+    
+    // Concepto
+    doc.setTextColor(148, 163, 184);
+    doc.text("Concepto", 8, startY);
+    doc.setTextColor(255, 255, 255);
+    doc.text("CUOTA MENSUAL", 92, startY, { align: "right" });
+    startY += lineHeight;
+    
+    // Método
+    doc.setTextColor(148, 163, 184);
+    doc.text("Método", 8, startY);
+    doc.setTextColor(255, 255, 255);
+    doc.text(metodo, 92, startY, { align: "right" });
+    
+    // Línea separadora
+    startY += 6;
+    doc.setDrawColor(51, 65, 85);
+    doc.line(8, startY, 92, startY);
+    startY += 8;
+    
+    // Total
+    doc.setFontSize(10);
+    doc.setTextColor(203, 213, 225); // text-slate-300
+    doc.text("Total Abonado", 8, startY);
+    doc.setFontSize(16);
+    doc.setTextColor(74, 222, 128); // text-green-400
+    doc.text(`$${monto.toLocaleString()}`, 92, startY, { align: "right" });
+    
+    // Badge de Acreditado
+    startY += 12;
+    doc.setFillColor(34, 197, 94, 0.1); // bg-green-500/10 no soporta alpha directo en fillRect de esta forma en jsPDF sin GState, pero podemos dibujar un rectángulo de contorno
+    doc.setDrawColor(34, 197, 94); // border-green-500
+    doc.roundedRect(8, startY, 84, 10, 2, 2, 'D');
+    doc.setFontSize(7);
+    doc.setTextColor(74, 222, 128); // text-green-400
+    doc.text("PAGO ACREDITADO", 50, startY + 6.5, { align: "center" });
+    
+    // Texto legal
+    startY += 18;
+    doc.setFontSize(5);
+    doc.setTextColor(71, 85, 105); // text-slate-600
+    doc.text("COMPROBANTE VÁLIDO COMO RECIBO DE PAGO", 50, startY, { align: "center" });
+
+    // Guardar el PDF
+    doc.save(`Recibo_${r.id}_SquatGym.pdf`);
 }
 
 // Función para simular que se resolvió el reclamo

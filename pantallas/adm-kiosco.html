@@ -77,6 +77,12 @@
                             <span>Subtotal</span>
                             <span id="kiosco-cart-subtotal" class="text-white">$0</span>
                         </div>
+                        <div class="mb-4">
+                            <label class="text-[9px] uppercase tracking-[0.35em] text-slate-400">Cliente Asociado</label>
+                            <select id="kiosco-cliente-select" class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950 px-3 py-2 text-[10px] font-black uppercase tracking-widest text-white outline-none focus:border-orange-500">
+                                <option value="Mostrador">Consumidor Final (Mostrador)</option>
+                            </select>
+                        </div>
                         <p class="mb-4 text-[10px] text-slate-500">Seleccioná un método de pago para completar la venta.</p>
                         <div class="grid grid-cols-2 gap-2 text-[10px] font-black uppercase tracking-widest">
                             <button id="metodo-Efectivo" onclick="kioscoCambiarMetodoPago('Efectivo')" class="payment-btn rounded-xl border border-slate-700 bg-slate-900 px-3 py-3 text-left transition">Efectivo</button>
@@ -90,6 +96,32 @@
                             <div class="mt-3 flex items-center justify-between text-[10px] font-black uppercase tracking-[0.35em] text-slate-300">
                                 <span>Vuelto estimado</span>
                                 <span id="kiosco-vuelto-display" class="text-emerald-300">$0</span>
+                            </div>
+                        </div>
+
+                        <div id="kiosco-qr-panel" class="mt-4 hidden rounded-3xl border border-sky-500/20 bg-sky-500/5 p-4 flex flex-col items-center justify-center">
+                            <div class="w-24 h-24 bg-white rounded-xl p-2 mb-3 mx-auto">
+                                <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=SquatGymPagos" alt="QR" class="w-full h-full object-contain">
+                            </div>
+                            <p class="text-[9px] uppercase tracking-[0.35em] text-sky-400 font-black text-center">Escaneá para pagar</p>
+                        </div>
+
+                        <div id="kiosco-tarjeta-panel" class="mt-4 hidden rounded-3xl border border-violet-500/20 bg-violet-500/5 p-4">
+                            <label class="text-[9px] uppercase tracking-[0.35em] text-slate-400">Datos de la Tarjeta</label>
+                            <input type="text" placeholder="XXXX XXXX XXXX XXXX" class="mt-3 mb-2 w-full rounded-2xl border border-slate-700 bg-slate-900 px-4 py-3 text-white outline-none focus:border-violet-500 text-xs font-black tracking-widest text-center" />
+                            <div class="grid grid-cols-2 gap-2">
+                                <input type="text" placeholder="MM/AA" class="w-full rounded-2xl border border-slate-700 bg-slate-900 px-4 py-3 text-white outline-none focus:border-violet-500 text-xs font-black text-center" />
+                                <input type="text" placeholder="CVC" class="w-full rounded-2xl border border-slate-700 bg-slate-900 px-4 py-3 text-white outline-none focus:border-violet-500 text-xs font-black text-center" />
+                            </div>
+                        </div>
+
+                        <div id="kiosco-transferencia-panel" class="mt-4 hidden rounded-3xl border border-orange-500/20 bg-orange-500/5 p-4">
+                            <p class="text-[9px] uppercase tracking-[0.35em] text-slate-400 mb-2">Datos Bancarios</p>
+                            <div class="bg-slate-900/50 rounded-2xl p-3 border border-slate-800">
+                                <p class="text-[9px] text-slate-500 mb-1 uppercase tracking-widest">CBU / CVU</p>
+                                <p class="text-xs font-black text-white tracking-widest mb-3">0000003100010000000001</p>
+                                <p class="text-[9px] text-slate-500 mb-1 uppercase tracking-widest">Alias</p>
+                                <p class="text-xs font-black text-orange-400 tracking-widest">SQUATGYM.PAGOS</p>
                             </div>
                         </div>
                         <button id="btn-confirmar-cobro" onclick="kioscoConfirmarCobro()" class="mt-5 btn-ui btn-naranja w-full rounded-xl py-3 text-xs font-black uppercase tracking-widest disabled:opacity-40">Confirmar Cobro</button>
@@ -124,4 +156,3 @@
         <div id="kiosco-toast" class="fixed right-6 bottom-6 z-50 hidden rounded-3xl border border-orange-500/40 bg-slate-900/95 px-6 py-4 text-sm text-white shadow-2xl backdrop-blur-xl transition-all duration-300"></div>
 
     </div>
-</div>

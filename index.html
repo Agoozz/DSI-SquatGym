@@ -813,7 +813,7 @@
       <!-- Header -->
       <div class="px-8 py-6 border-b border-slate-800 flex justify-between items-center bg-slate-900/50">
         <div>
-          <p class="text-[10px] font-black text-orange-500 uppercase tracking-widest mb-1">Paso 1 de 3</p>
+          <p class="text-[10px] font-black text-orange-500 uppercase tracking-widest mb-1">Paso 1 de 2</p>
           <h3 class="text-xl font-black text-white">Detalles del Cobro</h3>
         </div>
         <button onclick="cerrarModalWizard('modal-wizard-1')" class="text-slate-500 hover:text-white transition-colors">
@@ -957,7 +957,7 @@
             <i class="fas fa-arrow-left text-xs"></i>
           </button>
           <div>
-            <p class="text-[10px] font-black text-orange-500 uppercase tracking-widest mb-1">Paso 2 de 3</p>
+            <p class="text-[10px] font-black text-orange-500 uppercase tracking-widest mb-1">Paso 2 de 2</p>
             <h3 class="text-xl font-black text-white">Medio de Pago</h3>
           </div>
         </div>
@@ -1106,6 +1106,22 @@
     </div>
   </div>
 
+  <!-- Wizard Step: Procesando Cobro -->
+  <div id="modal-wizard-procesando" class="fixed inset-0 z-[17000] hidden flex items-center justify-center p-6 bg-slate-950/80 backdrop-blur-md">
+    <div class="text-center space-y-6 max-w-xs w-full animate-in fade-in zoom-in-95 duration-300">
+      <div class="relative w-20 h-20 mx-auto flex items-center justify-center">
+        <!-- Spinner premium con gradiente SquatGym -->
+        <div class="absolute inset-0 rounded-full border-4 border-slate-800"></div>
+        <div class="absolute inset-0 rounded-full border-4 border-t-orange-500 border-r-orange-500/50 animate-spin"></div>
+        <i class="fas fa-shield-alt text-2xl text-orange-500"></i>
+      </div>
+      <div>
+        <h4 class="text-lg font-black text-white italic uppercase tracking-wider">Procesando Pago</h4>
+        <p class="text-[10px] text-slate-400 font-bold mt-1">⏳ Conectando con pasarela segura de SquatGym...</p>
+      </div>
+    </div>
+  </div>
+
   <!-- Wizard Step 3: Recibo Electrónico -->
   <div id="modal-wizard-3" class="fixed inset-0 z-[16000] hidden flex items-center justify-center p-6 bg-slate-950/80 backdrop-blur-sm">
     <div class="bg-slate-100 w-full max-w-sm rounded-lg shadow-2xl overflow-hidden flex flex-col text-slate-900 font-mono text-sm relative">
@@ -1159,7 +1175,7 @@
         <button onclick="finalizarCobroWizard()" class="flex-1 bg-slate-800 hover:bg-slate-900 text-white py-3 rounded font-bold uppercase transition-colors text-xs">
           Cerrar
         </button>
-        <button onclick="window.print()" class="flex-1 bg-white hover:bg-slate-50 text-slate-900 border border-slate-300 py-3 rounded font-bold uppercase transition-colors text-xs flex items-center justify-center gap-2">
+        <button onclick="descargarPdfReciboWizard(lastTx)" class="flex-1 bg-white hover:bg-slate-50 text-slate-900 border border-slate-300 py-3 rounded font-bold uppercase transition-colors text-xs flex items-center justify-center gap-2">
           <i class="fas fa-print"></i> Imprimir
         </button>
       </div>
